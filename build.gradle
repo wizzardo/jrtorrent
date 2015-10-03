@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    jcenter()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+version = '0.1'
+
+mainClassName = "MyServer"
+
+dependencies {
+	//compile files(
+    //        'lib-1.jar',
+    //        'lib-2.jar'
+    //)
+}
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes(
+                "Main-Class": mainClassName
+        )
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
