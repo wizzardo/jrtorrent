@@ -10,13 +10,14 @@ targetCompatibility = 1.8
 
 version = '0.1'
 
-mainClassName = "MyServer"
+mainClassName = "com.wizzardo.jrt.RTorrentClient"
 
 dependencies {
-	//compile files(
-    //        'lib-1.jar',
-    //        'lib-2.jar'
-    //)
+	compile files(
+            '../epollserver/build/libs/epoll-0.1.jar',
+            '../http/build/libs/http-0.1.jar',
+            '../Utils/build/libs/tools-all-0.14-SNAPSHOT.jar'
+    )
 }
 
 //create a single Jar with all dependencies
