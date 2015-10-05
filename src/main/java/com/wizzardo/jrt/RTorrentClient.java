@@ -4,8 +4,6 @@ import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,7 +20,7 @@ public class RTorrentClient {
     }
 
     public List<TorrentInfo> getTorrents() {
-        String response = executeRequest(new ScgiClient.XmlRpc("d.multicall", "main",
+        String response = executeRequest(new XmlRpc("d.multicall", "main",
                 "d.name=",
                 "d.hash=",
                 "d.size_bytes=",
@@ -58,12 +56,12 @@ public class RTorrentClient {
         });
 
 
-        ScgiClient.XmlRpc.Params params = new ScgiClient.XmlRpc.Params();
+        XmlRpc.Params params = new XmlRpc.Params();
         for (TorrentInfo info : torrents) {
-            params.add(new ScgiClient.XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete=", "t.get_scrape_complete="));
+            params.add(new XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete=", "t.get_scrape_complete="));
         }
 
-        response = executeRequest(new ScgiClient.XmlRpc("system.multicall", new ScgiClient.XmlRpc.Params().add(params)));
+        response = executeRequest(new XmlRpc("system.multicall", new XmlRpc.Params().add(params)));
         Node multi = parser.parse(response);
         CollectionTools.eachWithIndex(multi.get(0).get(0).get(0).get(0).get(0).children(), (i, node) -> {
             int seeds = 0;
@@ -79,7 +77,7 @@ public class RTorrentClient {
         return torrents;
     }
 
-    private String executeRequest(ScgiClient.XmlRpc request) {
+    private String executeRequest(XmlRpc request) {
         return new ScgiClient.Request(host, port, request.render()).get();
     }
 
