@@ -19,6 +19,13 @@ public class RTorrentClient {
         this.port = port;
     }
 
+    public int getFilesCount(TorrentInfo torrent) {
+        String response = new XmlParser().parse(executeRequest(new XmlRpc("d.get_size_files", new XmlRpc.Params().add(torrent.getHash()))))
+                .get("params/param/value/i8").text();
+
+        return Integer.parseInt(response);
+    }
+
     public List<TorrentInfo> getTorrents() {
         String response = executeRequest(new XmlRpc("d.multicall", "main",
                 "d.name=",
