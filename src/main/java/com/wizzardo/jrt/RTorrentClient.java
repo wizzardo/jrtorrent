@@ -21,14 +21,16 @@ public class RTorrentClient {
 
     public int getFilesCount(TorrentInfo torrent) {
         String response = new XmlParser().parse(executeRequest(new XmlRpc("d.get_size_files", new XmlRpc.Params().add(torrent.getHash()))))
-                .get("params/param/value/i8").text();
+//                .get("params/param/value/i8").text();
+                .get(0).get(0).get(0).get(0).text();
 
         return Integer.parseInt(response);
     }
 
     public String getFile(TorrentInfo torrent, int i) {
         String file = new XmlParser().parse(executeRequest(new XmlRpc("f.get_path", new XmlRpc.Params().add(torrent.getHash()).add(i))))
-                .get("params/param/value/string").text();
+//                .get("params/param/value/string").text();
+                .get(0).get(0).get(0).get(0).text();
 
         return file;
     }
