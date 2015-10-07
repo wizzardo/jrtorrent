@@ -26,6 +26,13 @@ public class RTorrentClient {
         return Integer.parseInt(response);
     }
 
+    public String getFile(TorrentInfo torrent, int i) {
+        String file = new XmlParser().parse(executeRequest(new XmlRpc("f.get_path", new XmlRpc.Params().add(torrent.getHash()).add(i))))
+                .get("params/param/value/string").text();
+
+        return file;
+    }
+
     public List<TorrentInfo> getTorrents() {
         String response = executeRequest(new XmlRpc("d.multicall", "main",
                 "d.name=",
