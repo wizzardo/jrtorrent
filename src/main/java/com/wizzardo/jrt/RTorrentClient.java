@@ -35,6 +35,22 @@ public class RTorrentClient {
         return file;
     }
 
+    public void stop(TorrentInfo torrent) {
+        executeRequest(new XmlRpc("d.stop", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
+    public void start(TorrentInfo torrent) {
+        executeRequest(new XmlRpc("d.start", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
+    public void pause(TorrentInfo torrent) {
+        executeRequest(new XmlRpc("d.pause", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
+    public void resume(TorrentInfo torrent) {
+        executeRequest(new XmlRpc("d.resume", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
     public List<TorrentInfo> getTorrents() {
         String response = executeRequest(new XmlRpc("d.multicall", "main",
                 "d.name=",
