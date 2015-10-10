@@ -1,9 +1,11 @@
 package com.wizzardo.jrt;
 
 import com.wizzardo.tools.misc.DateIso8601;
+import com.wizzardo.tools.misc.SoftThreadLocal;
 import com.wizzardo.tools.security.Base64;
 import com.wizzardo.tools.xml.Node;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +15,21 @@ import java.util.Map;
  * Created by wizzardo on 05.10.15.
  */
 public class XmlRpc {
+
+    private static SoftThreadLocal<StringBuilder> stringBuilderThreadLocal = new SoftThreadLocal<StringBuilder>() {
+        @Override
+        protected StringBuilder init() {
+            return new StringBuilder();
+        }
+
+        @Override
+        public StringBuilder getValue() {
+            StringBuilder value = super.getValue();
+            value.setLength(0);
+            return value;
+        }
+    };
+
     String method;
     Params params = new Params();
 
@@ -42,7 +59,7 @@ public class XmlRpc {
         return new Node("methodCall")
                 .add(new Node("methodName").addText(method))
                 .add(params)
-                .toXML();
+                .toXML(false, stringBuilderThreadLocal.getValue()).toString();
     }
 
     interface Param {
