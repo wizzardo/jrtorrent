@@ -4,6 +4,9 @@ import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -49,6 +52,42 @@ public class RTorrentClient {
 
     public void resume(TorrentInfo torrent) {
         executeRequest(new XmlRpc("d.resume", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
+    private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
+        XmlRpc.Params params = new XmlRpc.Params();
+        params.add(torrent.getHash())
+                .add(0)
+                .add("f.get_path_components=")
+                .add("f.get_priority=")
+                .add("f.get_completed_chunks=")
+                .add("f.get_size_chunks=")
+        ;
+//        for (int i = 0; i < l; i++) {
+//            params.add("f.get_path").add("D4264E9D08C1F6BD9BCFC1D4B47E149C577D1FFC").add(i);
+//        }
+        String s = executeRequest(new XmlRpc("f.multicall", params));
+        Node xml = new XmlParser().parse(s);
+        Node files = xml.get(0).get(0).get(0).get(0).get(0);
+
+        TorrentEntry root = new TorrentEntry();
+
+        for (Node child : files.children()) {
+            Node data = child.get(0).get(0);
+            Node path = data.get(0).get(0).get(0);
+
+            TorrentEntry entry = root;
+            for (int i = 0; i < path.size(); i++) {
+                String name = path.get(i).get(0).get(0).text();
+                entry = entry.getOrCreate(name);
+            }
+
+            entry.setPriority(FilePriority.byString(data.get(1).get(0).get(0).text()));
+            entry.setChunksCompleted(Integer.parseInt(data.get(2).get(0).get(0).text()));
+            entry.setChunksCount(Integer.parseInt(data.get(3).get(0).get(0).text()));
+        }
+
+        return root.getChildren().values();
     }
 
     public List<TorrentInfo> getTorrents() {
@@ -117,7 +156,7 @@ public class RTorrentClient {
 
         String host = args.length > 0 ? args[0] : "localhost";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 5000;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
 
 //        ScgiClient.XmlRpc.Params params = new ScgiClient.XmlRpc.Params();
 //        List<ScgiClient.XmlRpc.Params> list = new ArrayList<>();
@@ -126,6 +165,7 @@ public class RTorrentClient {
             time = System.currentTimeMillis() - time;
             for (TorrentInfo info : torrents) {
                 System.out.println(info);
+//                new RTorrentClient(host, port).getFiles(info);
 //            params.add(new ScgiClient.XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete="));
             }
 
@@ -143,5 +183,7 @@ public class RTorrentClient {
 //            String request = new ScgiClient.XmlRpc(args[2], moreArgs).render();
 //            System.out.println(new ScgiClient.Request(host, port, request).get());
 //        }
+
+
     }
 }

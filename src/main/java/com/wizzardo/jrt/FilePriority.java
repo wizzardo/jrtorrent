@@ -12,7 +12,7 @@ public enum FilePriority {
         this.value = value;
     }
 
-    public FilePriority byInt(int i) {
+    public static FilePriority byInt(int i) {
         if (i == 0)
             return OFF;
         if (i == 1)
@@ -25,7 +25,7 @@ public enum FilePriority {
         throw new IllegalArgumentException("Argument is not in a valid range (0-3)");
     }
 
-    public FilePriority byString(String s) {
+    public static FilePriority byString(String s) {
         if ("0".equals(s))
             return OFF;
         if ("1".equals(s))
