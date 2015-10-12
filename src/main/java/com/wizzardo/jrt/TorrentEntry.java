@@ -13,6 +13,7 @@ public class TorrentEntry {
 
     private int chunksCount;
     private int chunksCompleted;
+    private int id;
 
     public final TorrentEntry parent;
     public final String name;
@@ -52,7 +53,7 @@ public class TorrentEntry {
         return priority;
     }
 
-    public void setPriority(FilePriority priority) {
+    void setPriority(FilePriority priority) {
         this.priority = priority;
     }
 
@@ -60,7 +61,7 @@ public class TorrentEntry {
         return chunksCount;
     }
 
-    public void setChunksCount(int chunksCount) {
+    void setChunksCount(int chunksCount) {
         this.chunksCount = chunksCount;
     }
 
@@ -68,11 +69,19 @@ public class TorrentEntry {
         return chunksCompleted;
     }
 
-    public void setChunksCompleted(int chunksCompleted) {
+    void setChunksCompleted(int chunksCompleted) {
         this.chunksCompleted = chunksCompleted;
     }
 
     public Map<String, TorrentEntry> getChildren() {
         return children;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    void setId(int id) {
+        this.id = id;
     }
 }

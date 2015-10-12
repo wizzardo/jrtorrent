@@ -55,8 +55,12 @@ public class RTorrentClient {
     }
 
     private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
+        return getEntries(torrent.getHash());
+    }
+
+    private Collection<TorrentEntry> getEntries(String hash) {
         XmlRpc.Params params = new XmlRpc.Params();
-        params.add(torrent.getHash())
+        params.add(hash)
                 .add(0)
                 .add("f.get_path_components=")
                 .add("f.get_priority=")
@@ -71,7 +75,7 @@ public class RTorrentClient {
         Node files = xml.get(0).get(0).get(0).get(0).get(0);
 
         TorrentEntry root = new TorrentEntry();
-
+        int id = 0;
         for (Node child : files.children()) {
             Node data = child.get(0).get(0);
             Node path = data.get(0).get(0).get(0);
@@ -81,12 +85,13 @@ public class RTorrentClient {
                 String name = path.get(i).get(0).get(0).text();
                 entry = entry.getOrCreate(name);
             }
-
+            entry.setId(id++);
             entry.setPriority(FilePriority.byString(data.get(1).get(0).get(0).text()));
             entry.setChunksCompleted(Integer.parseInt(data.get(2).get(0).get(0).text()));
             entry.setChunksCount(Integer.parseInt(data.get(3).get(0).get(0).text()));
         }
 
+//        System.out.println(files.toXML(true));
         return root.getChildren().values();
     }
 
@@ -148,6 +153,22 @@ public class RTorrentClient {
         return torrents;
     }
 
+    public void setFilePriority(TorrentInfo torrent, TorrentEntry entry, FilePriority priority) {
+        setFilePriority(torrent.getHash(), entry.getId(), priority);
+    }
+
+    public void setFilePriority(String hash, int file, FilePriority priority) {
+        XmlRpc.Params params = new XmlRpc.Params();
+        params.add(hash)
+                .add(file)
+                .add(priority.i)
+        ;
+        String s = new RTorrentClient(host, port).executeRequest(new XmlRpc("f.set_priority", params));
+//        System.out.println(s);
+        s = new RTorrentClient(host, port).executeRequest(new XmlRpc("d.update_priorities", hash));
+//        System.out.println(s);
+    }
+
     private String executeRequest(XmlRpc request) {
         return new ScgiClient.Request(host, port, request.render()).get();
     }
@@ -165,7 +186,7 @@ public class RTorrentClient {
             time = System.currentTimeMillis() - time;
             for (TorrentInfo info : torrents) {
                 System.out.println(info);
-//                new RTorrentClient(host, port).getFiles(info);
+//                new RTorrentClient(host, port).getEntries(info);
 //            params.add(new ScgiClient.XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete="));
             }
 
