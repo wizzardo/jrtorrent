@@ -4,37 +4,35 @@ package com.wizzardo.jrt;
  * Created by wizzardo on 07.10.15.
  */
 public enum FilePriority {
-    OFF("0"), LOW("1"), NORMAL("2"), HIGH("3");
+    OFF(0), NORMAL(1), HIGH(2);
 
-    final String value;
+    final String s;
+    final int i;
 
-    FilePriority(String value) {
-        this.value = value;
+    FilePriority(int value) {
+        this.s = String.valueOf(value);
+        this.i = value;
     }
 
     public static FilePriority byInt(int i) {
         if (i == 0)
             return OFF;
         if (i == 1)
-            return LOW;
-        if (i == 2)
             return NORMAL;
-        if (i == 3)
+        if (i == 2)
             return HIGH;
 
-        throw new IllegalArgumentException("Argument is not in a valid range (0-3)");
+        throw new IllegalArgumentException("Argument is not in a valid range (0-2)");
     }
 
     public static FilePriority byString(String s) {
         if ("0".equals(s))
             return OFF;
         if ("1".equals(s))
-            return LOW;
-        if ("2".equals(s))
             return NORMAL;
-        if ("3".equals(s))
+        if ("2".equals(s))
             return HIGH;
 
-        throw new IllegalArgumentException("Argument is not in a valid range (0-3)");
+        throw new IllegalArgumentException("Argument is not in a valid range (0-2)");
     }
 }
