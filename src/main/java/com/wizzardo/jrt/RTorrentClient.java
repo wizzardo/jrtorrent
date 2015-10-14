@@ -169,6 +169,10 @@ public class RTorrentClient {
 //        System.out.println(s);
     }
 
+    public String getDownloadDirectory(){
+        return new XmlParser().parse(executeRequest(new XmlRpc("get_directory"))).get(0).text();
+    }
+
     private String executeRequest(XmlRpc request) {
         return new ScgiClient.Request(host, port, request.render()).get();
     }
