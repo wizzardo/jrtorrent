@@ -38,6 +38,10 @@ public class RTorrentClient {
         return file;
     }
 
+    public void load(String torrent) {
+        executeRequest(new XmlRpc("load", new XmlRpc.Params().add(torrent)));
+    }
+
     public void stop(TorrentInfo torrent) {
         executeRequest(new XmlRpc("d.stop", new XmlRpc.Params().add(torrent.getHash())));
     }
