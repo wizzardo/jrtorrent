@@ -58,6 +58,10 @@ public class RTorrentClient {
         executeRequest(new XmlRpc("d.resume", new XmlRpc.Params().add(torrent.getHash())));
     }
 
+    public void remove(TorrentInfo torrent) {
+        executeRequest(new XmlRpc("d.erase", new XmlRpc.Params().add(torrent.getHash())));
+    }
+
     private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
         return getEntries(torrent.getHash());
     }
