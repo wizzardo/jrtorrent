@@ -39,27 +39,47 @@ public class RTorrentClient {
     }
 
     public void load(String torrent) {
-        executeRequest(new XmlRpc("load", new XmlRpc.Params().add(torrent)));
+        executeRequest(new XmlRpc("load", torrent));
     }
 
     public void stop(TorrentInfo torrent) {
-        executeRequest(new XmlRpc("d.stop", new XmlRpc.Params().add(torrent.getHash())));
+        stop(torrent.getHash());
+    }
+
+    public void stop(String hash) {
+        executeRequest(new XmlRpc("d.stop", hash));
     }
 
     public void start(TorrentInfo torrent) {
-        executeRequest(new XmlRpc("d.start", new XmlRpc.Params().add(torrent.getHash())));
+        start(torrent.getHash());
+    }
+
+    public void start(String hash) {
+        executeRequest(new XmlRpc("d.start", hash));
     }
 
     public void pause(TorrentInfo torrent) {
-        executeRequest(new XmlRpc("d.pause", new XmlRpc.Params().add(torrent.getHash())));
+        pause(torrent.getHash());
+    }
+
+    public void pause(String hash) {
+        executeRequest(new XmlRpc("d.pause", hash));
     }
 
     public void resume(TorrentInfo torrent) {
-        executeRequest(new XmlRpc("d.resume", new XmlRpc.Params().add(torrent.getHash())));
+        resume(torrent.getHash());
+    }
+
+    public void resume(String hash) {
+        executeRequest(new XmlRpc("d.resume", hash));
     }
 
     public void remove(TorrentInfo torrent) {
-        executeRequest(new XmlRpc("d.erase", new XmlRpc.Params().add(torrent.getHash())));
+        remove(torrent.getHash());
+    }
+
+    public void remove(String hash) {
+        executeRequest(new XmlRpc("d.erase", hash));
     }
 
     private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
@@ -177,7 +197,7 @@ public class RTorrentClient {
 //        System.out.println(s);
     }
 
-    public String getDownloadDirectory(){
+    public String getDownloadDirectory() {
         return new XmlParser().parse(executeRequest(new XmlRpc("get_directory"))).get(0).text();
     }
 
@@ -189,24 +209,33 @@ public class RTorrentClient {
 
         String host = args.length > 0 ? args[0] : "localhost";
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 5000;
-        for (int i = 0; i < 1; i++) {
 
-//        ScgiClient.XmlRpc.Params params = new ScgiClient.XmlRpc.Params();
-//        List<ScgiClient.XmlRpc.Params> list = new ArrayList<>();
-            long time = System.currentTimeMillis();
-            List<TorrentInfo> torrents = new RTorrentClient(host, port).getTorrents();
-            time = System.currentTimeMillis() - time;
-            for (TorrentInfo info : torrents) {
-                System.out.println(info);
-//                new RTorrentClient(host, port).getEntries(info);
-//            params.add(new ScgiClient.XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete="));
-            }
+        RTorrentClient client = new RTorrentClient(host, port);
+//        for (TorrentInfo info : client.getTorrents()) {
+//            System.out.println(info);
+//        }
+        client.load("/tmp/test.torrent");
+//        client.remove("3E2C74D5C2A6DC62B1F6B8E655A56AB319FED56D");
 
-            System.out.println("get torrents info: " + time + " ms");
-            System.out.println("");
 
-            Thread.sleep(1000);
-        }
+//        for (int i = 0; i < 1; i++) {
+//
+////        ScgiClient.XmlRpc.Params params = new ScgiClient.XmlRpc.Params();
+////        List<ScgiClient.XmlRpc.Params> list = new ArrayList<>();
+//            long time = System.currentTimeMillis();
+//            List<TorrentInfo> torrents = new RTorrentClient(host, port).getTorrents();
+//            time = System.currentTimeMillis() - time;
+//            for (TorrentInfo info : torrents) {
+//                System.out.println(info);
+////                new RTorrentClient(host, port).getEntries(info);
+////            params.add(new ScgiClient.XmlRpc("t.multicall", info.getHash(), "d.get_hash=", "t.get_scrape_incomplete="));
+//            }
+//
+//            System.out.println("get torrents info: " + time + " ms");
+//            System.out.println("");
+//
+//            Thread.sleep(1000);
+//        }
 //        String request = new ScgiClient.XmlRpc(host, params).render();
 //        System.out.println(new ScgiClient.Request(host, port, request).get());
 
