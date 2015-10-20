@@ -201,6 +201,14 @@ public class RTorrentClient {
         return new XmlParser().parse(executeRequest(new XmlRpc("get_directory"))).get(0).text();
     }
 
+    public String getTorrentDirectory(TorrentInfo info) {
+        return getTorrentDirectory(info.getHash());
+    }
+
+    public String getTorrentDirectory(String hash) {
+        return new XmlParser().parse(executeRequest(new XmlRpc("d.get_directory", hash))).get(0).text();
+    }
+
     private String executeRequest(XmlRpc request) {
         return new ScgiClient.Request(host, port, request.render()).get();
     }
@@ -211,10 +219,18 @@ public class RTorrentClient {
         int port = args.length > 1 ? Integer.parseInt(args[1]) : 5000;
 
         RTorrentClient client = new RTorrentClient(host, port);
-//        for (TorrentInfo info : client.getTorrents()) {
-//            System.out.println(info);
-//        }
-        client.load("/tmp/test.torrent");
+        for (TorrentInfo info : client.getTorrents()) {
+            System.out.println(info);
+            if (info.getStatus() == TorrentInfo.Status.STOPPED)
+                client.start(info);
+            for (TorrentEntry entry : client.getEntries(info)) {
+                System.out.println((entry.isFolder() ? "D: " : "F: ") + entry.name);
+            }
+            System.out.println("getTorrentDirectory: " + client.getTorrentDirectory(info));
+            System.out.println("getDownloadDirectory: " + client.getDownloadDirectory());
+        }
+
+//        client.load("/tmp/test.torrent");
 //        client.remove("3E2C74D5C2A6DC62B1F6B8E655A56AB319FED56D");
 
 
