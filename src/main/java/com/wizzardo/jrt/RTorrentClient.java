@@ -1,9 +1,11 @@
 package com.wizzardo.jrt;
 
 import com.wizzardo.tools.collections.CollectionTools;
+import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -80,6 +82,16 @@ public class RTorrentClient {
 
     public void remove(String hash) {
         executeRequest(new XmlRpc("d.erase", hash));
+    }
+
+    public void removeWithData(TorrentInfo torrent) {
+        removeWithData(torrent.getHash());
+    }
+
+    public void removeWithData(String hash) {
+        String path = getTorrentDirectory(hash);
+        executeRequest(new XmlRpc("d.erase", hash));
+        FileTools.deleteRecursive(new File(path));
     }
 
     private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
