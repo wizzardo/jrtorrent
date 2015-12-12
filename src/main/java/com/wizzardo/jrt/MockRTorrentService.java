@@ -29,8 +29,8 @@ public class MockRTorrentService extends RTorrentService {
                 ti.setSize(100 * (n + 1));
                 ti.setDownloaded(0);
                 ti.setDownloadSpeed(1);
-                ti.setUploaded(10 * n);
-                ti.setUploadSpeed(0);
+                ti.setUploaded(0);
+                ti.setUploadSpeed(1);
                 ti.setTotalPeers(10 * n);
                 ti.setTotalSeeds(10 * n);
                 ti.setPeers(1 + n);
@@ -46,10 +46,18 @@ public class MockRTorrentService extends RTorrentService {
                 e.printStackTrace();
             }
             while (true) {
-                for (TorrentInfo info : list) {
+                for (TorrentInfo ti : list) {
 //                    System.out.println("update torrent, set downloaded to " + (info.getDownloaded() == info.getSize() ? 0 : info.getDownloaded() + 1));
-                    info.setDownloaded(info.getDownloaded() == info.getSize() ? 0 : info.getDownloaded() + 1);
-                    appWebSocketHandler.onUpdate(info);
+                    if (ti.getDownloaded() == ti.getSize()) {
+                        ti.setDownloaded(0);
+                        ti.setUploaded(0);
+                        ti.setUploadSpeed(1);
+                    } else {
+                        ti.setDownloaded(ti.getDownloaded() + 1);
+                        ti.setUploaded(ti.getUploaded() + ti.getUploadSpeed());
+                        ti.setUploadSpeed(ti.getUploadSpeed() + 5);
+                    }
+                    appWebSocketHandler.onUpdate(ti);
                 }
                 try {
                     Thread.sleep(1000);

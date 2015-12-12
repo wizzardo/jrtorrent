@@ -2,11 +2,11 @@
     <div class="torrent {status.toLowerCase()} {opts.header?'header':''}">
         <span class="name">{name || opts.name}</span>
         <span class="status">{status || opts.status}</span>
-        <span class="size">{size || opts.size}</span>
-        <span class="d">{d || opts.d}</span>
-        <span class="u">{u  || opts.u}</span>
-        <span class="ds">{ds  || opts.ds || 0}</span>
-        <span class="us">{us || opts.us || 0}</span>
+        <span class="size">{formatSize(size || opts.size)}</span>
+        <span class="d">↓{formatSize(d || opts.d || 0)}</span>
+        <span class="ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
+        <span class="u">↑{formatSize(u || opts.u || 0)}</span>
+        <span class="us">↑{formatSpeed(us || opts.us || 0)}</span>
         <span class="peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
         <span class="seeds">{s || opts.s} {st ? '('+st+')':''}</span>
 
@@ -19,9 +19,11 @@
     <style scoped>
         :scope {
             display: block;
-            margin: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
-        .torrent:hover{
+
+        .torrent:hover {
             background-color: ghostwhite;
         }
 
@@ -43,7 +45,7 @@
         }
 
         .size, .d, .ds, .u, .us, .peers, .seeds {
-            width: 50px;
+            width: 63px;
             display: inline-block;
         }
 
@@ -65,6 +67,31 @@
 
         .header .mdl-progress {
             display: none;
+        }
+
+        @media screen and (max-width: 480px) {
+            .header {
+                display: none;
+            }
+
+            .mdl-progress {
+                width: 100%;
+            }
+
+            .status, .peers, .seeds {
+                display: none;
+            }
+
+            .name {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .size, .d, .ds, .u, .us, .peers, .seeds {
+                width: 55px;
+                font-size: 12px;
+            }
         }
     </style>
 
@@ -98,6 +125,23 @@
                     that.st = data.st;
                 that.update()
             });
-        })
+        });
+
+        this.formatSize = function formatSize(size) {
+//            console.log(size)
+            if (size < 1024)
+                return size + 'B';
+            size /= 1024;
+            if (size < 1024)
+                return size.toFixed(1) + 'KB';
+            size /= 1024;
+            if (size < 1024)
+                return size.toFixed(1) + 'MB';
+            size /= 1024;
+            return size.toFixed(1) + 'GB';
+        };
+        this.formatSpeed = function formatSize(size) {
+            return that.formatSize(size) + '/s'
+        };
     </script>
 </torrent>
