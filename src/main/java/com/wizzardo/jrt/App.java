@@ -13,6 +13,7 @@ public class App {
 
     public App() {
         server = new WebApplication("0.0.0.0", 8084, 4);
+        server.setTTL(5 * 60 * 1000);
 
         DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
 
