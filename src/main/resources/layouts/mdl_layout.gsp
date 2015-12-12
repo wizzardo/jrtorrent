@@ -29,7 +29,7 @@
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-            <span class="mdl-layout-title">${title ?: 'Title'}</span>
+            <span class="mdl-layout-title"><g:message code="title"/></span>
 
             <div class="mdl-layout-spacer"></div>
             <nav class="mdl-navigation">
@@ -39,7 +39,7 @@
     </header>
 
     <div class="mdl-layout__drawer">
-        <span class="mdl-layout-title">${title ?: 'Title'}</span>
+        <span class="mdl-layout-title"><g:message code="title"/></span>
         <nav class="mdl-navigation">
             <a class="mdl-navigation__link" href="">Link</a>
             <a class="mdl-navigation__link" href="">Link</a>
