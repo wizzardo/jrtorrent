@@ -34,9 +34,10 @@
 
     handlers.list = function (data) {
         obs = riot.observable();
+        torrentsByHash = {};
         for (var i = 0; i < data.torrents.length; i++) {
-            data.torrents[i].obs = obs
-            torrentsByHash[data.torrents[i].hash] = data.torrents[i]
+            data.torrents[i].obs = obs;
+            torrentsByHash[data.torrents[i].hash] = data.torrents[i];
         }
 
         torrents = data.torrents;
