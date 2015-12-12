@@ -5,9 +5,15 @@
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
     <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic' rel='stylesheet'
+          type='text/css'>
     <g:layoutHead/>
 
     <style>
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+
     .page-content {
         margin: 1em;
     }
