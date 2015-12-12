@@ -28,6 +28,14 @@ public class MockRTorrentService extends RTorrentService {
                 ti.setHash("hash_" + n);
                 ti.setSize(100 * (n + 1));
                 ti.setDownloaded(0);
+                ti.setDownloadSpeed(1);
+                ti.setUploaded(10 * n);
+                ti.setUploadSpeed(0);
+                ti.setTotalPeers(10 * n);
+                ti.setTotalSeeds(10 * n);
+                ti.setPeers(1 + n);
+                ti.setSeeds(1 + n);
+                ti.setStatus(TorrentInfo.Status.DOWNLOADING);
             }));
         }
         list = l;

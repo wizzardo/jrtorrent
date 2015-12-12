@@ -46,10 +46,7 @@
     };
 
     handlers.update = function (data) {
-        var torrent = find(data.torrent.hash);
-        obs.trigger('update_progress_' + data.torrent.hash, data.torrent.progress, function () {
-            torrent.progress = data.torrent.progress
-        })
+        obs.trigger('update_' + data.torrent.hash, data.torrent)
     };
 
     var wsEvents = {

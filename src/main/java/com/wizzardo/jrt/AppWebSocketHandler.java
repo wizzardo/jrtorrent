@@ -28,6 +28,16 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         return new JsonObject()
                 .append("name", ti.getName())
                 .append("hash", ti.getHash())
+                .append("size", ti.getSize())
+                .append("status", ti.getStatus())
+                .append("d", ti.getDownloaded())
+                .append("ds", ti.getDownloadSpeed())
+                .append("u", ti.getUploaded())
+                .append("us", ti.getUploadSpeed())
+                .append("s", ti.getSeeds())
+                .append("p", ti.getPeers())
+                .append("st", ti.getTotalSeeds())
+                .append("pt", ti.getTotalPeers())
                 .append("progress", ti.getDownloaded() * 100f / ti.getSize());
     }
 
