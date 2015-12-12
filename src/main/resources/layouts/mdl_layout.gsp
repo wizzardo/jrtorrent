@@ -11,6 +11,10 @@
     .page-content {
         margin: 1em;
     }
+
+    .mdl-layout__drawer-button > .material-icons {
+        margin-top: 10px;
+    }
     </style>
 </head>
 
@@ -23,9 +27,7 @@
 
             <div class="mdl-layout-spacer"></div>
             <nav class="mdl-navigation">
-                <button class="mdl-button mdl-js-button mdl-button--accent" style="font-weight: bold">
-                    Add
-                </button>
+                <add_button>add</add_button>
             </nav>
         </div>
     </header>
@@ -46,5 +48,9 @@
     </main>
 </div>
 
+<script src="/static/js/tags/add_button.tag" type="riot/tag"></script>
+<script>
+    riot.mount('add_button');
+</script>
 </body>
 </html>
