@@ -21,12 +21,12 @@ public class MockRTorrentService extends RTorrentService {
 
     public MockRTorrentService() {
         List<TorrentInfo> l = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            final int finalI = i;
+        for (int i = 0; i < 10; i++) {
+            final int n = i;
             l.add(with(new TorrentInfo(), ti -> {
-                ti.setName("test torrent "+ finalI);
-                ti.setHash("hash");
-                ti.setSize(100);
+                ti.setName("test torrent " + n);
+                ti.setHash("hash_" + n);
+                ti.setSize(100 * (n + 1));
                 ti.setDownloaded(0);
             }));
         }
