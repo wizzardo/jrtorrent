@@ -1,5 +1,5 @@
 <torrent id="torrent_{hash}">
-    <div class="torrent {status.toLowerCase()} {opts.header?'header':''}">
+    <div class="torrent {status.toLowerCase()}">
         <span class="name">{name || opts.name}</span>
         <span class="status">{status || opts.status}</span>
         <span class="size">{formatSize(size || opts.size)}</span>
@@ -19,8 +19,11 @@
     <style scoped>
         :scope {
             display: block;
-            margin-top: 10px;
-            margin-bottom: 10px;
+        }
+
+        .torrent {
+            padding: 10px;
+            min-height: 40px;
         }
 
         .torrent:hover {
@@ -69,7 +72,11 @@
             display: none;
         }
 
-        @media screen and (max-width: 480px) {
+        @media screen and (max-width: 770px) {
+            .torrent {
+                min-height: 55px;
+            }
+
             .header {
                 display: none;
             }
@@ -127,8 +134,7 @@
             });
         });
 
-        this.formatSize = function formatSize(size) {
-//            console.log(size)
+        formatSize = function (size) {
             if (size < 1024)
                 return size + 'B';
             size /= 1024;
@@ -140,8 +146,8 @@
             size /= 1024;
             return size.toFixed(1) + 'GB';
         };
-        this.formatSpeed = function formatSize(size) {
-            return that.formatSize(size) + '/s'
+        formatSpeed = function (size) {
+            return formatSize(size) + '/s'
         };
     </script>
 </torrent>
