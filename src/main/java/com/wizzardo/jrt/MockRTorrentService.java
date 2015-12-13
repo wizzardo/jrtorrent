@@ -75,7 +75,25 @@ public class MockRTorrentService extends RTorrentService {
     }
 
     public Collection<TorrentEntry> entries(TorrentInfo ti) {
-        return Collections.emptyList();
+        return entries(ti.getHash());
+    }
+
+    @Override
+    public Collection<TorrentEntry> entries(String hash) {
+        TorrentEntry root = new TorrentEntry();
+        int id = 0;
+        TorrentEntry folder1 = root.getOrCreate("test folder");
+        folder1.setId(id++);
+        folder1.getOrCreate("file1").setId(id++);
+        folder1.getOrCreate("file2").setId(id++);
+        folder1.getOrCreate("file3").setId(id++);
+        TorrentEntry folder2 = root.getOrCreate("test folder 2");
+        folder2.setId(id++);
+        folder2.getOrCreate("file1").setId(id++);
+        folder2.getOrCreate("file2").setId(id++);
+        folder2.getOrCreate("file3").setId(id++);
+
+        return root.getChildren().values();
     }
 
     static class Updater extends Thread implements ByteBufferProvider {

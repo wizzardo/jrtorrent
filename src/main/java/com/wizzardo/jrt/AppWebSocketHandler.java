@@ -5,6 +5,7 @@ import com.wizzardo.http.websocket.Message;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -22,6 +23,12 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
                 .append("command", "list")
                 .append("torrents", rtorrentService.list().stream()
                         .map((it) -> toJson(it)).collect(Collectors.toList()))));
+
+
+        handlers.put("loadTree", (listener, json) -> {
+            String hash = json.getAsJsonObject("args").getAsString("hash");
+            sendMessage(listener, new TreeResponse(rtorrentService.entries(hash), hash));
+        });
     }
 
     private JsonObject toJson(TorrentInfo ti) {
@@ -66,6 +73,10 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         sendMessage(listener, json.toString());
     }
 
+    public void sendMessage(WebSocketListener listener, Response response) {
+        sendMessage(listener, JsonTools.serialize(response));
+    }
+
     public void onUpdate(TorrentInfo ti) {
         JsonObject json = new JsonObject()
                 .append("command", "update")
@@ -76,5 +87,25 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
 
     protected interface CommandHandler {
         void handle(WebSocketListener listener, JsonObject json);
+    }
+
+
+    static class TreeResponse extends Response {
+        final Collection<TorrentEntry> tree;
+        final String hash;
+
+        TreeResponse(Collection<TorrentEntry> tree, String hash) {
+            super("tree");
+            this.tree = tree;
+            this.hash = hash;
+        }
+    }
+
+    static class Response {
+        final String command;
+
+        Response(String command) {
+            this.command = command;
+        }
     }
 }

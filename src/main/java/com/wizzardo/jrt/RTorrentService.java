@@ -23,4 +23,8 @@ public class RTorrentService implements Service {
     public Collection<TorrentEntry> entries(TorrentInfo ti) {
         return client.getEntries(ti);
     }
+
+    public Collection<TorrentEntry> entries(String hash) {
+        return client.getEntries(hash);
+    }
 }

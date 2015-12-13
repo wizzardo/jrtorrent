@@ -15,17 +15,14 @@ public class TorrentEntry {
     private int chunksCompleted;
     private int id;
 
-    public final TorrentEntry parent;
     public final String name;
 
-    public TorrentEntry(String name, TorrentEntry parent) {
+    public TorrentEntry(String name) {
         this.name = name;
-        this.parent = parent;
     }
 
     TorrentEntry() {
         name = null;
-        parent = null;
         isFolder = true;
     }
 
@@ -38,7 +35,7 @@ public class TorrentEntry {
             entry = children.get(name);
 
         if (entry == null) {
-            entry = new TorrentEntry(name, this);
+            entry = new TorrentEntry(name);
             children.put(name, entry);
         }
 
