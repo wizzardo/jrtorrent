@@ -14,8 +14,10 @@
     <torrents>!</torrents>
 </div>
 
-<script src="/static/js/tags/torrents.tag" type="riot/tag"></script>
-<script src="/static/js/tags/torrent.tag" type="riot/tag"></script>
+<script src="/static/js/tags/torrents.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
+<script src="/static/js/tags/torrent.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
+<script src="/static/js/tags/tree.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
+<script src="/static/js/tags/tree_entry.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
 <script>
     var torrents = [];
     var torrentsByHash = {};
@@ -34,7 +36,7 @@
     }
 
     handlers.list = function (data) {
-        obs = riot.observable();
+        obs = initObserver();
         torrentsByHash = {};
         for (var i = 0; i < data.torrents.length; i++) {
             data.torrents[i].obs = obs;
@@ -45,15 +47,35 @@
         mount()
     };
 
+    handlers.tree = function (data) {
+        console.log('handlers.tree');
+        console.log(data);
+        obs.trigger('tree_loaded_' + data.hash, data.tree)
+    };
+
     handlers.update = function (data) {
         obs.trigger('update_' + data.torrent.hash, data.torrent)
     };
 
+    function initObserver() {
+        console.log('initObserver')
+        var obs = riot.observable();
+        obs.on('load_tree', function (data) {
+            console.log('load_tree ' + data.hash);
+            sendCommand('loadTree', data)
+        });
+        return obs;
+    }
+
     var wsEvents = {
         onOpen: function () {
-            ws.send('{"command":"list"}');
+            sendCommand('list')
         }
     };
+
+    function sendCommand(command, args) {
+        ws.send(JSON.stringify({command: command, args: (args || {})}))
+    }
 
     function connect() {
         ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/ws");
@@ -63,7 +85,7 @@
                 wsEvents.onOpen();
         };
         ws.onmessage = function (e) {
-            console.log(e.data);
+//            console.log(e.data);
             var data = JSON.parse(e.data);
             handlers[data.command](data)
         };

@@ -1,5 +1,5 @@
 <torrent id="torrent_{hash}">
-    <div class="torrent {status.toLowerCase()}">
+    <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
         <span class="name">{name || opts.name}</span>
         <span class="status">{status || opts.status}</span>
         <span class="size">{formatSize(size || opts.size)}</span>
@@ -15,6 +15,7 @@
             <div class="bufferbar bar bar2"></div>
         </div>
     </div>
+    <tree id="tree_{hash}" show="{showTree}" style="{showTree ? 'max-height: 10000' : 'max-height:0px'}"></tree>
 
     <style scoped>
         :scope {
@@ -132,6 +133,19 @@
                     that.st = data.st;
                 that.update()
             });
+            that.obs.on('toggle_tree_' + that.hash, function () {
+                console.log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
+                that.showTree = !that.showTree;
+
+                if (that.showTree)
+                    that.obs.trigger('load_tree', {hash: that.hash});
+                that.update()
+            });
+            that.obs.on('tree_loaded_' + that.hash, function (data) {
+                console.log('tree_loaded ' + data);
+                console.log(data);
+                riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash})
+            });
         });
 
         formatSize = function (size) {
@@ -149,5 +163,10 @@
         formatSpeed = function (size) {
             return formatSize(size) + '/s'
         };
+
+        toggleTree = function (hash) {
+            console.log('toggle_tree_' + hash);
+            that.obs.trigger('toggle_tree_' + hash);
+        }
     </script>
 </torrent>

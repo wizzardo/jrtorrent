@@ -84,6 +84,9 @@ public class MockRTorrentService extends RTorrentService {
         int id = 0;
         TorrentEntry folder1 = root.getOrCreate("test folder");
         folder1.setId(id++);
+        TorrentEntry subfolder = folder1.getOrCreate("subfolder");
+        subfolder.setId(id++);
+        subfolder.getOrCreate("file1").setId(id++);
         folder1.getOrCreate("file1").setId(id++);
         folder1.getOrCreate("file2").setId(id++);
         folder1.getOrCreate("file3").setId(id++);
