@@ -14,12 +14,14 @@
         font-family: 'Roboto', sans-serif;
     }
 
-    .page-content {
-        margin: 1em;
-    }
-
     .mdl-layout__drawer-button > .material-icons {
         margin-top: 10px;
+    }
+
+    .mdl-layout {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
     }
     </style>
 </head>
