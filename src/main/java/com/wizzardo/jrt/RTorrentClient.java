@@ -94,11 +94,11 @@ public class RTorrentClient {
         FileTools.deleteRecursive(new File(path));
     }
 
-    private Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
+    public Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
         return getEntries(torrent.getHash());
     }
 
-    private Collection<TorrentEntry> getEntries(String hash) {
+    public Collection<TorrentEntry> getEntries(String hash) {
         XmlRpc.Params params = new XmlRpc.Params();
         params.add(hash)
                 .add(0)
