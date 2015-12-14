@@ -1,11 +1,15 @@
 <tree>
-    <tree_entry each={opts.entries}></tree_entry>
-
+    <div class="resizeable" style="height: {25 * totalChildrenToShow}px">
+        <tree_entry each={opts.entries}></tree_entry>
+    </div>
     <style scoped>
         :scope {
             display: block;
-            transition: max-height .2s cubic-bezier(.4,0,.2,1);
             overflow: hidden;
+        }
+
+        .resizeable {
+            transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
     </style>
 
@@ -13,11 +17,19 @@
         var that = this;
         var opened = false;
         var hash = opts.hash;
-
-        console.log('create tree tag with hash: ' + hash);
+        var totalChildrenToShow = 0;
 
         this.on('mount', function () {
+//            that.updateShownChildsCount()
+            that.totalChildrenToShow = opts.entries.length;
         });
+
+        that.updateShownChildsCount = function (innerChilds) {
+//            console.log('tree.updateShownChildsCount ' + innerChilds)
+            if (typeof(innerChilds) != "undefined")
+                that.totalChildrenToShow = that.totalChildrenToShow + innerChilds;
+            console.log('tree.totalChildrenToShow ' + that.totalChildrenToShow)
+        };
 
     </script>
 </tree>
