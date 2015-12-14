@@ -1,7 +1,8 @@
 <tree_entry>
     <div onclick="{toggleChildren}">
+        <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         {name}
-        <div class="children" show="{showChildren}">
+        <div class="resizeable children" style="height: {25 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
     </div>
@@ -12,6 +13,19 @@
             margin-left: 10px;
             padding-top: 5px;
             font-size: 14px;
+        }
+
+        .material-icons {
+            font-size: 14px;
+            color: #757575;
+        }
+
+        .children {
+            overflow: hidden;
+        }
+
+        .resizeable {
+            transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
     </style>
 
