@@ -1,30 +1,50 @@
 <torrent id="torrent_{hash}">
     <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
-        <span class="name">{name || opts.name}</span>
-        <span class="status">{status || opts.status}</span>
-        <span class="size">{formatSize(size || opts.size)}</span>
-        <span class="d">↓{formatSize(d || opts.d || 0)}</span>
-        <span class="ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
-        <span class="u">↑{formatSize(u || opts.u || 0)}</span>
-        <span class="us">↑{formatSpeed(us || opts.us || 0)}</span>
-        <span class="peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
-        <span class="seeds">{s || opts.s} {st ? '('+st+')':''}</span>
+        <button class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">pause</i>
+        </button>
+        <div>
+            <span class="name">{name || opts.name}</span>
+            <span class="status">{status || opts.status}</span>
+            <span class="size">{formatSize(size || opts.size)}</span>
+            <span class="d">↓{formatSize(d || opts.d || 0)}</span>
+            <span class="ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
+            <span class="u">↑{formatSize(u || opts.u || 0)}</span>
+            <span class="us">↑{formatSpeed(us || opts.us || 0)}</span>
+            <span class="peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
+            <span class="seeds">{s || opts.s} {st ? '('+st+')':''}</span>
 
-        <div class="mdl-progress">
-            <div class="progressbar bar bar1" style="width: {progress}%;"></div>
-            <div class="bufferbar bar bar2"></div>
+            <div class="mdl-progress">
+                <div class="progressbar bar bar1" style="width: {progress}%;"></div>
+                <div class="bufferbar bar bar2"></div>
+            </div>
         </div>
+        <button class="mdl-button mdl-js-button mdl-button--icon">
+            <i class="material-icons">delete</i>
+        </button>
     </div>
-    <tree id="tree_{hash}" show="{showTree}" style="{showTree ? 'max-height: 10000' : 'max-height:0px'}"></tree>
+    <tree id="tree_{hash}" show="{showTree}"></tree>
 
     <style scoped>
         :scope {
             display: block;
         }
 
+        .mdl-button {
+            margin-right: 10px;
+        }
+
+        .material-icons {
+            color: #757575;
+        }
+
         .torrent {
             padding: 10px;
             min-height: 40px;
+        }
+
+        .torrent > div {
+            display: inline-block;
         }
 
         .torrent:hover {
@@ -74,6 +94,10 @@
         }
 
         @media screen and (max-width: 770px) {
+            .mdl-button {
+                display: none;
+            }
+
             .torrent {
                 min-height: 55px;
             }
