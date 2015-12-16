@@ -38,6 +38,13 @@
     <script>
         var that = this;
         this.on('mount', function () {
+            var l = document.querySelectorAll(that.root.tagName.toLowerCase() + ' .mdl-textfield');
+            for (i = 0; i < l.length; i++) {
+                var el = l[i];
+//                console.log('reregister ' + el);
+                el.dataset.upgraded = '';
+                componentHandler.upgradeAllRegistered(el);
+            }
         });
     </script>
 
