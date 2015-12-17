@@ -29,7 +29,7 @@
             font-size: 16px;
             min-width: 600px;
             max-width: 90%;
-            margin-top: 10%;
+            margin-top: 30%;
             padding: 20px;
             box-shadow: 1px 1px 4px 0px rgba(0, 0, 0, 0.75);
         }
@@ -37,14 +37,9 @@
 
     <script>
         var that = this;
+        this.mixin(mdlMixin);
+
         this.on('mount', function () {
-            var l = document.querySelectorAll(that.root.tagName.toLowerCase() + ' .mdl-textfield');
-            for (i = 0; i < l.length; i++) {
-                var el = l[i];
-//                console.log('reregister ' + el);
-                el.dataset.upgraded = '';
-                componentHandler.upgradeAllRegistered(el);
-            }
         });
     </script>
 

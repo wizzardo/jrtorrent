@@ -33,6 +33,21 @@
     var torrents = [];
     var torrentsByHash = {};
     var handlers = {};
+    var mdlMixin = {
+        init: function () {
+            var that = this;
+            this.on('mount', function () {
+//                console.log('on mount mixin');
+                var l = document.querySelectorAll(that.root.tagName.toLowerCase() + ' .mdl-textfield');
+                for (i = 0; i < l.length; i++) {
+                    var el = l[i];
+//                    console.log('reregister ' + el);
+                    el.dataset.upgraded = '';
+                    componentHandler.upgradeAllRegistered(el);
+                }
+            })
+        }
+    };
 
     function mount() {
         torrentsTag = riot.mount('torrents', {torrents: torrents}, {}, function (tag) {
