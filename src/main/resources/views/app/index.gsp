@@ -14,10 +14,21 @@
     <torrents>!</torrents>
 </div>
 
+<modal id="add_modal">
+    Add new torrent
+    <form action="#">
+        <div id="ololo" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input class="mdl-textfield__input" type="text" id="url">
+            <label class="mdl-textfield__label" for="url">url</label>
+        </div>
+    </form>
+</modal>
+
 <script src="/static/js/tags/torrents.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
 <script src="/static/js/tags/torrent.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
 <script src="/static/js/tags/tree.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
 <script src="/static/js/tags/tree_entry.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
+<script src="/static/js/tags/modal.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
 <script>
     var torrents = [];
     var torrentsByHash = {};
