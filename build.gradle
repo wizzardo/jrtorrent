@@ -3,6 +3,10 @@ apply plugin: 'application'
 
 repositories {
     jcenter()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
 
 sourceCompatibility = 1.8
@@ -11,13 +15,12 @@ targetCompatibility = 1.8
 version = '0.1'
 
 mainClassName = "com.wizzardo.jrt.RTorrentClient"
+mainClassName = "com.wizzardo.jrt.App"
 
 dependencies {
-	compile files(
-            '../epollserver/build/libs/epoll-0.1.jar',
-            '../http/build/libs/http-0.1.jar',
-            '../Utils/build/libs/tools-all-0.14-SNAPSHOT.jar'
-    )
+    compile 'com.wizzardo:epoll:0.1+'
+    compile 'com.wizzardo:http:0.1+'
+    compile 'com.wizzardo.tools:tools:0.14+'
 }
 
 //create a single Jar with all dependencies
