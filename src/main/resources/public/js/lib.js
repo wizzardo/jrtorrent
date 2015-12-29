@@ -15,8 +15,14 @@ var lib = new function () {
         if (config.prototype == 'GET' && config.data)
             url += "?" + toRequestParams(config.data);
 
+        if (config.onprogress)
+            request.upload.onprogress = function (e) {
+                if (e.lengthComputable)
+                    config.onprogress(e);
+            };
+
         request.open(config.type, url, true);
-        if (config.type == 'POST')
+        if (config.type == 'POST' && !(config.data instanceof FormData))
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
         request.onload = function () {
@@ -32,7 +38,7 @@ var lib = new function () {
         };
 
         if (config.type == 'POST') {
-            if (typeof config.data == 'string')
+            if (typeof config.data == 'string' || config.data instanceof FormData)
                 request.send(config.data);
             else
                 request.send(toRequestParams(config.data));
