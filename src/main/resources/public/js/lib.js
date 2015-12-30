@@ -12,7 +12,7 @@ var lib = new function () {
     var ajax = function (config) {
         var request = new XMLHttpRequest();
         var url = config.url;
-        if (config.prototype == 'GET' && config.data)
+        if (config.method == 'GET' && config.data)
             url += "?" + toRequestParams(config.data);
 
         if (config.onprogress)
@@ -21,8 +21,8 @@ var lib = new function () {
                     config.onprogress(e);
             };
 
-        request.open(config.type, url, true);
-        if (config.type == 'POST' && !(config.data instanceof FormData))
+        request.open(config.method, url, true);
+        if (config.method == 'POST' && !(config.data instanceof FormData))
             request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
 
         request.onload = function () {
@@ -37,7 +37,7 @@ var lib = new function () {
                 config.error();
         };
 
-        if (config.type == 'POST') {
+        if (config.method == 'POST') {
             if (typeof config.data == 'string' || config.data instanceof FormData)
                 request.send(config.data);
             else
