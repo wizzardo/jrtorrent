@@ -21,6 +21,7 @@ public class App {
 
         server.getUrlMapping()
                 .append("/", new ControllerHandler(AppController.class, "riotIndex"))
+                .append("/addTorrent", new ControllerHandler(AppController.class, "addTorrent"))
                 .append("/ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
         ;
 
