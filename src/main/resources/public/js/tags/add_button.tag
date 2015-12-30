@@ -18,12 +18,15 @@
         var that = this;
 
         this.on('mount', function () {
-           that.modal = riot.mount('#add_modal', {})[0]
+            that.modal = riot.mount('#add_modal', {})[0];
+
+            obs.on('sendAddTorrent', function () {
+                that.modal.close()
+            })
         });
 
         that.show = function () {
-            that.modal.show = true;
-            that.modal.update();
+            that.modal.toggle();
         }
     </script>
 </add_button>
