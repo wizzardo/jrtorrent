@@ -188,7 +188,6 @@ public class RTorrentClient {
             }
             torrents.get(i).setTotalSeeds(seeds);
             torrents.get(i).setTotalPeers(peers);
-            return null;
         });
         return torrents;
     }
