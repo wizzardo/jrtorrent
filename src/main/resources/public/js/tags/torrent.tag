@@ -1,7 +1,10 @@
 <torrent id="torrent_{hash}">
     <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
-        <button class="mdl-button mdl-js-button mdl-button--icon">
+        <button class="mdl-button mdl-js-button mdl-button--icon pause">
             <i class="material-icons">pause</i>
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--icon delete-left">
+            <i class="material-icons">delete</i>
         </button>
         <div>
             <span class="name">{name || opts.name}</span>
@@ -19,7 +22,7 @@
                 <div class="bufferbar bar bar2"></div>
             </div>
         </div>
-        <button class="mdl-button mdl-js-button mdl-button--icon">
+        <button class="mdl-button mdl-js-button mdl-button--icon delete">
             <i class="material-icons">delete</i>
         </button>
     </div>
@@ -41,6 +44,9 @@
         .torrent {
             padding: 10px;
             min-height: 40px;
+            position: relative;
+            left: 0px;
+            transition: left .2s cubic-bezier(.4, 0, .2, 1);
         }
 
         .torrent > div {
@@ -93,9 +99,9 @@
             display: none;
         }
 
-        @media screen and (max-width: 770px) {
+        @media screen and (max-width: 850px) {
             .mdl-button {
-                display: none;
+                /*display: none;*/
             }
 
             .torrent {
@@ -119,10 +125,48 @@
             }
         }
 
+        @media screen and (min-width: 481px) {
+            .delete-left {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .delete {
+                display: none;
+            }
+
+            .torrent {
+                width: 700px;
+                left: -90px;
+            }
+
+            .torrent:hover {
+                left: 0px;
+            }
+        }
+
+        @media screen and (max-width: 375px) {
+
+            .torrent .mdl-progress {
+                max-width: 355px;
+            }
+        }
+
+        @media screen and (max-width: 360px) {
+            .torrent .mdl-progress {
+                max-width: 340px;
+            }
+        }
+
         @media screen and (max-width: 320px) {
             .size, .d, .ds, .u, .us, .peers, .seeds {
                 width: 55px;
                 font-size: 12px;
+            }
+
+            .torrent .mdl-progress {
+                max-width: 300px;
             }
         }
     </style>

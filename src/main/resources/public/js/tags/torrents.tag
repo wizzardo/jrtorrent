@@ -21,6 +21,7 @@
         .header {
             margin: 20px 10px 0 10px;
             border-bottom: 1px solid gray;
+            padding-left: 44px;
         }
 
         .header span {
@@ -40,7 +41,7 @@
             width: 120px;
         }
 
-        @media screen and (max-width: 770px) {
+        @media screen and (max-width: 850px) {
             .header {
                 display: none;
             }
