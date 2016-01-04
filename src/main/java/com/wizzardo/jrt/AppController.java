@@ -1,7 +1,11 @@
 package com.wizzardo.jrt;
 
 import com.wizzardo.http.framework.Controller;
+import com.wizzardo.http.framework.ControllerUrlMapping;
+import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
+import com.wizzardo.tools.collections.CollectionTools;
+import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.security.MD5;
 
 import java.util.Collection;
@@ -15,6 +19,7 @@ import java.util.Map;
 public class AppController extends Controller {
 
     RTorrentService rtorrentService;
+    ControllerUrlMapping mapping = DependencyFactory.get(ControllerUrlMapping.class);
 
     public Renderer index() {
         List<TorrentInfo> torrents = rtorrentService.list();
@@ -29,6 +34,12 @@ public class AppController extends Controller {
     }
 
     public Renderer riotIndex() {
+        model().append("config", JsonTools.serialize(new CollectionTools.MapBuilder<>()
+                        .add("ws", mapping.getUrlTemplate("ws").getRelativeUrl())
+                        .add("addTorrent", mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl())
+                        .get()
+        ));
+
         return renderView("index");
     }
 
