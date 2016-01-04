@@ -56,9 +56,5 @@
     </main>
 </div>
 
-<script src="/static/js/tags/add_button.tag" type="riot/tag"></script>
-<script>
-    riot.mount('add_button');
-</script>
 </body>
 </html>

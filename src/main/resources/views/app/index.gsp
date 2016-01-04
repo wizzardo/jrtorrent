@@ -18,14 +18,16 @@
     <upload_form>upload_form</upload_form>
 </modal>
 
-<script src="/static/js/tags/torrents.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
-<script src="/static/js/tags/torrent.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
-<script src="/static/js/tags/tree.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
-<script src="/static/js/tags/tree_entry.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
-<script src="/static/js/tags/modal.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
-<script src="/static/js/tags/upload_form.tag?${java.lang.System.currentTimeMillis()}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/torrents.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/torrent.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/tree.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/tree_entry.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/modal.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/upload_form.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/add_button.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 
 <script>
+    var config = ${config};
     var torrents = [];
     var torrentsByHash = {};
     var handlers = {};
@@ -102,7 +104,7 @@
     }
 
     function connect() {
-        ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/ws");
+        ws = new WebSocket("ws://" + location.hostname + ":" + location.port + config.ws);
         ws.onopen = function () {
             console.log("open");
             if (wsEvents.onOpen)
@@ -121,6 +123,7 @@
         };
     }
     connect();
+    riot.mount('add_button');
 </script>
 </body>
 </html>

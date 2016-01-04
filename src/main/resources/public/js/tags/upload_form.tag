@@ -78,7 +78,7 @@
         that.sendForm = function () {
             lib.ajax({
                 data: new FormData(that.form),
-                url: '/addTorrent',
+                url: config.addTorrent,
                 method: 'POST',
                 success: function () {
                     that.url.value = '';
