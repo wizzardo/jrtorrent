@@ -75,12 +75,12 @@
         }
 
         .size, .d, .ds, .u, .us, .peers, .seeds {
-            width: 63px;
+            width: 64px;
             display: inline-block;
         }
 
         .mdl-progress {
-            width: 200px;
+            width: 100%;
         }
 
         .mdl-progress > .bufferbar {
@@ -100,10 +100,6 @@
         }
 
         @media screen and (max-width: 850px) {
-            .mdl-button {
-                /*display: none;*/
-            }
-
             .torrent {
                 min-height: 55px;
             }
@@ -122,6 +118,7 @@
 
             .name {
                 width: 100%;
+                display: block;
             }
         }
 
@@ -148,13 +145,13 @@
 
         @media screen and (max-width: 375px) {
 
-            .torrent .mdl-progress {
+            .torrent .mdl-progress, .name {
                 max-width: 355px;
             }
         }
 
         @media screen and (max-width: 360px) {
-            .torrent .mdl-progress {
+            .torrent .mdl-progress, .name {
                 max-width: 340px;
             }
         }
@@ -165,7 +162,7 @@
                 font-size: 12px;
             }
 
-            .torrent .mdl-progress {
+            .torrent .mdl-progress, .name {
                 max-width: 300px;
             }
         }
