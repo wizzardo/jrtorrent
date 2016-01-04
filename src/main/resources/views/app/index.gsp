@@ -84,11 +84,19 @@
     };
 
     function initObserver() {
-        console.log('initObserver')
+        console.log('initObserver');
         var obs = riot.observable();
         obs.on('load_tree', function (data) {
             console.log('load_tree ' + data.hash);
             sendCommand('loadTree', data)
+        });
+        obs.on('torrent.stop', function (data) {
+            console.log('torrent.stop ' + data.hash);
+            sendCommand('stop', data)
+        });
+        obs.on('torrent.start', function (data) {
+            console.log('torrent.start ' + data.hash);
+            sendCommand('start', data)
         });
         return obs;
     }

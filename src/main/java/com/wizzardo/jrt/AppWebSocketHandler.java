@@ -2,6 +2,7 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
 import com.wizzardo.http.websocket.Message;
+import com.wizzardo.http.websocket.WebSocketHandler;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
 
@@ -28,6 +29,16 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         handlers.put("loadTree", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
             sendMessage(listener, new TreeResponse(rtorrentService.entries(hash), hash));
+        });
+
+        handlers.put("start", (listener, json) -> {
+            String hash = json.getAsJsonObject("args").getAsString("hash");
+            rtorrentService.start(hash);
+        });
+
+        handlers.put("stop", (listener, json) -> {
+            String hash = json.getAsJsonObject("args").getAsString("hash");
+            rtorrentService.stop(hash);
         });
     }
 

@@ -1,7 +1,7 @@
 <torrent id="torrent_{hash}">
-    <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
-        <button class="mdl-button mdl-js-button mdl-button--icon pause">
-            <i class="material-icons">pause</i>
+    <div class="torrent {status.toLowerCase()}" onclick="{toggleTree}">
+        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="{pause}">
+            <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon delete-left">
             <i class="material-icons">delete</i>
@@ -229,9 +229,21 @@
             return formatSize(size) + '/s'
         };
 
-        toggleTree = function (hash) {
-            console.log('toggle_tree_' + hash);
-            that.obs.trigger('toggle_tree_' + hash);
-        }
+        that.toggleTree = function (e) {
+            if (e.processed)
+                return true;
+            console.log('toggle_tree_' + that.hash);
+            that.obs.trigger('toggle_tree_' + that.hash);
+        };
+
+        that.pause = function (e) {
+//            console.log('pause ' + that.hash);
+            if (that.status == 'STOPPED' || that.status == 'PAUSED')
+                that.obs.trigger('torrent.start', {hash: that.hash});
+            else
+                that.obs.trigger('torrent.stop', {hash: that.hash});
+            e.processed = true;
+            return true;
+        };
     </script>
 </torrent>
