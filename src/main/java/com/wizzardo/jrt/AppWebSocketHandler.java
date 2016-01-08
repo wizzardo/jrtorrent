@@ -42,6 +42,20 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         });
     }
 
+    @Override
+    public void onConnect(WebSocketListener listener) {
+        if (listeners.isEmpty())
+            rtorrentService.resumeUpdater();
+        super.onConnect(listener);
+    }
+
+    @Override
+    public void onDisconnect(WebSocketListener listener) {
+        super.onDisconnect(listener);
+        if (listeners.isEmpty())
+            rtorrentService.pauseUpdater();
+    }
+
     private JsonObject toJson(TorrentInfo ti) {
         return new JsonObject()
                 .append("name", ti.getName())
