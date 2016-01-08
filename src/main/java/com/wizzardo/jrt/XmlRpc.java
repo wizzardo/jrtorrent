@@ -181,6 +181,7 @@ public class XmlRpc {
         }
 
         Params add(String s) {
+            s = escape(s);
             params.add(Param.from(s));
             return this;
         }
@@ -206,4 +207,14 @@ public class XmlRpc {
         }
     }
 
+
+    static String escape(String s) {
+        return s
+                .replace("&", "&amp;")
+                .replace("\"", "&quot;")
+                .replace("'", "&apos")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                ;
+    }
 }
