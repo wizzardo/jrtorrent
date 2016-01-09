@@ -5,9 +5,12 @@ import com.wizzardo.http.framework.ControllerUrlMapping;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
 import com.wizzardo.tools.collections.CollectionTools;
+import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.security.MD5;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -43,15 +46,26 @@ public class AppController extends Controller {
         return renderView("index");
     }
 
-    public Renderer addTorrent() {
+    public Renderer addTorrent() throws IOException {
         if (request.isMultipart()) {
             request.prepareMultiPart();
 
             String link = request.entry("url").asString();
             byte[] file = request.entry("file").asBytes();
 
-            System.out.println("link: " + link);
-            System.out.println("file: " + file.length + " " + MD5.create().update(file).asString());
+//            System.out.println("link: " + link);
+//            System.out.println("file: " + file.length + " " + MD5.create().update(file).asString());
+
+            if (file.length != 0) {
+                File tempFile = File.createTempFile("jrt", "torrent");
+                tempFile.deleteOnExit();
+                FileTools.bytes(tempFile, file);
+                rtorrentService.load(tempFile.getAbsolutePath());
+            } else if (!link.isEmpty()) {
+                rtorrentService.load(link);
+            } else {
+                throw new IllegalArgumentException("link and file are empty");
+            }
         }
 
         return renderString("ok");
