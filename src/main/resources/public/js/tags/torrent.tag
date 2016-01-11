@@ -1,6 +1,6 @@
 <torrent id="torrent_{hash}">
-    <div class="torrent {status.toLowerCase()}" onclick="{toggleTree}">
-        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="{pause}">
+    <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
+        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pause('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon delete-left">
@@ -26,7 +26,7 @@
             <i class="material-icons">delete</i>
         </button>
     </div>
-    <tree id="tree_{hash}" show="{showTree}"></tree>
+    <tree id="tree_{hash}"></tree>
 
     <style scoped>
         :scope {
@@ -202,14 +202,25 @@
                 console.log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
                 that.showTree = !that.showTree;
 
-                if (that.showTree)
+                if (!that.tree)
                     that.obs.trigger('load_tree', {hash: that.hash});
-                that.update()
+                else
+                    that.tree.toggle();
+
+//                that.update()
             });
             that.obs.on('tree_loaded_' + that.hash, function (data) {
                 console.log('tree_loaded ' + data);
                 console.log(data);
-                riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash})
+                that.tree = riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash})[0];
+                setTimeout(that.tree.toggle, 1);
+//                that.tree.toggle();
+            });
+            that.obs.on('torrent_toggle_' + that.hash, function () {
+                if (that.status == 'STOPPED' || that.status == 'PAUSED')
+                    that.obs.trigger('torrent.start', {hash: that.hash});
+                else
+                    that.obs.trigger('torrent.stop', {hash: that.hash});
             });
         });
 
@@ -229,20 +240,17 @@
             return formatSize(size) + '/s'
         };
 
-        that.toggleTree = function (e) {
-            if (e.processed)
+        toggleTree = function (hash) {
+            if (event.processed)
                 return true;
-            console.log('toggle_tree_' + that.hash);
-            that.obs.trigger('toggle_tree_' + that.hash);
+            console.log('toggle_tree_' + hash);
+            that.obs.trigger('toggle_tree_' + hash);
         };
 
-        that.pause = function (e) {
-//            console.log('pause ' + that.hash);
-            if (that.status == 'STOPPED' || that.status == 'PAUSED')
-                that.obs.trigger('torrent.start', {hash: that.hash});
-            else
-                that.obs.trigger('torrent.stop', {hash: that.hash});
-            e.processed = true;
+        pause = function (hash) {
+            console.log('pause ' + hash);
+            obs.trigger('torrent_toggle_' + hash);
+            event.processed = true;
             return true;
         };
     </script>
