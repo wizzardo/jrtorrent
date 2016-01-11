@@ -18,12 +18,17 @@
     <upload_form>upload_form</upload_form>
 </modal>
 
+<modal id="delete_modal">
+    <delete_form>delete_form</delete_form>
+</modal>
+
 <script src="${createLink([mapping: 'static', path: "/js/tags/torrents.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/torrent.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/tree.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/tree_entry.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/modal.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/upload_form.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', path: "/js/tags/delete_form.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', path: "/js/tags/add_button.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
 
 <script>
@@ -47,10 +52,11 @@
         }
     };
     var obs;
+    var deleteModal;
 
     function mount() {
-        torrentsTag = riot.mount('torrents', {torrents: torrents}, {}, function (tag) {
-            torrentsTag = tag[0];
+        torrentsTag = riot.mount('torrents', {torrents: torrents}, {}, function (tags) {
+            torrentsTag = tags[0];
         });
         if (torrentsTag)
             torrentsTag = torrentsTag[0];
@@ -98,12 +104,16 @@
             console.log('torrent.start ' + data.hash);
             sendCommand('start', data)
         });
+        obs.on('torrent.delete', function (data) {
+            console.log('torrent.delete ' + data.hash);
+            deleteModal.toggle();
+        });
         return obs;
     }
 
     var wsEvents = {
         onOpen: function () {
-            sendCommand('list')
+            sendCommand('list');
         }
     };
 
@@ -132,6 +142,11 @@
     }
     connect();
     riot.mount('add_button');
+    riot.mount('#delete_modal', {
+        onMount: function (tag) {
+            deleteModal = tag;
+        }
+    });
 </script>
 </body>
 </html>

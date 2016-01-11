@@ -1,9 +1,9 @@
 <torrent id="torrent_{hash}">
     <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
-        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pause('{hash}')">
+        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
-        <button class="mdl-button mdl-js-button mdl-button--icon delete-left">
+        <button class="mdl-button mdl-js-button mdl-button--icon delete-left" onclick="deleteTorrent('{hash}','{name}')">
             <i class="material-icons">delete</i>
         </button>
         <div>
@@ -22,7 +22,7 @@
                 <div class="bufferbar bar bar2"></div>
             </div>
         </div>
-        <button class="mdl-button mdl-js-button mdl-button--icon delete">
+        <button class="mdl-button mdl-js-button mdl-button--icon delete" onclick="deleteTorrent('{hash}','{name}')">
             <i class="material-icons">delete</i>
         </button>
     </div>
@@ -247,9 +247,16 @@
             that.obs.trigger('toggle_tree_' + hash);
         };
 
-        pause = function (hash) {
+        pauseTorrent = function (hash) {
             console.log('pause ' + hash);
             obs.trigger('torrent_toggle_' + hash);
+            event.processed = true;
+            return true;
+        };
+
+        deleteTorrent = function (hash, name) {
+            console.log('deleteTorrent ' + hash);
+            obs.trigger('torrent.delete', {hash: hash, name: name});
             event.processed = true;
             return true;
         };
