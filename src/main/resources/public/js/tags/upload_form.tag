@@ -24,7 +24,7 @@
         </button>
     </form>
 
-    <style>
+    <style scoped>
         :scope {
             display: block;
         }
