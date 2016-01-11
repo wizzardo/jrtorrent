@@ -54,7 +54,9 @@
                     that.display = false;
                     that.update();
                 }
-            }, false)
+            }, false);
+            if (that.opts.onMount)
+                that.opts.onMount(that);
         });
 
         that.close = function (e) {
