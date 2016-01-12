@@ -32,6 +32,15 @@
         button {
             margin-left: 20px;
         }
+
+        @media screen and (max-width: 480px) {
+            button {
+                margin-left: 0px;
+                margin-bottom: 5px;
+                width: 100%;
+                display: block;
+            }
+        }
     </style>
 
     <script>
