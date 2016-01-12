@@ -58,6 +58,9 @@
             if (that.opts.onMount)
                 that.opts.onMount(that);
         });
+        obs.on('modal.closeAll', function () {
+            that.close();
+        });
 
         that.close = function (e) {
             if (e && e.target != that.overlay)
@@ -67,16 +70,16 @@
             that.update();
         };
         that.open = function () {
+            obs.trigger('modal.closeAll');
             that.display = true;
             that.show = true;
             that.update();
         };
         that.toggle = function () {
-            that.show = !that.show;
-            if (that.show)
-                that.display = true;
-
-            that.update();
+            if(that.show)
+                that.close();
+            else
+                that.open();
         }
     </script>
 
