@@ -53,6 +53,13 @@ public class RTorrentService implements Service {
         client.stop(torrent);
     }
 
+    public void delete(String torrent, boolean withData) {
+        if (withData)
+            client.removeWithData(torrent);
+        else
+            client.remove(torrent);
+    }
+
     public void pauseUpdater() {
         updater.pause();
     }
@@ -61,7 +68,7 @@ public class RTorrentService implements Service {
         updater.unpause();
     }
 
-    protected static class Updater extends Thread implements ByteBufferProvider{
+    protected static class Updater extends Thread implements ByteBufferProvider {
 
         volatile boolean pause = true;
         final ByteBufferWrapper buffer = new ByteBufferWrapper(1024 * 50);

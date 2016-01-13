@@ -40,6 +40,12 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
             String hash = json.getAsJsonObject("args").getAsString("hash");
             rtorrentService.stop(hash);
         });
+
+        handlers.put("delete", (listener, json) -> {
+            String hash = json.getAsJsonObject("args").getAsString("hash");
+            boolean withData = json.getAsJsonObject("args").getAsBoolean("withData", Boolean.FALSE);
+            rtorrentService.delete(hash, withData);
+        });
     }
 
     @Override
