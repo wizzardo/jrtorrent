@@ -2,13 +2,12 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
-import com.wizzardo.http.framework.di.Service;
-import com.wizzardo.tools.misc.With;
+import com.wizzardo.tools.collections.lazy.Lazy;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.wizzardo.tools.misc.With.with;
 
@@ -17,26 +16,13 @@ import static com.wizzardo.tools.misc.With.with;
  */
 public class MockRTorrentService extends RTorrentService {
     volatile List<TorrentInfo> list;
+    final AtomicInteger counter = new AtomicInteger();
     AppWebSocketHandler appWebSocketHandler;
 
     public MockRTorrentService() {
         List<TorrentInfo> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            final int n = i;
-            l.add(with(new TorrentInfo(), ti -> {
-                ti.setName("test torrent " + n);
-                ti.setHash("hash_" + n);
-                ti.setSize(100 * (n + 1));
-                ti.setDownloaded(0);
-                ti.setDownloadSpeed(1);
-                ti.setUploaded(0);
-                ti.setUploadSpeed(1);
-                ti.setTotalPeers(10 * n);
-                ti.setTotalSeeds(10 * n);
-                ti.setPeers(1 + n);
-                ti.setSeeds(1 + n);
-                ti.setStatus(TorrentInfo.Status.DOWNLOADING);
-            }));
+            l.add(createTorrent(counter.getAndIncrement()));
         }
         list = l;
         Thread thread = new Updater(() -> {
@@ -70,6 +56,43 @@ public class MockRTorrentService extends RTorrentService {
         thread.start();
     }
 
+    private TorrentInfo createTorrent(int n) {
+        return with(new TorrentInfo(), ti -> {
+            ti.setName("test torrent " + n);
+            ti.setHash("hash_" + n);
+            ti.setSize(100 * (n + 1));
+            ti.setDownloaded(0);
+            ti.setDownloadSpeed(1);
+            ti.setUploaded(0);
+            ti.setUploadSpeed(1);
+            ti.setTotalPeers(10 * n);
+            ti.setTotalSeeds(10 * n);
+            ti.setPeers(1 + n);
+            ti.setSeeds(1 + n);
+            ti.setStatus(TorrentInfo.Status.DOWNLOADING);
+        });
+    }
+
+    @Override
+    public void delete(String torrent, boolean withData) {
+        list.removeIf(ti -> ti.getHash().equals(torrent));
+    }
+
+    @Override
+    public void load(String torrent) {
+        list.add(createTorrent(counter.getAndIncrement()));
+    }
+
+    @Override
+    public void start(String torrent) {
+        find(torrent).setStatus(TorrentInfo.Status.DOWNLOADING);
+    }
+
+    @Override
+    public void stop(String torrent) {
+        find(torrent).setStatus(TorrentInfo.Status.PAUSED);
+    }
+
     public List<TorrentInfo> list() {
         return list;
     }
@@ -97,6 +120,10 @@ public class MockRTorrentService extends RTorrentService {
         folder2.getOrCreate("file3").setId(id++);
 
         return root.getChildren().values();
+    }
+
+    private TorrentInfo find(String torrent) {
+        return Lazy.of(list).filter(ti -> ti.getHash().equals(torrent)).first();
     }
 
     static class Updater extends Thread implements ByteBufferProvider {
