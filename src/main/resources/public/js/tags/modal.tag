@@ -55,8 +55,6 @@
                     that.update();
                 }
             }, false);
-            if (that.opts.onMount)
-                that.opts.onMount(that);
         });
         obs.on('modal.closeAll', function () {
             that.close();
