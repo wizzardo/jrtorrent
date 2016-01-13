@@ -67,7 +67,6 @@
     }
 
     handlers.list = function (data) {
-        obs = initObserver();
         torrentsByHash = {};
         for (var i = 0; i < data.torrents.length; i++) {
             data.torrents[i].obs = obs;
@@ -106,7 +105,12 @@
         });
         obs.on('torrent.delete', function (data) {
             console.log('torrent.delete ' + data.hash);
+            obs.trigger('updateDeleteForm', data);
             deleteModal.toggle();
+        });
+        obs.on('sendDeleteTorrent', function (data) {
+            console.log('sendDeleteTorrent ' + data.hash + " " + data.withData);
+            sendCommand('delete', data)
         });
         return obs;
     }
@@ -140,13 +144,13 @@
             connect();
         };
     }
-    connect();
-    riot.mount('add_button');
-    riot.mount('#delete_modal', {
-        onMount: function (tag) {
-            deleteModal = tag;
-        }
-    });
+
+    riot.compile(function() {
+        obs = initObserver();
+        connect();
+        riot.mount('add_button');
+        deleteModal = riot.mount('#delete_modal')[0];
+    })
 </script>
 </body>
 </html>
