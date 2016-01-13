@@ -46,20 +46,26 @@
     <script>
         var that = this;
         this.on('mount', function () {
+            obs.on('updateDeleteForm', function (data) {
+                that.hash = data.hash;
+                that.name = data.name;
+                that.update();
+            });
         });
 
         that.cancel = function () {
+            obs.trigger('modal.closeAll');
             return true;
         };
 
         that.deleteTorrent = function () {
-            obs.trigger('sendDeleteTorrent');
-            return true;
+            obs.trigger('sendDeleteTorrent', {hash: that.hash});
+            return that.cancel();
         };
 
         that.deleteTorrentWithData = function () {
-            obs.trigger('sendDeleteTorrent');
-            return true;
+            obs.trigger('sendDeleteTorrent', {hash: that.hash, withData: true});
+            return that.cancel();
         };
 
         that.submit = function (e) {
