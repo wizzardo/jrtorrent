@@ -15,7 +15,7 @@ public class App {
         server = new WebApplication();
 
         DependencyFactory.getDependency(MessageBundle.class).load("messages");
-        DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
+//        DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
 
         server.getUrlMapping()
                 .append("/", AppController.class, "riotIndex")
