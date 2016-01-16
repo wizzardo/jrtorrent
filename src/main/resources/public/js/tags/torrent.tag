@@ -1,4 +1,5 @@
 <torrent id="torrent_{hash}">
+    <div class="status-bar {status}"></div>
     <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
@@ -31,6 +32,7 @@
     <style scoped>
         :scope {
             display: block;
+            position: relative;
         }
 
         .mdl-button {
@@ -39,6 +41,25 @@
 
         .material-icons {
             color: #757575;
+        }
+
+        .status-bar {
+            width: 4px;
+            height: 100%;
+            position: absolute;
+            z-index: 2;
+        }
+
+        .status-bar.FINISHED {
+            background-color: rgb(63, 81, 181);
+        }
+
+        .status-bar.PAUSED {
+            background-color: rgb(255, 193, 7);
+        }
+
+        .status-bar.DOWNLOADING {
+            background-color: rgb(76, 175, 80);
         }
 
         .torrent {
