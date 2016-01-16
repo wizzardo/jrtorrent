@@ -5,6 +5,18 @@ server {
     workersCount = 1
     ttl = 5 * 60 * 1000
     context = 'jrt'
+    basicAuth {
+        username = 'user'
+        password = 'pass'
+        tokenized {
+            downloads = '/tmp/'
+        }
+    }
+
+//    ssl {
+//        cert = '/etc/ssl/certs/hostname.crt'
+//        key = '/etc/ssl/private/hostname.key'
+//    }
 }
 
 jrt {
