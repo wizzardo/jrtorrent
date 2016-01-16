@@ -1,7 +1,9 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.tools.cache.Cache;
 import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.io.FileTools;
+import com.wizzardo.tools.misc.Consumer;
 import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by wizzardo on 03.10.15.
@@ -18,6 +22,13 @@ public class RTorrentClient {
 
     private String host;
     private int port;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Cache<Long, Runnable> delayed = new Cache<Long, Runnable>(0) {
+        @Override
+        public void onRemoveItem(Long aLong, Runnable runnable) {
+            executor.submit(runnable);
+        }
+    };
 
     public RTorrentClient(String host, int port) {
         this.host = host;
@@ -40,8 +51,28 @@ public class RTorrentClient {
         return file;
     }
 
+    public void delayed(long ms, Consumer<RTorrentClient> consumer) {
+        delayed.put(System.nanoTime(), () -> consumer.consume(this), ms);
+    }
+
     public void load(String torrent) {
+        List<TorrentInfo> before = getTorrents();
         executeRequest(new XmlRpc("load", torrent));
+        delayed(2000, client -> {
+            List<TorrentInfo> after = getTorrents();
+            for (TorrentInfo info : before) {
+                after.removeIf(it -> it.getHash().equals(info.getHash()));
+            }
+            TorrentInfo ti = after.get(0);
+            System.out.println("start: " + ti.getHash());
+            client.start(ti);
+            if (torrent.startsWith("magnet")) {
+                delayed(5000, c -> {
+                    System.out.println("start: " + ti.getHash());
+                    c.start(ti);
+                });
+            }
+        });
     }
 
     public void stop(TorrentInfo torrent) {
@@ -221,7 +252,11 @@ public class RTorrentClient {
     }
 
     private String executeRequest(XmlRpc request) {
-        return new ScgiClient.Request(host, port, request.render()).get();
+        String render = request.render();
+//        System.out.println("request: " + render);
+        String response = new ScgiClient.Request(host, port, render).get();
+//        System.out.println("response: " + response);
+        return response;
     }
 
     public static void main(String[] args) throws InterruptedException {
