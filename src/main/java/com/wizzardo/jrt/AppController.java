@@ -1,13 +1,14 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.http.filter.TokenFilter;
 import com.wizzardo.http.framework.Controller;
 import com.wizzardo.http.framework.ControllerUrlMapping;
+import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
 import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
-import com.wizzardo.tools.security.MD5;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,15 @@ public class AppController extends Controller {
 
     RTorrentService rtorrentService;
     ControllerUrlMapping mapping = DependencyFactory.get(ControllerUrlMapping.class);
+    TokenFilter tokenFilter = getTokenFilter();
+
+    private TokenFilter getTokenFilter() {
+        try {
+            return DependencyFactory.get(TokenFilter.class);
+        } catch (IllegalStateException ignored) {
+        }
+        return null;
+    }
 
     public Renderer index() {
         List<TorrentInfo> torrents = rtorrentService.list();
@@ -40,6 +50,8 @@ public class AppController extends Controller {
         model().append("config", JsonTools.serialize(new CollectionTools.MapBuilder<>()
                         .add("ws", mapping.getUrlTemplate("ws").getRelativeUrl())
                         .add("addTorrent", mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl())
+                        .add("token", tokenFilter != null ? tokenFilter.generateToken(request) : "")
+                        .add("downloadsPath", Holders.getApplication().getUrlMapping().getUrlTemplate("downloads").getRelativeUrl())
                         .get()
         ));
 

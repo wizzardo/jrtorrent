@@ -233,7 +233,7 @@
             that.obs.on('tree_loaded_' + that.hash, function (data) {
                 console.log('tree_loaded ' + data);
                 console.log(data);
-                that.tree = riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash})[0];
+                that.tree = riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash, name: that.name})[0];
                 setTimeout(that.tree.toggle, 1);
 //                that.tree.toggle();
             });

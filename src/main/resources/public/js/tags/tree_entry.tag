@@ -1,7 +1,8 @@
 <tree_entry>
     <div onclick="{toggleChildren}">
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
-        {name}
+        {isFolder?name:''}
+        <a if="{!isFolder}" href="{path() + '?token=' + config.token}">{name}</a>
         <div class="resizeable children" style="height: {25 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
@@ -71,6 +72,10 @@
             that.updateShownChildsCount(that.showChildren ? that.hiddenChildren : -that.shownChildren);
             that.hiddenChildren = t;
             that.update()
-        }
+        };
+
+        that.path = function () {
+            return that.parent.path() + '/' + that.name
+        };
     </script>
 </tree_entry>

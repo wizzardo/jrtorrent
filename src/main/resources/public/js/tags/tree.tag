@@ -35,7 +35,7 @@
 
         that.toggle = function () {
             that.openned = !that.openned;
-            console.log('toggle tree: '+that.openned);
+            console.log('toggle tree: ' + that.openned);
             if (!that.openned) {
                 that.totalChildrenHidden = that.totalChildrenToShow;
                 that.totalChildrenToShow = 0;
@@ -43,6 +43,10 @@
                 that.totalChildrenToShow = that.totalChildrenHidden;
             }
             that.update();
+        };
+
+        that.path = function () {
+            return config.downloadsPath + '/' + that.opts.name
         };
 
     </script>
