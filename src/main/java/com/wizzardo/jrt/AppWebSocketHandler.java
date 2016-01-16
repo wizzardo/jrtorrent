@@ -116,6 +116,22 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         broadcast(json);
     }
 
+    public void onAdd(TorrentInfo ti) {
+        JsonObject json = new JsonObject()
+                .append("command", "add")
+                .append("torrent", toJson(ti));
+
+        broadcast(json);
+    }
+
+    public void onRemove(TorrentInfo ti) {
+        JsonObject json = new JsonObject()
+                .append("command", "remove")
+                .append("torrent", toJson(ti));
+
+        broadcast(json);
+    }
+
     protected interface CommandHandler {
         void handle(WebSocketListener listener, JsonObject json);
     }

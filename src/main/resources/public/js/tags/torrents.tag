@@ -1,6 +1,5 @@
 <torrents>
     <div class="header">
-        <span class="th name">NAME</span>
         <span class="th status">STATUS</span>
         <span class="th">SIZE</span>
         <span class="th">DL</span>
@@ -29,12 +28,8 @@
         }
 
         .header .th {
-            width: 63px;
+            width: 99px;
             display: inline-block;
-        }
-
-        .th.name {
-            width: 150px;
         }
 
         .th.status {
@@ -47,4 +42,27 @@
             }
         }
     </style>
+    <script>
+        var that = this;
+
+        that.on('mount', function () {
+            obs.on('removeTorrent', function (data) {
+                var torrents = that.opts.torrents;
+                for (var i = 0; i < torrents.length; i++) {
+                    if (torrents[i].hash == data.hash) {
+                        torrents.splice(i, 1);
+                        break;
+                    }
+                }
+                that.update();
+            });
+            obs.on('addTorrent', function (data) {
+                console.log('addTorrent')
+                console.log(data)
+
+                that.opts.torrents.push(data);
+                that.update();
+            });
+        });
+    </script>
 </torrents>

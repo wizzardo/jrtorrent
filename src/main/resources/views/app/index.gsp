@@ -88,6 +88,16 @@
             obs.trigger('update_' + data.torrent.hash, data.torrent)
     };
 
+    handlers.add = function (data) {
+        if (obs)
+            obs.trigger('addTorrent', data.torrent)
+    };
+
+    handlers.remove = function (data) {
+        if (obs)
+            obs.trigger('removeTorrent', data.torrent)
+    };
+
     function initObserver() {
         console.log('initObserver');
         var obs = riot.observable();
