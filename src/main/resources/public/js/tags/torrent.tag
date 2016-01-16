@@ -4,7 +4,8 @@
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
-        <button class="mdl-button mdl-js-button mdl-button--icon delete-left" onclick="deleteTorrent('{hash}','{name}')">
+        <button class="mdl-button mdl-js-button mdl-button--icon delete-left"
+                onclick="deleteTorrent('{hash}','{name}')">
             <i class="material-icons">delete</i>
         </button>
         <div>
@@ -62,6 +63,10 @@
             background-color: rgb(76, 175, 80);
         }
 
+        .status-bar.SEEDING {
+            background-color: rgb(255, 87, 34);
+        }
+
         .torrent {
             padding: 10px;
             min-height: 40px;
@@ -80,8 +85,7 @@
 
         .name {
             font-weight: bold;
-            width: 150px;
-            display: inline-block;
+            display: block;
         }
 
         .status {
@@ -96,7 +100,7 @@
         }
 
         .size, .d, .ds, .u, .us, .peers, .seeds {
-            width: 64px;
+            width: 99px;
             display: inline-block;
         }
 
@@ -193,8 +197,15 @@
         var that = this;
 
         this.on('mount', function () {
-            that.obs.on('update_' + that.hash, function (data) {
+            console.log('on mount torrent: ' + that.hash);
+            console.log(that);
+
+            obs.on('update_' + that.hash, function (data) {
+                console.log('on update torrent: ' + that.hash);
+                console.log(data);
 //                console.log('update_progress: '+progress);
+                if (that.name != data.name)
+                    that.name = data.name;
                 if (that.progress != data.progress)
                     that.progress = data.progress;
                 if (that.status != data.status)
@@ -219,7 +230,7 @@
                     that.st = data.st;
                 that.update()
             });
-            that.obs.on('toggle_tree_' + that.hash, function () {
+            obs.on('toggle_tree_' + that.hash, function () {
                 console.log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
                 that.showTree = !that.showTree;
 
@@ -230,14 +241,14 @@
 
 //                that.update()
             });
-            that.obs.on('tree_loaded_' + that.hash, function (data) {
+            obs.on('tree_loaded_' + that.hash, function (data) {
                 console.log('tree_loaded ' + data);
                 console.log(data);
                 that.tree = riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash, name: that.name})[0];
                 setTimeout(that.tree.toggle, 1);
 //                that.tree.toggle();
             });
-            that.obs.on('torrent_toggle_' + that.hash, function () {
+            obs.on('torrent_toggle_' + that.hash, function () {
                 if (that.status == 'STOPPED' || that.status == 'PAUSED')
                     that.obs.trigger('torrent.start', {hash: that.hash});
                 else

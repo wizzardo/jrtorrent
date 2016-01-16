@@ -1,6 +1,6 @@
 <delete_form>
     Delete torrent?
-    <p> Are you sure that you want to delete '{name || 'name'}'</p>
+    <p> Are you sure that you want to delete '<strong>{name || 'name'}</strong>'</p>
 
     <form action="#" name="form" onsubmit={ submit }>
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
@@ -47,9 +47,7 @@
         var that = this;
         this.on('mount', function () {
             obs.on('updateDeleteForm', function (data) {
-                that.hash = data.hash;
-                that.name = data.name;
-                that.update();
+                that.update(data);
             });
         });
 
