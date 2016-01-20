@@ -136,7 +136,7 @@
     }
 
     function connect() {
-        ws = new WebSocket("ws://" + location.hostname + ":" + location.port + config.ws);
+        ws = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + "://" + location.hostname + ":" + location.port + config.ws);
         ws.onopen = function () {
             console.log("open");
             if (wsEvents.onOpen)
