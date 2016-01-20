@@ -33,8 +33,6 @@
 
 <script>
     var config = ${config};
-    var torrents = [];
-    var torrentsByHash = {};
     var handlers = {};
     var mdlMixin = {
         init: function () {
@@ -54,27 +52,12 @@
     var obs;
     var deleteModal;
 
-    function mount() {
-        torrentsTag = riot.mount('torrents', {torrents: torrents}, {}, function (tags) {
+    handlers.list = function (data) {
+        torrentsTag = riot.mount('torrents', {torrents: data.torrents}, {}, function (tags) {
             torrentsTag = tags[0];
         });
         if (torrentsTag)
             torrentsTag = torrentsTag[0];
-    }
-
-    function find(hash) {
-        return torrentsByHash[hash]
-    }
-
-    handlers.list = function (data) {
-        torrentsByHash = {};
-        for (var i = 0; i < data.torrents.length; i++) {
-            data.torrents[i].obs = obs;
-            torrentsByHash[data.torrents[i].hash] = data.torrents[i];
-        }
-
-        torrents = data.torrents;
-        mount()
     };
 
     handlers.tree = function (data) {

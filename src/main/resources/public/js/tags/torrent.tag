@@ -235,7 +235,7 @@
                 that.showTree = !that.showTree;
 
                 if (!that.tree)
-                    that.obs.trigger('load_tree', {hash: that.hash});
+                    obs.trigger('load_tree', {hash: that.hash});
                 else
                     that.tree.toggle();
 
@@ -250,9 +250,9 @@
             });
             obs.on('torrent_toggle_' + that.hash, function () {
                 if (that.status == 'STOPPED' || that.status == 'PAUSED')
-                    that.obs.trigger('torrent.start', {hash: that.hash});
+                    obs.trigger('torrent.start', {hash: that.hash});
                 else
-                    that.obs.trigger('torrent.stop', {hash: that.hash});
+                    obs.trigger('torrent.stop', {hash: that.hash});
             });
         });
 
@@ -276,7 +276,7 @@
             if (event.processed)
                 return true;
             console.log('toggle_tree_' + hash);
-            that.obs.trigger('toggle_tree_' + hash);
+            obs.trigger('toggle_tree_' + hash);
         };
 
         pauseTorrent = function (hash) {
