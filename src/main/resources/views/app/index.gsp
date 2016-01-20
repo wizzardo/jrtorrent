@@ -1,4 +1,4 @@
-<%@ page import="com.wizzardo.jrt.TorrentInfo;" contentType="text/html;charset=UTF-8" %>
+<%@ page import="com.wizzardo.http.framework.Holders; com.wizzardo.http.framework.Environment; com.wizzardo.jrt.TorrentInfo;" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="mdl_layout"/>
@@ -22,14 +22,16 @@
     <delete_form>delete_form</delete_form>
 </modal>
 
-<script src="${createLink([mapping: 'static', path: "/js/tags/torrents.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/torrent.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/tree.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/tree_entry.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/modal.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/upload_form.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/delete_form.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', path: "/js/tags/add_button.tag?${System.currentTimeMillis()}"])}" type="riot/tag"></script>
+<g:set var="noCache" value="${Holders.environment == Environment.DEVELOPMENT ? [r: System.currentTimeMillis()] : [:]}" />
+
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrents.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrent.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/tree.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/tree_entry.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/modal.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/upload_form.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/delete_form.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/add_button.tag"])}" type="riot/tag"></script>
 
 <script>
     var config = ${config};

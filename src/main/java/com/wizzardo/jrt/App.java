@@ -1,5 +1,6 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.http.framework.Environment;
 import com.wizzardo.http.framework.WebApplication;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
@@ -11,8 +12,9 @@ import com.wizzardo.http.framework.message.MessageBundle;
 public class App {
     final WebApplication server;
 
-    public App() {
+    public App(Environment environment) {
         server = new WebApplication();
+        server.setEnvironment(environment);
 
         DependencyFactory.getDependency(MessageBundle.class).load("messages");
 //        DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
@@ -27,6 +29,7 @@ public class App {
     }
 
     public static void main(String[] args) {
-        new App();
+        Environment environment = args.length == 1 && args[0].startsWith("-env=") ? Environment.parse(args[0].substring(5)) : Environment.DEVELOPMENT;
+        new App(environment);
     }
 }
