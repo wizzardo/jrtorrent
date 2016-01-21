@@ -1,5 +1,6 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.http.FileTreeHandler;
 import com.wizzardo.http.framework.Environment;
 import com.wizzardo.http.framework.WebApplication;
 import com.wizzardo.http.framework.di.DependencyFactory;
@@ -14,17 +15,21 @@ public class App {
 
     public App(Environment environment) {
         server = new WebApplication();
+        server.onSetup(app -> {
+            DependencyFactory.getDependency(MessageBundle.class).load("messages");
+//            DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
+
+            String downloads = app.getConfig().config("jrt").get("downloads", "./");
+
+            app.getUrlMapping()
+                    .append("/", AppController.class, "riotIndex")
+                    .append("/addTorrent", AppController.class, "addTorrent")
+                    .append("/downloads/*", "downloads", new FileTreeHandler(downloads, "/downloads")
+                            .setShowFolder(false))
+                    .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
+            ;
+        });
         server.setEnvironment(environment);
-
-        DependencyFactory.getDependency(MessageBundle.class).load("messages");
-//        DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
-
-        server.getUrlMapping()
-                .append("/", AppController.class, "riotIndex")
-                .append("/addTorrent", AppController.class, "addTorrent")
-                .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
-        ;
-
         server.start();
     }
 

@@ -8,9 +8,6 @@ server {
     basicAuth {
         username = 'user'
         password = 'pass'
-        tokenized {
-            downloads = '/tmp/'
-        }
     }
 
 //    ssl {
@@ -24,4 +21,6 @@ jrt {
         host = 'localhost'
         port = 5000
     }
+
+    downloads = '/tmp/'
 }
