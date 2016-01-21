@@ -1,6 +1,6 @@
 <torrent id="torrent_{hash}">
     <div class="status-bar {status}"></div>
-    <div class="torrent {status.toLowerCase()}" onclick="toggleTree('{hash}')">
+    <div class="torrent {status.toLowerCase()}" onclick="toggleTree(event, '{hash}')">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
@@ -272,7 +272,7 @@
             return formatSize(size) + '/s'
         };
 
-        toggleTree = function (hash) {
+        toggleTree = function (event, hash) {
             if (event.processed)
                 return true;
             console.log('toggle_tree_' + hash);
