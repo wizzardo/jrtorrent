@@ -28,7 +28,7 @@
         }
 
         .header .th {
-            width: 99px;
+            width: 95px;
             display: inline-block;
         }
 

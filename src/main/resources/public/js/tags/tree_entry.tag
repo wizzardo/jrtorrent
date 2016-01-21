@@ -3,7 +3,7 @@
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         {isFolder?name:''}
         <a if="{!isFolder}" href="{path() + '?token=' + config.token}" onclick="open('{path()}?token=' + config.token)">{name}</a>
-        <div class="resizeable children" style="height: {25 * shownChildren}px">
+        <div class="resizeable children" style="height: {30 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
     </div>
@@ -12,7 +12,7 @@
         :scope {
             display: block;
             margin-left: 10px;
-            padding-top: 5px;
+            padding-top: 10px;
             font-size: 14px;
         }
 

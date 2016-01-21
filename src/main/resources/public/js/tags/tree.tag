@@ -1,5 +1,5 @@
 <tree>
-    <div class="resizeable" style="height: {25 * totalChildrenToShow || 0}px">
+    <div class="resizeable" style="height: {30 * totalChildrenToShow || 0}px">
         <tree_entry each={opts.entries}></tree_entry>
     </div>
     <style scoped>
@@ -7,6 +7,7 @@
             display: block;
             overflow: hidden;
             background: #F8F8F8;
+            padding-left: 10px;
         }
 
         .resizeable {

@@ -100,7 +100,7 @@
         }
 
         .size, .d, .ds, .u, .us, .peers, .seeds {
-            width: 99px;
+            width: 95px;
             display: inline-block;
         }
 
@@ -154,6 +154,10 @@
         }
 
         @media screen and (max-width: 480px) {
+            .size, .d, .ds, .u, .us, .peers, .seeds {
+                width: 64px;
+            }
+
             .delete {
                 display: none;
             }
