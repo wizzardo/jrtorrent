@@ -78,7 +78,10 @@ public class RTorrentClient {
                 delayed(5000, c -> {
                     System.out.println("start: " + ti.getHash());
                     c.start(ti);
-                    new File(c.getDownloadDirectory(), ti.getHash() + ".meta").delete();
+                    delayed(15000, cc -> {
+                        System.out.println("remove file: " + ti.getHash() + ".meta");
+                        new File(cc.getDownloadDirectory(), ti.getHash() + ".meta").delete();
+                    });
                 });
             }
         });
