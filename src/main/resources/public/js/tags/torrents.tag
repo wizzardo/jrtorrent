@@ -1,13 +1,14 @@
 <torrents>
     <div class="header">
         <span class="th status">STATUS</span>
-        <span class="th">SIZE</span>
-        <span class="th">DL</span>
-        <span class="th">↓SPEED</span>
-        <span class="th">UL</span>
-        <span class="th">↑SPEED</span>
-        <span class="th">PEERS</span>
-        <span class="th">SEEDS</span>
+        <span class="th size">SIZE</span>
+        <span class="th d">DL</span>
+        <span class="th ds">↓SPEED</span>
+        <span class="th eta">ETA</span>
+        <span class="th u">UL</span>
+        <span class="th us">↑SPEED</span>
+        <span class="th peers">PEERS</span>
+        <span class="th seeds">SEEDS</span>
     </div>
     <torrent each={opts.torrents}>
     </torrent>
@@ -27,8 +28,9 @@
             font-weight: bold;
         }
 
-        .header .th {
-            width: 95px;
+        /*.header */
+        .th {
+            width: 85px;
             display: inline-block;
         }
 
@@ -38,7 +40,18 @@
 
         @media screen and (max-width: 850px) {
             .header {
+                padding-left: 11px;
+                margin: 0;
+            }
+
+            .status, .peers, .seeds, .size {
                 display: none;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .th {
+                width: 64px;
             }
         }
     </style>
