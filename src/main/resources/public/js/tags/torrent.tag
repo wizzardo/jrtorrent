@@ -14,6 +14,7 @@
             <span class="size">{formatSize(size || opts.size)}</span>
             <span class="d">↓{formatSize(d || opts.d || 0)}</span>
             <span class="ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
+            <span class="eta">{progress == 100 || size - d == 0 ? '' : formatEta(size - d, ds)}</span>
             <span class="u">↑{formatSize(u || opts.u || 0)}</span>
             <span class="us">↑{formatSpeed(us || opts.us || 0)}</span>
             <span class="peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
@@ -99,8 +100,8 @@
             overflow: hidden;
         }
 
-        .size, .d, .ds, .u, .us, .peers, .seeds {
-            width: 95px;
+        .size, .d, .ds, .u, .us, .peers, .seeds, .eta {
+            width: 85px;
             display: inline-block;
         }
 
@@ -137,7 +138,7 @@
                 width: 100%;
             }
 
-            .status, .peers, .seeds {
+            .status, .peers, .seeds, .size {
                 display: none;
             }
 
@@ -154,7 +155,7 @@
         }
 
         @media screen and (max-width: 480px) {
-            .size, .d, .ds, .u, .us, .peers, .seeds {
+            .size, .d, .ds, .u, .us, .peers, .seeds, .eta {
                 width: 64px;
             }
 
@@ -274,6 +275,21 @@
         };
         formatSpeed = function (size) {
             return formatSize(size) + '/s'
+        };
+        formatEta = function (remaining, speed) {
+            var s = remaining / speed;
+            if (isNaN(s))
+                return '';
+            if (s < 60)
+                return Math.ceil(s) + 's';
+            var m = s / 60;
+            if (m < 60)
+                return Math.ceil(m) + 'm' + (s % 60) + 's';
+            var h = m / 60;
+            if (h < 24)
+                return Math.ceil(h) + 'h' + (m % 60) + 'm';
+            var d = h / 24;
+            return Math.ceil(d) + 'd' + Math.ceil(h % 24) + 'h';
         };
 
         toggleTree = function (event, hash) {
