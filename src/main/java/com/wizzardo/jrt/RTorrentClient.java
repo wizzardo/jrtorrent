@@ -129,14 +129,14 @@ public class RTorrentClient {
     }
 
     public void removeWithData(String hash) {
-        String path;
+        File path;
         if (getFilesCount(hash) == 1)
-            path = getFile(hash, 0);
+            path = new File(getDownloadDirectory(), getFile(hash, 0));
         else
-            path = getTorrentDirectory(hash);
+            path = new File(getTorrentDirectory(hash));
 
         executeRequest(new XmlRpc("d.erase", hash));
-        FileTools.deleteRecursive(new File(path));
+        FileTools.deleteRecursive(path);
     }
 
     public Collection<TorrentEntry> getEntries(TorrentInfo torrent) {
@@ -286,6 +286,8 @@ public class RTorrentClient {
             for (TorrentEntry entry : client.getEntries(info)) {
                 System.out.println((entry.isFolder() ? "D: " : "F: ") + entry.name);
             }
+            System.out.println("getFilesCount: " + client.getFilesCount(info));
+            System.out.println("getFile: " + client.getFile(info, 0));
             System.out.println("getTorrentDirectory: " + client.getTorrentDirectory(info));
             System.out.println("getDownloadDirectory: " + client.getDownloadDirectory());
         }
