@@ -36,7 +36,11 @@ public class RTorrentClient {
     }
 
     public int getFilesCount(TorrentInfo torrent) {
-        String response = new XmlParser().parse(executeRequest(new XmlRpc("d.get_size_files", new XmlRpc.Params().add(torrent.getHash()))))
+        return getFilesCount(torrent.getHash());
+    }
+
+    public int getFilesCount(String hash) {
+        String response = new XmlParser().parse(executeRequest(new XmlRpc("d.get_size_files", new XmlRpc.Params().add(hash))))
 //                .get("params/param/value/i8").text();
                 .get(0).get(0).get(0).get(0).text();
 
@@ -44,7 +48,11 @@ public class RTorrentClient {
     }
 
     public String getFile(TorrentInfo torrent, int i) {
-        String file = new XmlParser().parse(executeRequest(new XmlRpc("f.get_path", new XmlRpc.Params().add(torrent.getHash()).add(i))))
+        return getFile(torrent.getHash(), i);
+    }
+
+    public String getFile(String hash, int i) {
+        String file = new XmlParser().parse(executeRequest(new XmlRpc("f.get_path", new XmlRpc.Params().add(hash).add(i))))
 //                .get("params/param/value/string").text();
                 .get(0).get(0).get(0).get(0).text();
 
@@ -120,7 +128,12 @@ public class RTorrentClient {
     }
 
     public void removeWithData(String hash) {
-        String path = getTorrentDirectory(hash);
+        String path;
+        if (getFilesCount(hash) == 1)
+            path = getFile(hash, 0);
+        else
+            path = getTorrentDirectory(hash);
+
         executeRequest(new XmlRpc("d.erase", hash));
         FileTools.deleteRecursive(new File(path));
     }
