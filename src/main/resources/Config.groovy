@@ -9,7 +9,7 @@ server {
         username = 'user'
         password = 'pass'
         token = true
-        tokenTTL = 7 * 24 * 60 * 60 * 1000
+        tokenTTL = 7 * 24 * 60 * 60 * 1000l
     }
 
 //    ssl {
