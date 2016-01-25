@@ -284,10 +284,10 @@
                 return Math.ceil(s) + 's';
             var m = s / 60;
             if (m < 60)
-                return Math.ceil(m) + 'm' + (s % 60) + 's';
+                return Math.ceil(m) + 'm' + Math.ceil(s % 60) + 's';
             var h = m / 60;
             if (h < 24)
-                return Math.ceil(h) + 'h' + (m % 60) + 'm';
+                return Math.ceil(h) + 'h' + Math.ceil(m % 60) + 'm';
             var d = h / 24;
             return Math.ceil(d) + 'd' + Math.ceil(h % 24) + 'h';
         };
