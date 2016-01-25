@@ -9,16 +9,16 @@
             <i class="material-icons">delete</i>
         </button>
         <div>
-            <span class="name">{name || opts.name}</span>
-            <span class="status">{status || opts.status}</span>
-            <span class="size">{formatSize(size || opts.size)}</span>
-            <span class="d">↓{formatSize(d || opts.d || 0)}</span>
-            <span class="ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
-            <span class="eta">{progress == 100 || size - d == 0 ? '' : formatEta(size - d, ds)}</span>
-            <span class="u">↑{formatSize(u || opts.u || 0)}</span>
-            <span class="us">↑{formatSpeed(us || opts.us || 0)}</span>
-            <span class="peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
-            <span class="seeds">{s || opts.s} {st ? '('+st+')':''}</span>
+            <span class="td name">{name || opts.name}</span>
+            <span class="td status">{status || opts.status}</span>
+            <span class="td size">{formatSize(size || opts.size)}</span>
+            <span class="td d">↓{formatSize(d || opts.d || 0)}</span>
+            <span class="td ds">↓{formatSpeed(ds || opts.ds || 0)}</span>
+            <span class="td eta">{progress == 100 || size - d == 0 ? '' : formatEta(size - d, ds)}</span>
+            <span class="td u">↑{formatSize(u || opts.u || 0)}</span>
+            <span class="td us">↑{formatSpeed(us || opts.us || 0)}</span>
+            <span class="td peers">{p || opts.p} {pt ? '('+pt+')':''}</span>
+            <span class="td seeds">{s || opts.s} {st ? '('+st+')':''}</span>
 
             <div class="mdl-progress">
                 <div class="progressbar bar bar1" style="width: {progress}%;"></div>
@@ -84,12 +84,13 @@
             background-color: ghostwhite;
         }
 
-        .name {
+        .torrent .name {
             font-weight: bold;
             display: block;
+            width: 100%;
         }
 
-        .status {
+        .torrent .status {
             width: 120px;
             display: inline-block;
         }
@@ -100,7 +101,7 @@
             overflow: hidden;
         }
 
-        .size, .d, .ds, .u, .us, .peers, .seeds, .eta {
+        .td {
             width: 80px;
             display: inline-block;
         }
@@ -125,7 +126,76 @@
             display: none;
         }
 
-        @media screen and (max-width: 850px) {
+        @media screen and (max-width: 800px) {
+            .torrent .status {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .mdl-progress {
+                width: 100%;
+            }
+        }
+
+        @media screen and (min-width: 737px) {
+            .delete-left {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 736px) {
+            .torrent {
+                width: 850px;
+                left: -90px;
+            }
+
+            .td {
+                width: 86px;
+            }
+
+            .torrent:hover {
+                left: 0px;
+            }
+
+            .delete {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 690px) {
+            .td {
+                width: 81px;
+            }
+        }
+
+        @media screen and (max-width: 667px) {
+            .td {
+                width: 78px;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .td {
+                width: 69px;
+            }
+        }
+
+        @media screen and (max-width: 568px) {
+            .td {
+                width: 66px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .td {
+                width: 70px;
+            }
+
+            .peers, .seeds, .size {
+                display: none;
+            }
+
             .torrent {
                 min-height: 55px;
             }
@@ -133,50 +203,27 @@
             .header {
                 display: none;
             }
+        }
 
-            .mdl-progress {
-                width: 100%;
-            }
-
-            .status, .peers, .seeds, .size {
-                display: none;
-            }
-
-            .name {
-                width: 100%;
-                display: block;
+        @media screen and (max-width: 412px) {
+            .td {
+                width: 75px;
             }
         }
 
-        @media screen and (min-width: 481px) {
-            .delete-left {
-                display: none;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .size, .d, .ds, .u, .us, .peers, .seeds, .eta {
-                width: 64px;
-            }
-
-            .delete {
-                display: none;
-            }
-
-            .torrent {
-                width: 700px;
-                left: -90px;
-            }
-
-            .torrent:hover {
-                left: 0px;
+        @media screen and (max-width: 384px) {
+            .td {
+                width: 70px;
             }
         }
 
         @media screen and (max-width: 375px) {
-
             .torrent .mdl-progress, .name {
                 max-width: 355px;
+            }
+
+            .td {
+                width: 68px;
             }
         }
 
@@ -187,7 +234,7 @@
         }
 
         @media screen and (max-width: 320px) {
-            .size, .d, .ds, .u, .us, .peers, .seeds {
+            .td {
                 width: 55px;
                 font-size: 12px;
             }
