@@ -101,7 +101,7 @@
         }
 
         .size, .d, .ds, .u, .us, .peers, .seeds, .eta {
-            width: 85px;
+            width: 80px;
             display: inline-block;
         }
 

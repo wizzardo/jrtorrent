@@ -30,7 +30,7 @@
 
         /*.header */
         .th {
-            width: 85px;
+            width: 80px;
             display: inline-block;
         }
 
