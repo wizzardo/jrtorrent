@@ -1,6 +1,9 @@
 <delete_form>
     Delete torrent?
-    <p> Are you sure that you want to delete '<strong>{name || 'name'}</strong>'</p>
+    <p> Are you sure that you want to delete
+        <br/>
+        '<strong>{name || 'name'}</strong>'
+    </p>
 
     <form action="#" name="form" onsubmit={ submit }>
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
@@ -31,6 +34,12 @@
 
         button {
             margin-left: 20px;
+        }
+
+        p strong {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         @media screen and (max-width: 480px) {
