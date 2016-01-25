@@ -24,6 +24,12 @@
         margin-left: auto;
         margin-right: auto;
     }
+
+    .page-content {
+        width: 920px;
+        margin-left: auto;
+        margin-right: auto;
+    }
     </style>
 </head>
 
