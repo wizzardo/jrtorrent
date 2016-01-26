@@ -92,7 +92,7 @@ public class RTorrentClient {
     }
 
     public void stop(String hash) {
-        executeRequest(new XmlRpc("d.stop", hash));
+        executeRequest(new XmlRpc("d.close", hash));
     }
 
     public void start(TorrentInfo torrent) {
