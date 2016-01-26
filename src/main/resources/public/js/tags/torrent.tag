@@ -325,7 +325,7 @@
         };
         formatEta = function (remaining, speed) {
             var s = remaining / speed;
-            if (isNaN(s))
+            if (!isFinite(s))
                 return '';
             if (s < 60)
                 return Math.ceil(s) + 's';
