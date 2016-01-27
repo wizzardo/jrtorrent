@@ -6,8 +6,9 @@
         :scope {
             display: block;
             overflow: hidden;
-            background: #F8F8F8;
+            background: #FAFAFA;
             padding-left: 10px;
+            border-bottom: 1px solid #EAEAEA;
         }
 
         .resizeable {
