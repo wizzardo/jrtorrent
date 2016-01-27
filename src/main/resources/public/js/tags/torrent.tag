@@ -1,6 +1,6 @@
 <torrent id="torrent_{hash}">
     <div class="status-bar {status}"></div>
-    <div class="torrent {status.toLowerCase()}" onclick="toggleTree(event, '{hash}')">
+    <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="clickTorrent(event, '{hash}')">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
         </button>
@@ -80,8 +80,12 @@
             display: inline-block;
         }
 
+        .torrent.selected {
+            background: #FAFAFA;
+        }
+
         .torrent:hover {
-            background-color: ghostwhite;
+            background-color: rgba(0,0,0,0.05);
         }
 
         .torrent .name {
@@ -154,7 +158,7 @@
                 width: 86px;
             }
 
-            .torrent:hover {
+            .torrent.selected {
                 left: 0px;
             }
 
@@ -247,6 +251,7 @@
 
     <script>
         var that = this;
+        that.selected = false;
 
         this.on('mount', function () {
             console.log('on mount torrent: ' + that.hash);
@@ -282,7 +287,7 @@
                     that.st = data.st;
                 that.update()
             });
-            obs.on('toggle_tree_' + that.hash, function () {
+            that.toggleTree = function () {
                 console.log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
                 that.showTree = !that.showTree;
 
@@ -292,7 +297,8 @@
                     that.tree.toggle();
 
 //                that.update()
-            });
+            };
+            obs.on('toggle_tree_' + that.hash, that.toggleTree);
             obs.on('tree_loaded_' + that.hash, function (data) {
                 console.log('tree_loaded ' + data);
                 console.log(data);
@@ -305,6 +311,12 @@
                     obs.trigger('torrent.start', {hash: that.hash});
                 else
                     obs.trigger('torrent.stop', {hash: that.hash});
+            });
+            obs.on('click_' + that.hash, function () {
+                console.log('toggle_tree_' + that.hash);
+                that.toggleTree();
+                that.selected = !that.selected;
+                that.update();
             });
         });
 
@@ -339,11 +351,11 @@
             return Math.ceil(d) + 'd' + Math.ceil(h % 24) + 'h';
         };
 
-        toggleTree = function (event, hash) {
+        clickTorrent = function (event, hash) {
             if (event.processed)
                 return true;
-            console.log('toggle_tree_' + hash);
-            obs.trigger('toggle_tree_' + hash);
+
+            obs.trigger('click_' + hash);
         };
 
         pauseTorrent = function (hash) {
