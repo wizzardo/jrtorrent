@@ -48,5 +48,22 @@ jrt {
 ```
 
 
+#### nginx config (optional)
+```
+    location /jrt {
+        proxy_pass   http://127.0.0.1:8080/jrt;
+
+        proxy_http_version 1.1;
+        proxy_set_header  Upgrade $http_upgrade;
+        proxy_set_header  Connection "upgrade";
+        proxy_set_header  Host $host;
+        proxy_set_header  X-Real-IP $remote_addr;
+        proxy_set_header  X-Forwarded-for $remote_addr;
+        proxy_buffering off;
+        port_in_redirect  off;
+    }
+
+```
+
 [mobile-screenshot]: https://wizzardo.github.io/jrtorrent/img/mobile.png "mobile-screenshot"
 [desktop-screenshot]: https://wizzardo.github.io/jrtorrent/img/desktop.png "desktop-screenshot"
