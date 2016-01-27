@@ -8,9 +8,7 @@ import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -57,6 +55,30 @@ public class RTorrentClient {
                 .get(0).get(0).get(0).get(0).text();
 
         return file;
+    }
+
+    public long getFileSize(String hash, int i) {
+        String size = new XmlParser().parse(executeRequest(new XmlRpc("f.get_size_bytes", new XmlRpc.Params().add(hash).add(i))))
+//                .get("params/param/value/i8").text();
+                .get(0).get(0).get(0).get(0).text();
+
+        return Long.parseLong(size);
+    }
+
+    public long getFileSizeChunks(String hash, int i) {
+        String size = new XmlParser().parse(executeRequest(new XmlRpc("f.get_size_chunks", new XmlRpc.Params().add(hash).add(i))))
+//                .get("params/param/value/i8").text();
+                .get(0).get(0).get(0).get(0).text();
+
+        return Long.parseLong(size);
+    }
+
+    public long getFileCompletedChunks(String hash, int i) {
+        String size = new XmlParser().parse(executeRequest(new XmlRpc("f.get_completed_chunks", new XmlRpc.Params().add(hash).add(i))))
+//                .get("params/param/value/i8").text();
+                .get(0).get(0).get(0).get(0).text();
+
+        return Long.parseLong(size);
     }
 
     public void delayed(long ms, Consumer<RTorrentClient> consumer) {
@@ -154,6 +176,7 @@ public class RTorrentClient {
                 .add("f.get_priority=")
                 .add("f.get_completed_chunks=")
                 .add("f.get_size_chunks=")
+                .add("f.get_size_bytes=")
         ;
 //        for (int i = 0; i < l; i++) {
 //            params.add("f.get_path").add("D4264E9D08C1F6BD9BCFC1D4B47E149C577D1FFC").add(i);
@@ -177,6 +200,7 @@ public class RTorrentClient {
             entry.setPriority(FilePriority.byString(data.get(1).get(0).get(0).text()));
             entry.setChunksCompleted(Integer.parseInt(data.get(2).get(0).get(0).text()));
             entry.setChunksCount(Integer.parseInt(data.get(3).get(0).get(0).text()));
+            entry.setSizeBytes(Long.parseLong(data.get(4).get(0).get(0).text()));
         }
 
 //        System.out.println(files.toXML(true));

@@ -13,6 +13,7 @@ public class TorrentEntry {
 
     private int chunksCount;
     private int chunksCompleted;
+    private long sizeBytes;
     private int id;
 
     public final String name;
@@ -80,5 +81,13 @@ public class TorrentEntry {
 
     void setId(int id) {
         this.id = id;
+    }
+
+    public long getSizeBytes() {
+        return sizeBytes;
+    }
+
+    void setSizeBytes(long sizeBytes) {
+        this.sizeBytes = sizeBytes;
     }
 }
