@@ -2,7 +2,7 @@
     <div onclick="{toggleChildren}">
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         {isFolder?name:''}
-        <a if="{!isFolder}" href="{path() + '?token=' + config.token}" onclick="open('{path()}?token=' + config.token)">{name}</a>
+        <a if="{!isFolder}" href="{path() + '?token=' + config.token}" onclick="open('{path()}?token=' + config.token)" target="_blank">{name}</a>
         <div class="resizeable children" style="height: {30 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
