@@ -139,7 +139,7 @@
                 console.log('addTorrent')
                 console.log(data)
 
-                that.opts.torrents.push(data);
+                that.opts.torrents.splice(0, 0, data);
                 that.update();
             });
         });
