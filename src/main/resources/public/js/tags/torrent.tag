@@ -33,7 +33,7 @@
 
     <style scoped>
         :scope {
-            display: block;
+            display: inline-block;
             position: relative;
         }
 
@@ -56,7 +56,7 @@
             background-color: rgb(63, 81, 181);
         }
 
-        .status-bar.PAUSED {
+        .status-bar.STOPPED {
             background-color: rgb(255, 193, 7);
         }
 
@@ -150,7 +150,6 @@
 
         @media screen and (max-width: 736px) {
             .torrent {
-                width: 850px;
                 left: -90px;
             }
 
