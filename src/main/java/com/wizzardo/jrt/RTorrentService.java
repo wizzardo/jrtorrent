@@ -7,10 +7,7 @@ import com.wizzardo.http.framework.di.Service;
 import com.wizzardo.tools.collections.lazy.Lazy;
 import com.wizzardo.tools.evaluation.Config;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -31,7 +28,9 @@ public class RTorrentService implements Service {
     }
 
     public List<TorrentInfo> list() {
-        return client.getTorrents();
+        List<TorrentInfo> torrents = client.getTorrents();
+        Collections.reverse(torrents);
+        return torrents;
     }
 
     public Collection<TorrentEntry> entries(TorrentInfo ti) {
