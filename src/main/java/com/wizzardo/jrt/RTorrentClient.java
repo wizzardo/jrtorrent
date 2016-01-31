@@ -168,7 +168,7 @@ public class RTorrentClient {
         return getEntries(torrent.getHash());
     }
 
-    public Collection<TorrentEntry> getEntries(String hash) {
+    public TorrentEntry getRootEntry(String hash) {
         XmlRpc.Params params = new XmlRpc.Params();
         params.add(hash)
                 .add(0)
@@ -204,7 +204,11 @@ public class RTorrentClient {
         }
 
 //        System.out.println(files.toXML(true));
-        return root.getChildren().values();
+        return root;
+    }
+
+    public Collection<TorrentEntry> getEntries(String hash) {
+        return getRootEntry(hash).getChildren().values();
     }
 
     public List<TorrentInfo> getTorrents() {
@@ -269,15 +273,66 @@ public class RTorrentClient {
     }
 
     public void setFilePriority(String hash, int file, FilePriority priority) {
+        setFilePriority(hash, file, priority, true);
+    }
+
+    public void setFilePriority(String hash, int file, FilePriority priority, boolean updatePriorities) {
         XmlRpc.Params params = new XmlRpc.Params();
         params.add(hash)
                 .add(file)
                 .add(priority.i)
         ;
-        String s = new RTorrentClient(host, port).executeRequest(new XmlRpc("f.set_priority", params));
-//        System.out.println(s);
-        s = new RTorrentClient(host, port).executeRequest(new XmlRpc("d.update_priorities", hash));
-//        System.out.println(s);
+        String s = executeRequest(new XmlRpc("f.set_priority", params));
+        if (updatePriorities)
+            updateFilePriorities(hash);
+    }
+
+    public TorrentEntry findEntry(String path, TorrentEntry root) {
+        String[] parts = path.split("/");
+        if ((parts.length == 1 && parts[0].isEmpty()) || parts.length == 0)
+            return root;
+
+        Collection<TorrentEntry> entries = root.getChildren().values();
+        outer:
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (part.isEmpty())
+                continue;
+
+            for (TorrentEntry entry : entries) {
+                if (entry.name.equals(part)) {
+                    if (i == parts.length - 1)
+                        return entry;
+
+                    if (!entry.isFolder())
+                        return null;
+
+                    entries = entry.getChildren().values();
+                    continue outer;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void setPriority(String hash, String path, FilePriority priority) {
+        setPriority(hash, findEntry(path, getRootEntry(hash)), priority, true);
+    }
+
+    public void updateFilePriorities(String hash) {
+        executeRequest(new XmlRpc("d.update_priorities", hash));
+    }
+
+    public void setPriority(String hash, TorrentEntry entry, FilePriority priority, boolean updatePriorities) {
+        if (!entry.isFolder()) {
+            setFilePriority(hash, entry.getId(), priority, false);
+        } else {
+            for (TorrentEntry te : entry.getChildren().values()) {
+                setPriority(hash, te, priority, false);
+            }
+        }
+        if (updatePriorities)
+            updateFilePriorities(hash);
     }
 
     public String getDownloadDirectory() {
