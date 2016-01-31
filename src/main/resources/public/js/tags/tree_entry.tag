@@ -48,12 +48,12 @@
             l.sort(function (a, b) {
                 return a.id < b.id ? a : b
             });
-//            console.log('after sort:')
-//            console.log(l)
+//            log('after sort:')
+//            log(l)
             return l;
         };
         that.updateShownChildsCount = function (innerChilds) {
-//            console.log('entry.updateShownChildsCount ' + innerChilds + ' in ' + that.name);
+//            log('entry.updateShownChildsCount ' + innerChilds + ' in ' + that.name);
             if (typeof(innerChilds) != "undefined")
                 that.shownChildren += innerChilds;
 
@@ -65,8 +65,8 @@
             if (e.processed)
                 return;
             that.showChildren = !that.showChildren;
-            console.log('toggleChildren: ' + that.showChildren + ' for element: ' + that.name);
-//            console.log('parent: ' + that.parent.name);
+            log('toggleChildren: ' + that.showChildren + ' for element: ' + that.name);
+//            log('parent: ' + that.parent.name);
             e.processed = true;
             var t = that.shownChildren;
             that.updateShownChildsCount(that.showChildren ? that.hiddenChildren : -that.shownChildren);

@@ -253,13 +253,13 @@
         that.selected = false;
 
         this.on('mount', function () {
-            console.log('on mount torrent: ' + that.hash);
-            console.log(that);
+            log('on mount torrent: ' + that.hash);
+            log(that);
 
-            obs.on('update_' + that.hash, function (data) {
-                console.log('on update torrent: ' + that.hash);
-                console.log(data);
-//                console.log('update_progress: '+progress);
+            obs.set('update_' + that.hash, function (data) {
+                log('on update torrent: ' + that.hash);
+                log(data);
+//                log('update_progress: '+progress);
                 if (that.name != data.name)
                     that.name = data.name;
                 if (that.progress != data.progress)
@@ -287,7 +287,7 @@
                 that.update()
             });
             that.toggleTree = function () {
-                console.log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
+                log('on toggle_tree_' + that.hash + (that.showTree ? ' close' : ' open'));
                 that.showTree = !that.showTree;
 
                 if (!that.tree)
@@ -297,22 +297,22 @@
 
 //                that.update()
             };
-            obs.on('toggle_tree_' + that.hash, that.toggleTree);
-            obs.on('tree_loaded_' + that.hash, function (data) {
-                console.log('tree_loaded ' + data);
-                console.log(data);
+            obs.set('toggle_tree_' + that.hash, that.toggleTree);
+            obs.set('tree_loaded_' + that.hash, function (data) {
+                log('tree_loaded ' + data);
+                log(data);
                 that.tree = riot.mount('#tree_' + that.hash, {entries: data, hash: that.hash, name: that.name})[0];
                 setTimeout(that.tree.toggle, 1);
 //                that.tree.toggle();
             });
-            obs.on('torrent_toggle_' + that.hash, function () {
+            obs.set('torrent_toggle_' + that.hash, function () {
                 if (that.status == 'STOPPED' || that.status == 'PAUSED')
                     obs.trigger('torrent.start', {hash: that.hash});
                 else
                     obs.trigger('torrent.stop', {hash: that.hash});
             });
-            obs.on('click_' + that.hash, function () {
-                console.log('toggle_tree_' + that.hash);
+            obs.set('click_' + that.hash, function () {
+                log('toggle_tree_' + that.hash);
                 that.toggleTree();
                 that.selected = !that.selected;
                 that.update();
@@ -358,14 +358,14 @@
         };
 
         pauseTorrent = function (hash) {
-            console.log('pause ' + hash);
+            log('pause ' + hash);
             obs.trigger('torrent_toggle_' + hash);
             event.processed = true;
             return true;
         };
 
         deleteTorrent = function (hash, name) {
-            console.log('deleteTorrent ' + hash);
+            log('deleteTorrent ' + hash);
             obs.trigger('torrent.delete', {hash: hash, name: name});
             event.processed = true;
             return true;

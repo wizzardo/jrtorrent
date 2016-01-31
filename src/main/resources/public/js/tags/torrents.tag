@@ -125,7 +125,7 @@
         var that = this;
 
         that.on('mount', function () {
-            obs.on('removeTorrent', function (data) {
+            obs.set('removeTorrent', function (data) {
                 var torrents = that.opts.torrents;
                 for (var i = 0; i < torrents.length; i++) {
                     if (torrents[i].hash == data.hash) {
@@ -135,9 +135,9 @@
                 }
                 that.update();
             });
-            obs.on('addTorrent', function (data) {
-                console.log('addTorrent')
-                console.log(data)
+            obs.set('addTorrent', function (data) {
+                log('addTorrent')
+                log(data)
 
                 that.opts.torrents.splice(0, 0, data);
                 that.update();

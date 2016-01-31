@@ -29,15 +29,15 @@
         });
 
         that.updateShownChildsCount = function (innerChilds) {
-//            console.log('tree.updateShownChildsCount ' + innerChilds)
+//            log('tree.updateShownChildsCount ' + innerChilds)
             if (typeof(innerChilds) != "undefined")
                 that.totalChildrenToShow = that.totalChildrenToShow + innerChilds;
-            console.log('tree.totalChildrenToShow ' + that.totalChildrenToShow)
+            log('tree.totalChildrenToShow ' + that.totalChildrenToShow)
         };
 
         that.toggle = function () {
             that.openned = !that.openned;
-            console.log('toggle tree: ' + that.openned);
+            log('toggle tree: ' + that.openned);
             if (!that.openned) {
                 that.totalChildrenHidden = that.totalChildrenToShow;
                 that.totalChildrenToShow = 0;

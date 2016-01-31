@@ -48,7 +48,7 @@
         this.mixin(mdlMixin);
 
         this.on('mount', function () {
-            console.log('modal mounted')
+            log('modal mounted')
             that.overlay.addEventListener("transitionend", function () {
                 if (!that.show) {
                     that.display = false;
