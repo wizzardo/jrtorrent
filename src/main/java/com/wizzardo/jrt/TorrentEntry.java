@@ -14,7 +14,7 @@ public class TorrentEntry {
     private int chunksCount;
     private int chunksCompleted;
     private long sizeBytes;
-    private int id;
+    private int id = -1;
 
     public final String name;
 
