@@ -66,12 +66,16 @@
 
             that.show = false;
             that.update();
+            if (that.onHide)
+                that.onHide();
         };
         that.open = function () {
             obs.trigger('modal.closeAll');
             that.display = true;
             that.show = true;
             that.update();
+            if (that.onShow)
+                that.onShow();
         };
         that.toggle = function () {
             if(that.show)
