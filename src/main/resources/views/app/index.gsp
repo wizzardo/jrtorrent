@@ -147,12 +147,15 @@
             console.log(message)
     }
 
-    riot.compile(function() {
+    riot.compile(function () {
         obs = initObserver();
         connect();
         riot.mount('add_button');
         deleteModal = riot.mount('#delete_modal')[0];
-    })
+    });
+    setInterval(function () {
+        sendCommand('ping')
+    }, 15000);
 </script>
 </body>
 </html>

@@ -46,6 +46,8 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
             boolean withData = json.getAsJsonObject("args").getAsBoolean("withData", Boolean.FALSE);
             rtorrentService.delete(hash, withData);
         });
+
+        handlers.put("ping", (listener, json) -> {});
     }
 
     @Override
