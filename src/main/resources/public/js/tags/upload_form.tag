@@ -70,6 +70,9 @@
     <script>
         var that = this;
         this.on('mount', function () {
+            that.parent.onShow = function () {
+                that.url.focus();
+            };
             that.file.onchange = function () {
                 that.fileName.value = this.files[0].name;
             };
