@@ -15,6 +15,10 @@
         font-family: 'Roboto', sans-serif;
     }
 
+    .app {
+        margin-bottom: 100px;
+    }
+
     .mdl-layout__drawer-button > .material-icons {
         margin-top: 10px;
     }
