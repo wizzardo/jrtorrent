@@ -66,23 +66,27 @@
 
             that.show = false;
             that.update();
-            if (that.onHide)
-                that.onHide();
+            that.trigger('hide')
         };
         that.open = function () {
             obs.trigger('modal.closeAll');
             that.display = true;
             that.show = true;
             that.update();
-            if (that.onShow)
-                that.onShow();
+            that.trigger('show')
         };
         that.toggle = function () {
-            if(that.show)
+            if (that.show)
                 that.close();
             else
                 that.open();
-        }
+        };
+        that.onShow = function (cb) {
+            that.on('show', cb);
+        };
+        that.onHide = function (cb) {
+            that.on('hide', cb);
+        };
     </script>
 
 </modal>
