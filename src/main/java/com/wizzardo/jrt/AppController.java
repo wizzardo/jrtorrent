@@ -63,6 +63,7 @@ public class AppController extends Controller {
             request.prepareMultiPart();
 
             String link = request.entry("url").asString();
+            boolean autostart = "on".equals(request.entry("autostart").asString());
             byte[] file = request.entry("file").asBytes();
 
 //            System.out.println("link: " + link);
@@ -72,9 +73,9 @@ public class AppController extends Controller {
                 File tempFile = File.createTempFile("jrt", "torrent");
                 tempFile.deleteOnExit();
                 FileTools.bytes(tempFile, file);
-                rtorrentService.load(tempFile.getAbsolutePath());
+                rtorrentService.load(tempFile.getAbsolutePath(), autostart);
             } else if (!link.isEmpty()) {
-                rtorrentService.load(link);
+                rtorrentService.load(link, autostart);
             } else {
                 throw new IllegalArgumentException("link and file are empty");
             }

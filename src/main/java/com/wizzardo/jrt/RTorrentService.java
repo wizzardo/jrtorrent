@@ -45,6 +45,10 @@ public class RTorrentService implements Service {
         client.load(torrent);
     }
 
+    public void load(String torrent, boolean autostart) {
+        client.load(torrent, autostart);
+    }
+
     public void start(String torrent) {
         client.start(torrent);
     }

@@ -86,6 +86,10 @@ public class RTorrentClient {
     }
 
     public void load(String torrent) {
+        load(torrent, true);
+    }
+
+    public void load(String torrent, boolean autostart) {
         List<TorrentInfo> before = getTorrents();
         executeRequest(new XmlRpc("load", torrent));
         delayed(2000, client -> {
@@ -95,15 +99,18 @@ public class RTorrentClient {
             }
             TorrentInfo ti = after.get(0);
             System.out.println("start: " + ti.getHash());
-            client.start(ti);
+            if (autostart || torrent.startsWith("magnet"))
+                client.start(ti);
+
             if (torrent.startsWith("magnet")) {
-                delayed(5000, c -> {
-                    System.out.println("start: " + ti.getHash());
-                    c.start(ti);
-                    delayed(15000, cc -> {
-                        System.out.println("remove file: " + ti.getHash() + ".meta");
-                        new File(cc.getDownloadDirectory(), ti.getHash() + ".meta").delete();
+                if (autostart)
+                    delayed(5000, c -> {
+                        System.out.println("start: " + ti.getHash());
+                        c.start(ti);
                     });
+                delayed(20000, cc -> {
+                    System.out.println("remove file: " + ti.getHash() + ".meta");
+                    new File(cc.getDownloadDirectory(), ti.getHash() + ".meta").delete();
                 });
             }
         });

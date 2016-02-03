@@ -17,6 +17,11 @@
             </div>
         </div>
 
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="autostart">
+            <input type="checkbox" id="autostart" name="autostart" class="mdl-checkbox__input" checked>
+            <span class="mdl-checkbox__label">Autostart</span>
+        </label>
+
         <br/>
 
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored download" onclick="{sendForm}">
