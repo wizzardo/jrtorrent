@@ -14,6 +14,8 @@
     <torrents>torrents</torrents>
 </div>
 
+<add_button>add</add_button>
+
 <modal id="add_modal">
     <upload_form>upload_form</upload_form>
 </modal>

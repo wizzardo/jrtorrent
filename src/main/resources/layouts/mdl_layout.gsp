@@ -42,7 +42,6 @@
 
             <div class="mdl-layout-spacer"></div>
             <nav class="mdl-navigation">
-                <add_button>add</add_button>
             </nav>
         </div>
     </header>
