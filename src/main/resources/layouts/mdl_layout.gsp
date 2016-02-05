@@ -23,12 +23,6 @@
         margin-top: 10px;
     }
 
-    .mdl-layout {
-        max-width: 1280px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
     .page-content {
         width: 920px;
         margin-left: auto;
