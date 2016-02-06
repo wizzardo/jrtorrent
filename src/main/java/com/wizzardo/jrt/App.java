@@ -8,6 +8,7 @@ import com.wizzardo.http.framework.WebApplication;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
+import com.wizzardo.jmx.GcStatsRegistrar;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -33,6 +34,7 @@ public class App {
         });
         server.setEnvironment(environment);
         server.start();
+        GcStatsRegistrar.registerBeans();
     }
 
     public static void main(String[] args) {
