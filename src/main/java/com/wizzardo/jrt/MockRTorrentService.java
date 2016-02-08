@@ -83,6 +83,10 @@ public class MockRTorrentService extends RTorrentService {
         list.add(createTorrent(counter.getAndIncrement()));
     }
 
+    public void load(String torrent, boolean autostart) {
+        load(torrent);
+    }
+
     @Override
     public void start(String torrent) {
         find(torrent).setStatus(TorrentInfo.Status.DOWNLOADING);
