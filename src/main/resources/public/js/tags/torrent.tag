@@ -76,6 +76,10 @@
             transition: left .2s cubic-bezier(.4, 0, .2, 1);
         }
 
+        .torrent:hover {
+            cursor: pointer;
+        }
+
         .torrent > div {
             display: inline-block;
         }

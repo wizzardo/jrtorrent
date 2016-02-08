@@ -1,7 +1,7 @@
 <tree_entry>
     <div onclick="{toggleChildren}">
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
-        {isFolder?name:''}
+        <span>{isFolder?name:''}</span>
         <a if="{!isFolder}" href="{path() + '?token=' + config.token}" onclick="openLink('{path()}?token=' + config.token)">{name}</a>
         <div class="resizeable children" style="height: {30 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
@@ -14,6 +14,10 @@
             margin-left: 10px;
             padding-top: 10px;
             font-size: 14px;
+        }
+
+        span:hover {
+            cursor: pointer;
         }
 
         .material-icons {
