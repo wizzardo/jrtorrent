@@ -35,18 +35,6 @@ public class AppController extends Controller {
     }
 
     public Renderer index() {
-        List<TorrentInfo> torrents = rtorrentService.list();
-        model().append("torrents", torrents);
-
-        Map<String, Collection<TorrentEntry>> entries = new HashMap<>();
-        model().append("entries", entries);
-        for (TorrentInfo torrent : torrents) {
-            entries.put(torrent.getHash(), rtorrentService.entries(torrent));
-        }
-        return renderView("index__");
-    }
-
-    public Renderer riotIndex() {
         model().append("config", JsonTools.serialize(new CollectionTools.MapBuilder<>()
                         .add("ws", mapping.getUrlTemplate("ws").getRelativeUrl())
                         .add("addTorrent", mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl())

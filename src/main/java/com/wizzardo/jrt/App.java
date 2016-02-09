@@ -25,7 +25,7 @@ public class App {
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
 
             app.getUrlMapping()
-                    .append("/", AppController.class, "riotIndex")
+                    .append("/", AppController.class, "index")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler(AppController.class, "addTorrent")))
                     .append("/downloads/*", new FileTreeHandler(downloads, "/downloads", "downloads")
                             .setShowFolder(false))
