@@ -44,13 +44,14 @@
             var that = this;
             this.on('mount', function () {
 //                log('on mount mixin');
-                var l = document.querySelectorAll(that.root.tagName.toLowerCase() + ' .mdl-textfield');
-                for (i = 0; i < l.length; i++) {
-                    var el = l[i];
-//                    log('reregister ' + el);
-                    el.dataset.upgraded = '';
-                    componentHandler.upgradeAllRegistered(el);
-                }
+                ['.mdl-textfield', '.mdl-menu', '.mdl-icon-toggle', '.mdl-button'].forEach(function(it){
+                    var l = that.root.querySelectorAll(it+':not(.is-upgraded)');
+                    for (i = 0; i < l.length; i++) {
+                        var el = l[i];
+                        el.dataset.upgraded = '';
+                        componentHandler.upgradeAllRegistered(el);
+                    }
+                });
             })
         }
     };
