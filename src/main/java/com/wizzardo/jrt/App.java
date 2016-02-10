@@ -2,6 +2,7 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.http.FileTreeHandler;
 import com.wizzardo.http.MultipartHandler;
+import com.wizzardo.http.RestHandler;
 import com.wizzardo.http.framework.ControllerHandler;
 import com.wizzardo.http.framework.Environment;
 import com.wizzardo.http.framework.WebApplication;
@@ -27,8 +28,8 @@ public class App {
             app.getUrlMapping()
                     .append("/", AppController.class, "index")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler(AppController.class, "addTorrent")))
-                    .append("/downloads/*", new FileTreeHandler(downloads, "/downloads", "downloads")
-                            .setShowFolder(false))
+                    .append("/downloads/*", new RestHandler().get(new FileTreeHandler(downloads, "/downloads", "downloads")
+                            .setShowFolder(false)))
                     .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
             ;
         });
