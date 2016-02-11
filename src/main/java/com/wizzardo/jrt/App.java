@@ -28,7 +28,7 @@ public class App {
             app.getUrlMapping()
                     .append("/", AppController.class, "index")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler(AppController.class, "addTorrent")))
-                    .append("/downloads/*", new RestHandler().get(new FileTreeHandler(downloads, "/downloads", "downloads")
+                    .append("/downloads/*", new RestHandler("downloads").get(new FileTreeHandler(downloads, "/downloads")
                             .setShowFolder(false)))
                     .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
             ;
