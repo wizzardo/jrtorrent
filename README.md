@@ -9,13 +9,16 @@ this project is a web-interface for rtorrent
 ```bash
 git clone https://github.com/wizzardo/jrtorrent.git
 cd jrtorrent
-./gradlew run
+./gradlew --refresh-dependencies fatJar
+java -Xmx32m -jar build/libs/jrtorrent-all-0.1.jar
 ```
 
 #### Run with screen
 ```bash
-cd $HOME/ && screen -dmS -X rtorrent
-cd $HOME/jrtorrent && screen -dmS -X ./gradlew run
+cd $HOME/ && screen -dmS rtorrent rtorrent
+cd $HOME/jrtorrent 
+./gradlew --refresh-dependencies fatJar
+screen -dmS jrtorrent java -Xmx32m -jar build/libs/jrtorrent-all-0.1.jar
 ```
 
 #### rtorrent Installation
@@ -34,7 +37,6 @@ server {
     host = '0.0.0.0'
     port = 8080
     ioWorkersCount = 1
-    workersCount = 1
     ttl = 5 * 60 * 1000
     context = 'jrt'
 }
