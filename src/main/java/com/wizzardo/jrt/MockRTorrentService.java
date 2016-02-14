@@ -22,7 +22,7 @@ public class MockRTorrentService extends RTorrentService {
     public MockRTorrentService() {
         List<TorrentInfo> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            l.add(createTorrent(counter.getAndIncrement()));
+            load("");
         }
         list = l;
         Thread thread = new Updater(() -> {
@@ -33,6 +33,9 @@ public class MockRTorrentService extends RTorrentService {
             }
             while (true) {
                 for (TorrentInfo ti : list) {
+                    if (ti.getStatus() != TorrentInfo.Status.DOWNLOADING)
+                        continue;
+
 //                    System.out.println("update torrent, set downloaded to " + (info.getDownloaded() == info.getSize() ? 0 : info.getDownloaded() + 1));
                     if (ti.getDownloaded() == ti.getSize()) {
                         ti.setDownloaded(0);
@@ -80,7 +83,7 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void load(String torrent) {
-        list.add(createTorrent(counter.getAndIncrement()));
+        list.add(0, createTorrent(counter.getAndIncrement()));
     }
 
     public void load(String torrent, boolean autostart) {
@@ -94,7 +97,7 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void stop(String torrent) {
-        find(torrent).setStatus(TorrentInfo.Status.PAUSED);
+        find(torrent).setStatus(TorrentInfo.Status.STOPPED);
     }
 
     public List<TorrentInfo> list() {
