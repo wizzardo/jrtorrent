@@ -55,6 +55,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         if (listeners.isEmpty())
             rtorrentService.resumeUpdater();
         super.onConnect(listener);
+        System.out.println("onConnect. listeners: " + listeners.size());
     }
 
     @Override
@@ -62,6 +63,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         super.onDisconnect(listener);
         if (listeners.isEmpty())
             rtorrentService.pauseUpdater();
+        System.out.println("onDisconnect. listeners: " + listeners.size());
     }
 
     private JsonObject toJson(TorrentInfo ti) {
