@@ -84,7 +84,8 @@ public class MockRTorrentService extends RTorrentService {
     @Override
     public void load(String torrent) {
         TorrentInfo info = createTorrent(counter.getAndIncrement());
-        appWebSocketHandler.onAdd(info);
+        if (appWebSocketHandler != null)
+            appWebSocketHandler.onAdd(info);
         list.add(0, info);
     }
 
