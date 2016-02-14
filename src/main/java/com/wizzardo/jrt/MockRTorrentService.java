@@ -15,16 +15,14 @@ import static com.wizzardo.tools.misc.With.with;
  * Created by wizzardo on 07.12.15.
  */
 public class MockRTorrentService extends RTorrentService {
-    volatile List<TorrentInfo> list;
+    volatile List<TorrentInfo> list = new ArrayList<>();
     final AtomicInteger counter = new AtomicInteger();
     AppWebSocketHandler appWebSocketHandler;
 
     public MockRTorrentService() {
-        List<TorrentInfo> l = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             load("");
         }
-        list = l;
         Thread thread = new Updater(() -> {
             try {
                 Thread.sleep(1000); // workaround to wait until websocket handler will be setted
