@@ -4,9 +4,9 @@ import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
 import com.wizzardo.tools.collections.lazy.Lazy;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.wizzardo.tools.misc.With.with;
@@ -15,7 +15,7 @@ import static com.wizzardo.tools.misc.With.with;
  * Created by wizzardo on 07.12.15.
  */
 public class MockRTorrentService extends RTorrentService {
-    volatile List<TorrentInfo> list = new ArrayList<>();
+    volatile List<TorrentInfo> list = new CopyOnWriteArrayList<>();
     final AtomicInteger counter = new AtomicInteger();
     AppWebSocketHandler appWebSocketHandler;
 
@@ -40,7 +40,7 @@ public class MockRTorrentService extends RTorrentService {
                         ti.setUploaded(0);
                         ti.setUploadSpeed(1);
                     } else {
-                        ti.setDownloaded(ti.getDownloaded() + 1);
+                        ti.setDownloaded(ti.getDownloadSpeed());
                         ti.setUploaded(ti.getUploaded() + ti.getUploadSpeed());
                         ti.setUploadSpeed(ti.getUploadSpeed() + 5);
                     }
@@ -76,12 +76,16 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void delete(String torrent, boolean withData) {
-        list.removeIf(ti -> ti.getHash().equals(torrent));
+        TorrentInfo info = find(torrent);
+        list.remove(info);
+        appWebSocketHandler.onRemove(info);
     }
 
     @Override
     public void load(String torrent) {
-        list.add(0, createTorrent(counter.getAndIncrement()));
+        TorrentInfo info = createTorrent(counter.getAndIncrement());
+        appWebSocketHandler.onAdd(info);
+        list.add(0, info);
     }
 
     public void load(String torrent, boolean autostart) {
@@ -90,12 +94,20 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void start(String torrent) {
-        find(torrent).setStatus(TorrentInfo.Status.DOWNLOADING);
+        TorrentInfo info = find(torrent);
+        info.setDownloadSpeed(1);
+        info.setUploadSpeed(1);
+        info.setStatus(TorrentInfo.Status.DOWNLOADING);
+        appWebSocketHandler.onUpdate(info);
     }
 
     @Override
     public void stop(String torrent) {
-        find(torrent).setStatus(TorrentInfo.Status.STOPPED);
+        TorrentInfo info = find(torrent);
+        info.setDownloadSpeed(0);
+        info.setUploadSpeed(0);
+        info.setStatus(TorrentInfo.Status.STOPPED);
+        appWebSocketHandler.onUpdate(info);
     }
 
     public List<TorrentInfo> list() {
