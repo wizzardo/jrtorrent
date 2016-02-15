@@ -40,7 +40,7 @@ public class MockRTorrentService extends RTorrentService {
                         ti.setUploaded(0);
                         ti.setUploadSpeed(1);
                     } else {
-                        ti.setDownloaded(ti.getDownloadSpeed());
+                        ti.setDownloaded(ti.getDownloaded() + ti.getDownloadSpeed());
                         ti.setUploaded(ti.getUploaded() + ti.getUploadSpeed());
                         ti.setUploadSpeed(ti.getUploadSpeed() + 5);
                     }
