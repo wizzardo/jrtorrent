@@ -79,7 +79,7 @@
         };
 
         that.path = function () {
-            return that.parent.path() + '/' + that.name
+            return that.parent.path() + '/' + encodeURIComponent(that.name)
         };
 
         openLink = function (url) {

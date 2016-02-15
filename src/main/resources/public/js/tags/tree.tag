@@ -48,7 +48,7 @@
         };
 
         that.path = function () {
-            return config.downloadsPath + (that.opts.entries.length != 1 ? '/' + that.opts.name : '')
+            return config.downloadsPath + (that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : '')
         };
 
     </script>
