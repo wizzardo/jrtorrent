@@ -53,7 +53,7 @@ jrt {
 #### nginx config (optional)
 ```
     location /jrt {
-        proxy_pass   http://127.0.0.1:8080/jrt;
+        proxy_pass   http://127.0.0.1:8080$request_uri;
 
         proxy_http_version 1.1;
         proxy_set_header  Upgrade $http_upgrade;
