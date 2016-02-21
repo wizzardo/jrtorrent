@@ -24,7 +24,7 @@
     <delete_form>delete_form</delete_form>
 </modal>
 
-<g:set var="noCache" value="${Holders.environment == Environment.DEVELOPMENT ? [r: System.currentTimeMillis()] : [:]}" />
+<g:set var="noCache" value="${Holders.environment == Environment.DEVELOPMENT ? [r: System.currentTimeMillis()] : [:]}"/>
 
 <script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrents.tag"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrent.tag"])}" type="riot/tag"></script>
@@ -34,6 +34,7 @@
 <script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/upload_form.tag"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/delete_form.tag"])}" type="riot/tag"></script>
 <script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/add_button.tag"])}" type="riot/tag"></script>
+<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/mdl_select.tag"])}" type="riot/tag"></script>
 
 <script>
     var debug = false;
@@ -44,8 +45,8 @@
             var that = this;
             this.on('mount', function () {
 //                log('on mount mixin');
-                ['.mdl-textfield', '.mdl-menu', '.mdl-icon-toggle', '.mdl-button'].forEach(function(it){
-                    var l = that.root.querySelectorAll(it+':not(.is-upgraded)');
+                ['.mdl-textfield', '.mdl-menu', '.mdl-icon-toggle', '.mdl-button'].forEach(function (it) {
+                    var l = that.root.querySelectorAll(it + ':not(.is-upgraded)');
                     for (i = 0; i < l.length; i++) {
                         var el = l[i];
                         el.dataset.upgraded = '';
@@ -148,6 +149,23 @@
     function log(message) {
         if (debug)
             console.log(message)
+    }
+
+    function mountMdlSelect(after, conf) {
+        var id = after.id;
+        if (!id) {
+            id = ('r_' + Math.random()).replace('\.', '');
+            after.id = id;
+        }
+        var select = document.createElement('mdl_select');
+        select.id = 'mdl_select_' + id;
+        if (after.nextSibling)
+            after.parentNode.insertBefore(select, after.nextSibling);
+        else
+            after.parentNode.appendChild(select);
+
+        conf['for'] = id;
+        riot.mount(select, conf);
     }
 
     riot.compile(function () {

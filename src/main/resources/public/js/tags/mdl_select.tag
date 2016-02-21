@@ -20,7 +20,7 @@
 
             menu.MaterialMenu.hide();
             setTimeout(function () {
-                that.unmount(true);
+                that.unmount();
             }, 1000);
         };
 
@@ -34,14 +34,12 @@
         });
         this.on('unmount', function () {
             document.removeEventListener('click', callback);
-            if (that.opts.onUnMount)
-                that.opts.onUnMount()
         });
 
         that.click = function (i) {
             log(i);
             if (that.opts.onSelect)
-                that.opts.onSelect(+i.target.dataset.n)
+                that.opts.onSelect(+i.target.dataset.n, i)
         };
 
     </script>
