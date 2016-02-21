@@ -2,7 +2,15 @@
     <div onclick="{toggleChildren}">
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         <span>{isFolder?name:''}</span>
-        <a if="{!isFolder}" href="{path() + '?token=' + config.token}" onclick="openLink('{path()}?token=' + config.token)">{name}</a>
+        <a if="{!isFolder}" href="{path() + '?token=' + config.token}"
+           onclick="openLink('{path()}?token=' + config.token)">{name}</a>
+
+        <span class="priority">
+            <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
+                {priority || 'NORMAL'}
+            </button>
+        </span>
+
         <div class="resizeable children" style="height: {30 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
@@ -31,6 +39,15 @@
 
         .resizeable {
             transition: height .2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .mdl-button {
+            line-height: 14px;
+            height: 14px;
+        }
+
+        .priority{
+            float: right;
         }
     </style>
 
@@ -80,6 +97,31 @@
 
         that.path = function () {
             return that.parent.path() + '/' + encodeURIComponent(that.name)
+        };
+
+        that.mountSelect = function (e) {
+            var button = e.target;
+            var l = ['OFF', 'NORMAL', 'HIGH'];
+
+            mountMdlSelect(button, {
+                items: l,
+                onSelect: function (i, e) {
+                    e.processed = true;
+                    that.setPriority(l[i])
+                }
+            });
+            e.processed = true;
+        };
+
+        that.setPriority = function(value){
+            if(that.isFolder){
+                values(that.children).forEach(function(it){
+                    it.priority = value;
+                })
+            }
+
+            that.priority = value;
+            that.update();
         };
 
         openLink = function (url) {
