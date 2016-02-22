@@ -46,7 +46,7 @@
             height: 14px;
         }
 
-        .priority{
+        .priority {
             float: right;
         }
     </style>
@@ -113,15 +113,25 @@
             e.processed = true;
         };
 
-        that.setPriority = function(value){
-            if(that.isFolder){
-                values(that.children).forEach(function(it){
-                    it.priority = value;
-                })
+        that.setPriority = function (value) {
+            if (that.isFolder) {
+                var sp = function (entry) {
+                    if (entry.children) {
+                        for (var key in entry.children) {
+                            sp(entry.children[key])
+                        }
+                    }
+                    entry.priority = value;
+                };
+                sp(that);
             }
 
-            that.priority = value;
+            that.parent.setPriorityForEntry(that.name, value);
             that.update();
+        };
+
+        that.setPriorityForEntry = function (entry, value) {
+            that.children[entry].priority = value
         };
 
         openLink = function (url) {

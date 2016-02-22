@@ -47,6 +47,14 @@
             that.update();
         };
 
+        that.setPriorityForEntry = function (entry, value) {
+            for (var i = 0; i < opts.entries.length; i++) {
+                var it = opts.entries[i];
+                if (it.name == entry)
+                    it.priority = value;
+            }
+        };
+
         that.path = function () {
             return config.downloadsPath + (that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : '')
         };
