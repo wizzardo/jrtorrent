@@ -40,6 +40,14 @@
                 max-width: 600px;
             }
         }
+        @media screen and (max-width: 800px) {
+            .overlay {
+                transition: none;
+            }
+            .content {
+                box-shadow: none;
+            }
+        }
     </style>
 
     <script>
@@ -53,6 +61,9 @@
                 if (!that.show) {
                     that.display = false;
                     that.update();
+                    that.trigger('hide')
+                } else {
+                    that.trigger('show')
                 }
             }, false);
         });
@@ -66,14 +77,12 @@
 
             that.show = false;
             that.update();
-            that.trigger('hide')
         };
         that.open = function () {
             obs.trigger('modal.closeAll');
             that.display = true;
             that.show = true;
             that.update();
-            that.trigger('show')
         };
         that.toggle = function () {
             if (that.show)
