@@ -9,6 +9,7 @@ import com.wizzardo.http.framework.template.Renderer;
 import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
+import com.wizzardo.tools.misc.With;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class AppController extends Controller {
 
     public Renderer addTorrent() throws IOException {
         String link = request.entry("url").asString();
-        boolean autostart = "on".equals(request.entry("autostart").asString());
+        boolean autostart = With.map(request.entry("autostart"), it -> it != null && "on".equals(it.asString()));
         byte[] file = request.entry("file").asBytes();
 
         if (file.length != 0) {
