@@ -6,7 +6,9 @@ import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.Service;
 import com.wizzardo.tools.collections.lazy.Lazy;
 import com.wizzardo.tools.evaluation.Config;
+import com.wizzardo.tools.misc.Unchecked;
 
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -62,6 +64,10 @@ public class RTorrentService implements Service {
             client.removeWithData(torrent);
         else
             client.remove(torrent);
+    }
+
+    public void setPriority(String hash, String path, FilePriority priority) {
+        client.setPriority(hash, client.findEntry(Unchecked.call(() -> URLDecoder.decode(path, "utf-8")), client.getRootEntry(hash)), priority, true);
     }
 
     public void pauseUpdater() {

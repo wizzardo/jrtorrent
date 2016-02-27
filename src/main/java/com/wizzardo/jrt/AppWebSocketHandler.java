@@ -47,7 +47,16 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
             rtorrentService.delete(hash, withData);
         });
 
-        handlers.put("ping", (listener, json) -> {});
+        handlers.put("setPriority", (listener, json) -> {
+            JsonObject args = json.getAsJsonObject("args");
+            String hash = args.getAsString("hash");
+            String path = args.getAsString("path");
+            FilePriority priority = FilePriority.valueOf(args.getAsString("priority"));
+            rtorrentService.setPriority(hash, path, priority);
+        });
+
+        handlers.put("ping", (listener, json) -> {
+        });
     }
 
     @Override

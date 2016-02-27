@@ -111,6 +111,10 @@ public class MockRTorrentService extends RTorrentService {
         appWebSocketHandler.onUpdate(info);
     }
 
+    @Override
+    public void setPriority(String hash, String path, FilePriority priority) {
+    }
+
     public List<TorrentInfo> list() {
         return list;
     }
