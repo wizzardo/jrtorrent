@@ -19,7 +19,6 @@
     <script>
         var that = this;
         var opened = false;
-        var hash = opts.hash;
         var totalChildrenToShow = 0;
         var totalChildrenHidden = 0;
 
@@ -55,8 +54,16 @@
             }
         };
 
+        that.link = function () {
+            return config.downloadsPath + that.path()
+        };
+
         that.path = function () {
-            return config.downloadsPath + (that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : '')
+            return that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : ''
+        };
+
+        that.hash = function () {
+            return that.opts.hash;
         };
 
     </script>

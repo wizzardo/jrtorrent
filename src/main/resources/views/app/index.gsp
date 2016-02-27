@@ -108,6 +108,10 @@
             log('sendDeleteTorrent ' + data.hash + " " + data.withData);
             sendCommand('delete', data)
         });
+        obs.on('torrent.setPriority', function (data) {
+            log('torrent.setPriority ' + data.hash + " " + data.path + " " + data.priority);
+            sendCommand('setPriority', data)
+        });
         obs.set = function (eventName, callback) {
             obs.off(eventName);
             obs.on(eventName, callback)

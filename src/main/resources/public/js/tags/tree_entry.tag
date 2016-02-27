@@ -3,7 +3,7 @@
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         <span>{isFolder?name:''}</span>
         <a if="{!isFolder}" href="{path() + '?token=' + config.token}"
-           onclick="openLink('{path()}?token=' + config.token)">{name}</a>
+           onclick="openLink('{link()}?token=' + config.token)">{name}</a>
 
         <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
@@ -101,8 +101,16 @@
             that.update()
         };
 
+        that.link = function () {
+            return that.parent.link() + '/' + encodeURIComponent(that.name)
+        };
+
         that.path = function () {
             return that.parent.path() + '/' + encodeURIComponent(that.name)
+        };
+
+        that.hash = function () {
+            return that.parent.hash()
         };
 
         that.mountSelect = function (e) {
@@ -114,6 +122,8 @@
                 onSelect: function (i, e) {
                     e.processed = true;
                     that.setPriority(l[i])
+                    log('set priority to ' + l[i] + ' for ' + that.path() + ' and hash:' + that.hash());
+                    obs.trigger('torrent.setPriority', {hash: that.hash(), path: that.path(), priority: l[i]})
                 }
             });
             e.processed = true;
