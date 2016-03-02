@@ -121,9 +121,16 @@
                 items: l,
                 onSelect: function (i, e) {
                     e.processed = true;
-                    that.setPriority(l[i])
-                    log('set priority to ' + l[i] + ' for ' + that.path() + ' and hash:' + that.hash());
-                    obs.trigger('torrent.setPriority', {hash: that.hash(), path: that.path(), priority: l[i]})
+                    var priority = l[i];
+                    obs.trigger('torrent.setPriority', {
+                        hash: that.hash(),
+                        path: that.path(),
+                        priority: priority,
+                        callbackId: registerCallback(function () {
+                            that.setPriority(priority);
+                            log('set priority to ' + priority + ' for ' + that.path() + ' and hash:' + that.hash());
+                        })
+                    })
                 }
             });
             e.processed = true;
@@ -143,7 +150,7 @@
             }
 
             that.parent.setPriorityForEntry(that.name, value);
-            that.update();
+            that.parent.update();
         };
 
         that.setPriorityForEntry = function (entry, value) {

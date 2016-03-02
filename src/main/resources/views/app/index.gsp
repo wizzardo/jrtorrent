@@ -84,6 +84,11 @@
             obs.trigger('removeTorrent', data.torrent)
     };
 
+    handlers.callback = function (data) {
+        if (obs)
+            obs.trigger('callback.' + data.callbackId, data)
+    };
+
     function initObserver() {
         log('initObserver');
         var obs = riot.observable();
@@ -170,6 +175,12 @@
 
         conf['for'] = id;
         riot.mount(select, conf);
+    }
+
+    function registerCallback(callback) {
+        var callbackId = Math.random() + "";
+        obs.one('callback.' + callbackId, callback);
+        return callbackId
     }
 
     riot.compile(function () {
