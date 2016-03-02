@@ -53,6 +53,11 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
             String path = args.getAsString("path");
             FilePriority priority = FilePriority.valueOf(args.getAsString("priority"));
             rtorrentService.setPriority(hash, path, priority);
+            sendMessage(listener, new JsonObject()
+                            .append("command", "callback")
+                            .append("callbackId", args.getAsString("callbackId"))
+                            .append("result", "ok")
+            );
         });
 
         handlers.put("ping", (listener, json) -> {
