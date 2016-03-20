@@ -201,6 +201,7 @@ public class RTorrentClient {
             TorrentEntry entry = root;
             for (int i = 0; i < path.size(); i++) {
                 String name = path.get(i).get(0).get(0).text();
+                name = Node.unescape(name);
                 entry = entry.getOrCreate(name);
             }
             entry.setId(id++);
@@ -241,7 +242,7 @@ public class RTorrentClient {
         List<TorrentInfo> torrents = CollectionTools.collect(methodResponse.get(0).get(0).get(0).get(0).get(0).children(), data -> {
             data = data.get(0).get(0);
             TorrentInfo info = new TorrentInfo();
-            info.setName(data.get(0).get(0).text());
+            info.setName(Node.unescape(data.get(0).get(0).text()));
             info.setHash(data.get(1).get(0).text());
             info.setSize(Long.parseLong(data.get(2).get(0).text()));
             info.setDownloaded(Long.parseLong(data.get(3).get(0).text()));
