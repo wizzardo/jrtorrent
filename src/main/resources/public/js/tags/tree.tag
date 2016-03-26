@@ -54,10 +54,6 @@
             }
         };
 
-        that.link = function () {
-            return config.downloadsPath + that.path()
-        };
-
         that.path = function () {
             return that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : ''
         };

@@ -2,8 +2,7 @@
     <div onclick="{toggleChildren}">
         <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
         <span>{isFolder?name:''}</span>
-        <a if="{!isFolder}" href="{path() + '?token=' + config.token}"
-           onclick="openLink('{link()}?token=' + config.token)">{name}</a>
+        <a if="{!isFolder}" href="{link()}" onclick="openLink('{link()}')">{name}</a>
 
         <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
@@ -102,7 +101,7 @@
         };
 
         that.link = function () {
-            return that.parent.link() + '/' + encodeURIComponent(that.name)
+            return config.downloadsPath + that.path() + '?token=' + config.token;
         };
 
         that.path = function () {
