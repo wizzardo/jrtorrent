@@ -5,7 +5,6 @@ import com.wizzardo.tools.misc.SoftThreadLocal;
 import com.wizzardo.tools.security.Base64;
 import com.wizzardo.tools.xml.Node;
 
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,19 +15,13 @@ import java.util.Map;
  */
 public class XmlRpc {
 
-    private static SoftThreadLocal<StringBuilder> stringBuilderThreadLocal = new SoftThreadLocal<StringBuilder>() {
-        @Override
-        protected StringBuilder init() {
-            return new StringBuilder();
-        }
-
-        @Override
-        public StringBuilder getValue() {
-            StringBuilder value = super.getValue();
-            value.setLength(0);
-            return value;
-        }
-    };
+    private static SoftThreadLocal<StringBuilder> stringBuilderThreadLocal = new SoftThreadLocal<>(
+            StringBuilder::new,
+            it -> {
+                it.setLength(0);
+                return it;
+            }
+    );
 
     String method;
     Params params = new Params();
@@ -133,8 +126,8 @@ public class XmlRpc {
 
                 for (Map.Entry<String, Param> entry : map.entrySet()) {
                     struct.add(new Node("member")
-                                    .add(new Node("name").addText(entry.getKey()))
-                                    .add(entry.getValue().value())
+                            .add(new Node("name").addText(entry.getKey()))
+                            .add(entry.getValue().value())
                     );
                 }
             };
