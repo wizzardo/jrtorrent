@@ -4,7 +4,7 @@ import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
 import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.Service;
-import com.wizzardo.tools.collections.lazy.Lazy;
+import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.evaluation.Config;
 import com.wizzardo.tools.misc.Unchecked;
 
@@ -124,7 +124,7 @@ public class RTorrentService implements Service {
             outer:
             while (list.size() < torrents.size()) {
                 for (String hash : torrents.keySet()) {
-                    TorrentInfo torrent = Lazy.of(list).filter(it -> it.getHash().equals(hash)).first();
+                    TorrentInfo torrent = Flow.of(list).filter(it -> it.getHash().equals(hash)).first();
                     if (torrent == null) {
                         torrent = torrents.remove(hash);
                         rTorrentService.appWebSocketHandler.onRemove(torrent);

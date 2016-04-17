@@ -2,7 +2,7 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
-import com.wizzardo.tools.collections.lazy.Lazy;
+import com.wizzardo.tools.collections.flow.Flow;
 
 import java.util.Collection;
 import java.util.List;
@@ -145,7 +145,7 @@ public class MockRTorrentService extends RTorrentService {
     }
 
     private TorrentInfo find(String torrent) {
-        return Lazy.of(list).filter(ti -> ti.getHash().equals(torrent)).first();
+        return Flow.of(list).filter(ti -> ti.getHash().equals(torrent)).first();
     }
 
     static class Updater extends Thread implements ByteBufferProvider {
