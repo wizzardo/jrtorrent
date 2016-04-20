@@ -1,11 +1,14 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.http.HttpConnection;
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
 import com.wizzardo.http.websocket.Message;
 import com.wizzardo.http.websocket.WebSocketHandler;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
+import com.wizzardo.tools.misc.Unchecked;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Created by wizzardo on 08.12.15.
  */
-public class AppWebSocketHandler extends DefaultWebSocketHandler {
+public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHandler.PingableListener> {
 
     protected Map<String, CommandHandler> handlers = new ConcurrentHashMap<>();
     protected RTorrentService rtorrentService;
@@ -54,18 +57,19 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
             FilePriority priority = FilePriority.valueOf(args.getAsString("priority"));
             rtorrentService.setPriority(hash, path, priority);
             sendMessage(listener, new JsonObject()
-                            .append("command", "callback")
-                            .append("callbackId", args.getAsString("callbackId"))
-                            .append("result", "ok")
+                    .append("command", "callback")
+                    .append("callbackId", args.getAsString("callbackId"))
+                    .append("result", "ok")
             );
         });
 
         handlers.put("ping", (listener, json) -> {
+            listener.update();
         });
     }
 
     @Override
-    public void onConnect(WebSocketListener listener) {
+    public void onConnect(PingableListener listener) {
         if (listeners.isEmpty())
             rtorrentService.resumeUpdater();
         super.onConnect(listener);
@@ -73,7 +77,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
     }
 
     @Override
-    public void onDisconnect(WebSocketListener listener) {
+    public void onDisconnect(PingableListener listener) {
         super.onDisconnect(listener);
         if (listeners.isEmpty())
             rtorrentService.pauseUpdater();
@@ -98,7 +102,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
     }
 
     @Override
-    public void onMessage(WebSocketListener listener, Message message) {
+    public void onMessage(PingableListener listener, Message message) {
 //        System.out.println(message.asString());
         JsonObject json = JsonTools.parse(message.asString()).asJsonObject();
         CommandHandler handler = handlers.get(json.getAsString("command"));
@@ -150,10 +154,38 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler {
         broadcast(json);
     }
 
-    protected interface CommandHandler {
-        void handle(WebSocketListener listener, JsonObject json);
+    @Override
+    protected PingableListener createListener(HttpConnection connection, WebSocketHandler handler) {
+        return new PingableListener(connection, handler);
     }
 
+    protected interface CommandHandler {
+        void handle(PingableListener listener, JsonObject json);
+    }
+
+    public static class PingableListener extends WebSocketHandler.WebSocketListener {
+        long lastPing;
+
+        private PingableListener(HttpConnection connection, WebSocketHandler webSocketHandler) {
+            super(connection, webSocketHandler);
+            update();
+        }
+
+        public void update() {
+            lastPing = System.currentTimeMillis();
+        }
+
+        @Override
+        public synchronized void sendMessage(Message message) {
+            if (System.currentTimeMillis() - lastPing > 60_000l) {
+                close();
+                webSocketHandler.onDisconnect(this);
+                Unchecked.ignore(() -> connection.close());
+                return;
+            }
+            super.sendMessage(message);
+        }
+    }
 
     static class TreeResponse extends Response {
         final Collection<TorrentEntry> tree;
