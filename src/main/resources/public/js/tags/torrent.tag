@@ -1,4 +1,4 @@
-<torrent id="torrent_{hash}">
+<torrent>
     <div class="status-bar {status}"></div>
     <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="clickTorrent(event, '{hash}')">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
