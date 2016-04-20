@@ -1,6 +1,6 @@
 <upload_form>
     Add new torrent
-    <form action="#" name="form" onsubmit={ submit }>
+    <form action="#" name="form" onsubmit="{submit}">
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <input class="mdl-textfield__input" type="text" id="url" name="url">
             <label class="mdl-textfield__label" for="url">link to torrent file or magnet link</label>
@@ -29,24 +29,24 @@
         </button>
     </form>
 
-    <style scoped>
-        :scope {
+    <style>
+        upload_form {
             display: block;
         }
 
-        form {
+        upload_form form {
             position: relative;
             width: 100%;
             height: 90%;
         }
 
-        .download {
+        upload_form .download {
             position: absolute;
             right: 0px;
             bottom: 0px;
         }
 
-        .mdl-button--file input {
+        upload_form .mdl-button--file input {
             cursor: pointer;
             height: 100%;
             right: 0;
@@ -57,16 +57,16 @@
             z-index: 4;
         }
 
-        .mdl-textfield--file .mdl-textfield__input {
+        upload_form .mdl-textfield--file .mdl-textfield__input {
             box-sizing: border-box;
             width: calc(100% - 32px);
         }
 
-        .mdl-textfield--file .mdl-button--file {
+        upload_form .mdl-textfield--file .mdl-button--file {
             right: 0;
         }
 
-        .mdl-textfield {
+        upload_form .mdl-textfield {
             width: 100%;
         }
 

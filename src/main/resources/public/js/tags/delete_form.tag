@@ -5,7 +5,7 @@
         '<strong>{name || 'name'}</strong>'
     </p>
 
-    <form action="#" name="form" onsubmit={ submit }>
+    <form action="#" name="form" onsubmit="{submit}">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
                 onclick="{deleteTorrentWithData}">
             Delete with data
@@ -18,32 +18,32 @@
         </button>
     </form>
 
-    <style scoped>
-        :scope {
+    <style>
+        delete_form {
             display: block;
             position: relative;
             height: 100%;
         }
 
-        form {
+        delete_form form {
             position: absolute;
             right: 0px;
             bottom: 0px;
             margin: 0px;
         }
 
-        button {
+        delete_form button {
             margin-left: 20px;
         }
 
-        p strong {
+        delete_form p strong {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         @media screen and (max-width: 480px) {
-            button {
+            delete_form button {
                 margin-left: 0px;
                 margin-bottom: 5px;
                 width: 100%;

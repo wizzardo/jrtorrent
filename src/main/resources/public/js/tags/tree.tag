@@ -2,8 +2,8 @@
     <div class="resizeable" style="height: {30 * totalChildrenToShow || 0}px">
         <tree_entry each={opts.entries}></tree_entry>
     </div>
-    <style scoped>
-        :scope {
+    <style>
+        tree {
             display: block;
             overflow: hidden;
             background: #FAFAFA;
@@ -11,7 +11,7 @@
             border-bottom: 1px solid #EAEAEA;
         }
 
-        .resizeable {
+        tree .resizeable {
             transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
     </style>

@@ -31,44 +31,44 @@
     </div>
     <tree id="tree_{hash}"></tree>
 
-    <style scoped>
-        :scope {
+    <style>
+        torrent {
             display: inline-block;
             position: relative;
         }
 
-        .mdl-button {
+        torrent .mdl-button {
             margin-right: 10px;
         }
 
-        .material-icons {
+        torrent .material-icons {
             color: #757575;
         }
 
-        .status-bar {
+        torrent .status-bar {
             width: 4px;
             height: 100%;
             position: absolute;
             z-index: 2;
         }
 
-        .status-bar.FINISHED {
+        torrent .status-bar.FINISHED {
             background-color: rgb(63, 81, 181);
         }
 
-        .status-bar.STOPPED {
+        torrent .status-bar.STOPPED {
             background-color: rgb(255, 193, 7);
         }
 
-        .status-bar.DOWNLOADING {
+        torrent .status-bar.DOWNLOADING {
             background-color: rgb(76, 175, 80);
         }
 
-        .status-bar.SEEDING {
+        torrent .status-bar.SEEDING {
             background-color: rgb(255, 87, 34);
         }
 
-        .torrent {
+        torrent .torrent {
             padding: 10px;
             min-height: 40px;
             position: relative;
@@ -76,177 +76,177 @@
             transition: left .2s cubic-bezier(.4, 0, .2, 1);
         }
 
-        .torrent:hover {
+        torrent .torrent:hover {
             cursor: pointer;
         }
 
-        .torrent > div {
+        torrent  .torrent > div {
             display: inline-block;
         }
 
-        .torrent.selected {
+        torrent .torrent.selected {
             background: #FAFAFA;
         }
 
-        .torrent:hover {
+        torrent  .torrent:hover {
             background-color: rgba(0, 0, 0, 0.05);
         }
 
-        .torrent .name {
+        torrent .torrent .name {
             font-weight: bold;
             display: block;
             width: 100%;
         }
 
-        .torrent .status {
+        torrent .torrent .status {
             width: 120px;
             display: inline-block;
         }
 
-        span {
+        torrent span {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
         }
 
-        .td {
+        torrent .td {
             width: 80px;
             display: inline-block;
         }
 
-        .mdl-progress {
+        torrent .mdl-progress {
             width: 100%;
         }
 
-        .mdl-progress > .bufferbar {
+        torrent .mdl-progress > .bufferbar {
             width: 100%;
         }
 
-        .header {
+        torrent  .header {
             border-bottom: 1px solid gray;
         }
 
-        .header span {
+        torrent .header span {
             font-weight: bold;
         }
 
-        .header .mdl-progress {
+        torrent .header .mdl-progress {
             display: none;
         }
 
         @media screen and (max-width: 800px) {
-            .torrent .status {
+            torrent  .torrent .status {
                 display: none;
             }
         }
 
         @media screen and (max-width: 768px) {
-            .mdl-progress {
+            torrent  .mdl-progress {
                 width: 100%;
             }
         }
 
         @media screen and (min-width: 737px) {
-            .delete-left {
+            torrent .delete-left {
                 display: none;
             }
         }
 
         @media screen and (max-width: 736px) {
-            .torrent {
+            torrent .torrent {
                 left: -90px;
             }
 
-            .td {
+            torrent .td {
                 width: 86px;
             }
 
-            .torrent.selected {
+            torrent .torrent.selected {
                 left: 0px;
             }
 
-            .delete {
+            torrent .delete {
                 display: none;
             }
         }
 
         @media screen and (max-width: 690px) {
-            .td {
+            torrent .td {
                 width: 81px;
             }
         }
 
         @media screen and (max-width: 667px) {
-            .td {
+            torrent .td {
                 width: 78px;
             }
         }
 
         @media screen and (max-width: 600px) {
-            .td {
+            torrent .td {
                 width: 69px;
             }
         }
 
         @media screen and (max-width: 568px) {
-            .td {
+            torrent .td {
                 width: 66px;
             }
         }
 
         @media screen and (max-width: 480px) {
-            .td {
+            torrent .td {
                 width: 70px;
             }
 
-            .peers, .seeds, .size {
+            torrent  .peers, .seeds, .size {
                 display: none;
             }
 
-            .torrent {
+            torrent  .torrent {
                 min-height: 55px;
             }
 
-            .header {
+            torrent .header {
                 display: none;
             }
         }
 
         @media screen and (max-width: 412px) {
-            .td {
+            torrent .td {
                 width: 75px;
             }
         }
 
         @media screen and (max-width: 384px) {
-            .td {
+            torrent .td {
                 width: 70px;
             }
         }
 
         @media screen and (max-width: 375px) {
-            .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, .name {
                 max-width: 355px;
             }
 
-            .td {
+            torrent  .td {
                 width: 68px;
             }
         }
 
         @media screen and (max-width: 360px) {
-            .torrent .mdl-progress, .name {
+            torrent  .torrent .mdl-progress, .name {
                 max-width: 340px;
             }
         }
 
         @media screen and (max-width: 320px) {
-            .td {
+            torrent  .td {
                 width: 55px;
                 font-size: 12px;
             }
 
-            .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, .name {
                 max-width: 300px;
             }
         }

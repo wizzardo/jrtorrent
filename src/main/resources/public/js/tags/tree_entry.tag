@@ -15,42 +15,42 @@
         </div>
     </div>
 
-    <style scoped>
-        :scope {
+    <style>
+        tree_entry {
             display: block;
             margin-left: 10px;
             padding-top: 10px;
             font-size: 14px;
         }
 
-        span:hover {
+        tree_entry span:hover {
             cursor: pointer;
         }
 
-        .material-icons {
+        tree_entry .material-icons {
             font-size: 14px;
             color: #757575;
         }
 
-        .children {
+        tree_entry .children {
             overflow: hidden;
         }
 
-        .resizeable {
+        tree_entry .resizeable {
             transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
 
-        .mdl-button {
+        tree_entry .mdl-button {
             line-height: 14px;
             height: 14px;
         }
 
-        .priority {
+        tree_entry .priority {
             float: right;
         }
 
         @media screen and (max-width: 736px) {
-            .priority {
+            tree_entry .priority {
                 display: none;
             }
         }

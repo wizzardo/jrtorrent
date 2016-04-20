@@ -13,28 +13,28 @@
     <torrent each={opts.torrents}>
     </torrent>
 
-    <style scoped>
-        :scope {
+    <style>
+        torrents  {
             display: block
         }
 
-        .header {
+        torrents .header {
             margin: 20px 10px 0 10px;
             border-bottom: 1px solid gray;
             padding-left: 44px;
         }
 
-        .header span {
+        torrents .header span {
             font-weight: bold;
         }
 
         /*.header */
-        .th {
+        torrents .th {
             width: 80px;
             display: inline-block;
         }
 
-        .th.status {
+        torrents .th.status {
             width: 120px;
         }
 
@@ -42,81 +42,81 @@
         }
 
         @media screen and (max-width: 800px) {
-            .status {
+            torrents .status {
                 display: none;
             }
         }
 
         @media screen and (max-width: 736px) {
-            .header {
+            torrents .header {
                 padding-left: 11px;
                 margin: 0;
             }
-            .th {
+            torrents .th {
                 width: 86px;
             }
         }
 
         @media screen and (max-width: 690px) {
-            .th {
+            torrents .th {
                 width: 81px;
             }
         }
 
         @media screen and (max-width: 667px) {
-            .th {
+            torrents .th {
                 width: 78px;
             }
         }
 
         @media screen and (max-width: 600px) {
-            .th {
+            torrents  .th {
                 width: 69px;
             }
         }
 
         @media screen and (max-width: 568px) {
-            .th {
+            torrents .th {
                 width: 66px;
             }
         }
 
         @media screen and (max-width: 480px) {
-            .th {
+            torrents .th {
                 width: 64px;
             }
 
-            .peers, .seeds, .size {
+            torrents  .peers, .seeds, .size {
                 display: none;
             }
         }
 
         @media screen and (max-width: 414px) {
-            .th {
+            torrents .th {
                 width: 70px;
             }
         }
 
         @media screen and (max-width: 412px) {
-            .th {
+            torrents .th {
                 width: 75px;
             }
         }
 
         @media screen and (max-width: 384px) {
-            .th {
+            torrents .th {
                 width: 70px;
             }
         }
 
         @media screen and (max-width: 360px) {
-            .th {
+            torrents .th {
                 width: 68px;
             }
         }
 
         @media screen and (max-width: 320px) {
-            .th {
+            torrents  .th {
                 width: 54px;
             }
         }

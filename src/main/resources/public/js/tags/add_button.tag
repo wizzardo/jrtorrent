@@ -4,17 +4,17 @@
         <i class="material-icons">add</i>
     </button>
 
-    <style scoped>
-        :scope {
+    <style>
+        add_button {
             display: inline;
         }
 
-        .mdl-button {
+        add_button .mdl-button {
             font-weight: bold;
             color: white;
         }
 
-        .mdl-button--floating-action {
+        add_button .mdl-button--floating-action {
             position: fixed;
             right: 24px;
             bottom: 24px;
@@ -24,7 +24,7 @@
             transition: bottom .2s cubic-bezier(.4, 0, .2, 1);
         }
 
-        .slide-bottom {
+        add_button .slide-bottom {
             bottom: -100px;
         }
     </style>

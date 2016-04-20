@@ -7,12 +7,12 @@
         </div>
     </div>
 
-    <style scoped>
-        :scope {
+    <style>
+        modal {
             display: block;
         }
 
-        .overlay {
+        modal .overlay {
             position: fixed;
             width: 100%;
             height: 100%;
@@ -22,7 +22,7 @@
             transition: background-color .2s cubic-bezier(.4, 0, .2, 1);
         }
 
-        .content {
+        modal .content {
             height: 200px;
             background-color: white;
             margin-left: auto;
@@ -36,15 +36,15 @@
         }
 
         @media screen and (min-width: 800px) {
-            .content {
+            modal .content {
                 max-width: 600px;
             }
         }
         @media screen and (max-width: 800px) {
-            .overlay {
+            modal .overlay {
                 transition: none;
             }
-            .content {
+            modal .content {
                 box-shadow: none;
             }
         }
