@@ -25,3 +25,12 @@ jrt {
 
     downloads = '/tmp/'
 }
+
+environments {
+    dev {
+        tagBundler.ttl = 1
+    }
+    prod {
+        tagBundler.ttl = -1
+    }
+}
