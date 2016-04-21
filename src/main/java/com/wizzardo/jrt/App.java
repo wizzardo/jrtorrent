@@ -3,6 +3,7 @@ package com.wizzardo.jrt;
 import com.wizzardo.http.FileTreeHandler;
 import com.wizzardo.http.MultipartHandler;
 import com.wizzardo.http.RestHandler;
+import com.wizzardo.http.filter.GzipFilter;
 import com.wizzardo.http.framework.ControllerHandler;
 import com.wizzardo.http.framework.Environment;
 import com.wizzardo.http.framework.WebApplication;
@@ -32,6 +33,9 @@ public class App {
                             .setShowFolder(false)))
                     .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
                     .append("/tags.js", AppController.class, "tags")
+            ;
+            app.getFiltersMapping()
+                    .addAfter("/tags.js", new GzipFilter())
             ;
         });
         server.setEnvironment(environment);
