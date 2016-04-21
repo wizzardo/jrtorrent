@@ -13,10 +13,6 @@ import com.wizzardo.tools.misc.With;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -26,6 +22,7 @@ public class AppController extends Controller {
     RTorrentService rtorrentService;
     ControllerUrlMapping mapping = DependencyFactory.get(ControllerUrlMapping.class);
     TokenFilter tokenFilter = getTokenFilter();
+    TagBundler tagBundler;
 
     private TokenFilter getTokenFilter() {
         try {
@@ -45,6 +42,20 @@ public class AppController extends Controller {
         ));
 
         return renderView("index");
+    }
+
+    public Renderer tags() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(tagBundler.toJavascript("add_button"));
+        sb.append(tagBundler.toJavascript("delete_form"));
+        sb.append(tagBundler.toJavascript("mdl_select"));
+        sb.append(tagBundler.toJavascript("modal"));
+        sb.append(tagBundler.toJavascript("torrent"));
+        sb.append(tagBundler.toJavascript("torrents"));
+        sb.append(tagBundler.toJavascript("tree"));
+        sb.append(tagBundler.toJavascript("tree_entry"));
+        sb.append(tagBundler.toJavascript("upload_form"));
+        return renderString(sb.toString());
     }
 
     public Renderer addTorrent() throws IOException {

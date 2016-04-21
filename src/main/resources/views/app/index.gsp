@@ -24,17 +24,7 @@
     <delete_form>delete_form</delete_form>
 </modal>
 
-<g:set var="noCache" value="${Holders.environment == Environment.DEVELOPMENT ? [r: System.currentTimeMillis()] : [:]}"/>
-
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrents.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/torrent.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/tree.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/tree_entry.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/modal.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/upload_form.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/delete_form.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/add_button.tag"])}" type="riot/tag"></script>
-<script src="${createLink([mapping: 'static', params: noCache, path: "/js/tags/mdl_select.tag"])}" type="riot/tag"></script>
+<script src="${createLink(controller: 'app', action: 'tags')}" type="text/javascript"></script>
 
 <script>
     var debug = false;

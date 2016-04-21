@@ -31,6 +31,7 @@ public class App {
                     .append("/downloads/*", new RestHandler("downloads").get(new FileTreeHandler(downloads, "/downloads")
                             .setShowFolder(false)))
                     .append("/ws", "ws", DependencyFactory.getDependency(AppWebSocketHandler.class))
+                    .append("/tags.js", AppController.class, "tags")
             ;
         });
         server.setEnvironment(environment);
