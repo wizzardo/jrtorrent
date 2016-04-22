@@ -2,7 +2,7 @@
     <div class="status-bar {status}"></div>
     <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="clickTorrent(event, '{hash}')">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
-            <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' ? 'play_arrow' : 'pause'}</i>
+            <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' || status == 'FINISHED' ? 'play_arrow' : 'pause'}</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon delete-left"
                 onclick="deleteTorrent('{hash}','{name}')">
@@ -80,7 +80,7 @@
             cursor: pointer;
         }
 
-        torrent  .torrent > div {
+        torrent .torrent > div {
             display: inline-block;
         }
 
@@ -88,7 +88,7 @@
             background: #FAFAFA;
         }
 
-        torrent  .torrent:hover {
+        torrent .torrent:hover {
             background-color: rgba(0, 0, 0, 0.05);
         }
 
@@ -122,7 +122,7 @@
             width: 100%;
         }
 
-        torrent  .header {
+        torrent .header {
             border-bottom: 1px solid gray;
         }
 
@@ -135,13 +135,13 @@
         }
 
         @media screen and (max-width: 800px) {
-            torrent  .torrent .status {
+            torrent .torrent .status {
                 display: none;
             }
         }
 
         @media screen and (max-width: 768px) {
-            torrent  .mdl-progress {
+            torrent .mdl-progress {
                 width: 100%;
             }
         }
@@ -199,11 +199,11 @@
                 width: 70px;
             }
 
-            torrent  .peers, .seeds, .size {
+            torrent .peers, .seeds, .size {
                 display: none;
             }
 
-            torrent  .torrent {
+            torrent .torrent {
                 min-height: 55px;
             }
 
@@ -229,19 +229,19 @@
                 max-width: 355px;
             }
 
-            torrent  .td {
+            torrent .td {
                 width: 68px;
             }
         }
 
         @media screen and (max-width: 360px) {
-            torrent  .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, .name {
                 max-width: 340px;
             }
         }
 
         @media screen and (max-width: 320px) {
-            torrent  .td {
+            torrent .td {
                 width: 55px;
                 font-size: 12px;
             }
@@ -310,7 +310,7 @@
 //                that.tree.toggle();
             });
             obs.set('torrent_toggle_' + that.hash, function () {
-                if (that.status == 'STOPPED' || that.status == 'PAUSED')
+                if (that.status == 'STOPPED' || that.status == 'PAUSED' || that.status == 'FINISHED')
                     obs.trigger('torrent.start', {hash: that.hash});
                 else
                     obs.trigger('torrent.stop', {hash: that.hash});
