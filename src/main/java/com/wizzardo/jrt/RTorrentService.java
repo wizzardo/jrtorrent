@@ -142,6 +142,7 @@ public class RTorrentService implements Service {
                     torrents.put(info.getHash(), info);
                 }
             }
+            rTorrentService.appWebSocketHandler.checkConnections();
         }
 
         protected boolean isUpdated(TorrentInfo o, TorrentInfo n) {

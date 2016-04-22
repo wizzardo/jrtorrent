@@ -8,7 +8,6 @@ import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.Unchecked;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,6 +153,13 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         broadcast(json);
     }
 
+    public void checkConnections() {
+        for (PingableListener listener : listeners) {
+            if (!listener.isValid())
+                listener.close();
+        }
+    }
+
     @Override
     protected PingableListener createListener(HttpConnection connection, WebSocketHandler handler) {
         return new PingableListener(connection, handler);
@@ -177,13 +183,21 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
 
         @Override
         public synchronized void sendMessage(Message message) {
-            if (System.currentTimeMillis() - lastPing > 60_000l) {
+            if (!isValid()) {
                 close();
-                webSocketHandler.onDisconnect(this);
-                Unchecked.ignore(() -> connection.close());
                 return;
             }
             super.sendMessage(message);
+        }
+
+        public boolean isValid() {
+            return System.currentTimeMillis() - lastPing <= 60_000;
+        }
+
+        @Override
+        public void close() {
+            webSocketHandler.onDisconnect(this);
+            Unchecked.ignore(() -> connection.close());
         }
     }
 
