@@ -14,7 +14,7 @@
     </torrent>
 
     <style>
-        torrents  {
+        torrents {
             display: block
         }
 
@@ -52,6 +52,7 @@
                 padding-left: 11px;
                 margin: 0;
             }
+
             torrents .th {
                 width: 86px;
             }
@@ -70,7 +71,7 @@
         }
 
         @media screen and (max-width: 600px) {
-            torrents  .th {
+            torrents .th {
                 width: 69px;
             }
         }
@@ -86,7 +87,7 @@
                 width: 64px;
             }
 
-            torrents  .peers, .seeds, .size {
+            torrents .peers, torrents .seeds, torrents .size {
                 display: none;
             }
         }
@@ -116,7 +117,7 @@
         }
 
         @media screen and (max-width: 320px) {
-            torrents  .th {
+            torrents .th {
                 width: 54px;
             }
         }
