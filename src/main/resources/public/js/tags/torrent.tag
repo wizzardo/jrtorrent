@@ -96,6 +96,7 @@
             font-weight: bold;
             display: block;
             width: 100%;
+            max-width: 760px;
         }
 
         torrent .torrent .status {
@@ -120,18 +121,6 @@
 
         torrent .mdl-progress > .bufferbar {
             width: 100%;
-        }
-
-        torrent .header {
-            border-bottom: 1px solid gray;
-        }
-
-        torrent .header span {
-            font-weight: bold;
-        }
-
-        torrent .header .mdl-progress {
-            display: none;
         }
 
         @media screen and (max-width: 800px) {
@@ -199,16 +188,12 @@
                 width: 70px;
             }
 
-            torrent .peers, .seeds, .size {
+            torrent .peers, torrent .seeds, torrent .size {
                 display: none;
             }
 
             torrent .torrent {
                 min-height: 55px;
-            }
-
-            torrent .header {
-                display: none;
             }
         }
 
@@ -225,7 +210,7 @@
         }
 
         @media screen and (max-width: 375px) {
-            torrent .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, torrent .name {
                 max-width: 355px;
             }
 
@@ -235,7 +220,7 @@
         }
 
         @media screen and (max-width: 360px) {
-            torrent .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, torrent .name {
                 max-width: 340px;
             }
         }
@@ -246,7 +231,7 @@
                 font-size: 12px;
             }
 
-            torrent .torrent .mdl-progress, .name {
+            torrent .torrent .mdl-progress, torrent .name {
                 max-width: 300px;
             }
         }
