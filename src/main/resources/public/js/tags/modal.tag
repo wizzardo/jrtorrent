@@ -56,8 +56,15 @@
         this.mixin(mdlMixin);
 
         this.on('mount', function () {
-            log('modal mounted')
-            that.overlay.addEventListener("transitionend", function () {
+            log('modal mounted');
+
+            obs.on('modal.closeAll', function () {
+                that.close();
+            });
+        });
+
+        var addTransitionListener = function () {
+            var listener = function () {
                 if (!that.show) {
                     that.display = false;
                     that.update();
@@ -65,34 +72,45 @@
                 } else {
                     that.trigger('show')
                 }
-            }, false);
-        });
-        obs.on('modal.closeAll', function () {
-            that.close();
-        });
+                that.overlay.removeEventListener("transitionend", listener)
+            };
+            that.overlay.addEventListener("transitionend", listener);
+        };
 
         that.close = function (e) {
             if (e && e.target != that.overlay)
                 return true;
 
+            if (!that.show)
+                return;
+
+            addTransitionListener();
             that.show = false;
             that.update();
         };
+
         that.open = function () {
+            if (that.show)
+                return;
+
             obs.trigger('modal.closeAll');
+            addTransitionListener();
             that.display = true;
             that.show = true;
             that.update();
         };
+
         that.toggle = function () {
             if (that.show)
                 that.close();
             else
                 that.open();
         };
+
         that.onShow = function (cb) {
             that.on('show', cb);
         };
+
         that.onHide = function (cb) {
             that.on('hide', cb);
         };
