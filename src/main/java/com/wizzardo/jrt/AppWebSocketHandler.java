@@ -193,12 +193,6 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         public boolean isValid() {
             return System.currentTimeMillis() - lastPing <= 60_000;
         }
-
-        @Override
-        public void close() {
-            webSocketHandler.onDisconnect(this);
-            Unchecked.ignore(() -> connection.close());
-        }
     }
 
     static class TreeResponse extends Response {
