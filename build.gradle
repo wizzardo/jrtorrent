@@ -21,7 +21,7 @@ dependencies {
     compile 'com.wizzardo:epoll:0.1+'
     compile 'com.wizzardo:http:0.1+'
     compile 'com.wizzardo:datadog-jmx:0.1+'
-    compile 'com.wizzardo.tools:tools:0.14+'
+    compile 'com.wizzardo.tools:tools:0.15+'
 }
 
 //create a single Jar with all dependencies

@@ -145,7 +145,7 @@ public class MockRTorrentService extends RTorrentService {
     }
 
     private TorrentInfo find(String torrent) {
-        return Flow.of(list).filter(ti -> ti.getHash().equals(torrent)).first();
+        return Flow.of(list).filter(ti -> ti.getHash().equals(torrent)).first().get();
     }
 
     static class Updater extends Thread implements ByteBufferProvider {

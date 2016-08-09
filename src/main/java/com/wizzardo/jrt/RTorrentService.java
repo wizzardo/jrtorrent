@@ -124,7 +124,7 @@ public class RTorrentService implements Service {
             outer:
             while (list.size() < torrents.size()) {
                 for (String hash : torrents.keySet()) {
-                    TorrentInfo torrent = Flow.of(list).filter(it -> it.getHash().equals(hash)).first();
+                    TorrentInfo torrent = Flow.of(list).filter(it -> it.getHash().equals(hash)).first().get();
                     if (torrent == null) {
                         torrent = torrents.remove(hash);
                         rTorrentService.appWebSocketHandler.onRemove(torrent);
