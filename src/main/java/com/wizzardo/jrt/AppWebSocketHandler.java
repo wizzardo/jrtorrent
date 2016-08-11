@@ -184,7 +184,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         @Override
         public synchronized void sendMessage(Message message) {
             if (!isValid()) {
-                close();
+                Unchecked.ignore(() -> connection.close());
                 return;
             }
             super.sendMessage(message);
@@ -192,12 +192,6 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
 
         public boolean isValid() {
             return System.currentTimeMillis() - lastPing <= 60_000;
-        }
-
-        @Override
-        public void close() {
-            if (connection.isAlive())
-                Unchecked.ignore(() -> connection.close());
         }
     }
 
