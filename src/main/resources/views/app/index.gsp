@@ -3,7 +3,6 @@
 <head>
     <meta name="layout" content="mdl_layout"/>
     <title>JRtorrent</title>
-    <g:resource dir="js" file="web_socket.js"/>
     <g:resource dir="js" file="lib.js"/>
     <g:resource dir="js" file="riot_compiler.js"/>
 </head>
