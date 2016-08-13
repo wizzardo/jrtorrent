@@ -23,7 +23,7 @@
         var totalChildrenHidden = 0;
 
         this.on('mount', function () {
-            that.totalChildrenHidden = opts.entries.length;
+            that.totalChildrenHidden = (opts.entries || []).length;
             that.update();
         });
 
