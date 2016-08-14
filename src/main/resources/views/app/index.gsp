@@ -5,7 +5,7 @@
     <meta name="layout" content="mdl_layout"/>
     <title>JRtorrent</title>
     <g:resource dir="js" file="lib.js"/>
-    <g:resource dir="js" file="riot_compiler.js"/>
+    <g:resource dir="js" file="riot.min.js"/>
 </head>
 
 <body>
@@ -173,15 +173,14 @@
         return callbackId
     }
 
-    riot.compile(function () {
-        obs = initObserver();
-        connect();
-        riot.mount('add_button');
-        deleteModal = riot.mount('#delete_modal')[0];
-    });
     setInterval(function () {
         sendCommand('ping')
     }, 15000);
+
+    obs = initObserver();
+    connect();
+    riot.mount('add_button');
+    deleteModal = riot.mount('#delete_modal')[0];
 </script>
 </body>
 </html>
