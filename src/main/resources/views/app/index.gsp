@@ -1,4 +1,5 @@
 <%@ page import="com.wizzardo.http.framework.Holders; com.wizzardo.http.framework.Environment; com.wizzardo.jrt.TorrentInfo;" contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="layout" content="mdl_layout"/>
