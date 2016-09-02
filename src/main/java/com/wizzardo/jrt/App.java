@@ -31,7 +31,7 @@ public class App {
                     .append("/downloads/*", new RestHandler("downloads")
                             .get(new FileTreeHandler(downloads, "/downloads")
                                     .setShowFolder(false)))
-                    .append("/ws", "ws", AppWebSocketHandler.class)
+                    .append("/ws", AppWebSocketHandler.class)
                     .append("/tags.js", AppController.class, "tags")
             ;
             app.getFiltersMapping()

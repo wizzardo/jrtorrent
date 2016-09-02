@@ -21,6 +21,11 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     protected Map<String, CommandHandler> handlers = new ConcurrentHashMap<>();
     protected RTorrentService rtorrentService;
 
+    @Override
+    public String name() {
+        return "ws";
+    }
+
     public AppWebSocketHandler() {
         handlers.put("list", (listener, json) -> sendMessage(listener, new JsonObject()
                 .append("command", "list")
