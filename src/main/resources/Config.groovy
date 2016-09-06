@@ -34,3 +34,9 @@ environments {
         tagBundler.ttl = -1
     }
 }
+
+datadog {
+    enabled = true
+    hostname = 'localhost'
+    port = 8125
+}
