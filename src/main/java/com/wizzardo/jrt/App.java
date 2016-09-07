@@ -14,6 +14,9 @@ import com.wizzardo.http.framework.message.MessageBundle;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
 import com.wizzardo.metrics.Recorder;
+import com.wizzardo.tools.misc.Unchecked;
+
+import java.net.InetAddress;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -44,7 +47,8 @@ public class App {
 
             DatadogConfig datadogConfig = DependencyFactory.get(DatadogConfig.class);
             if (datadogConfig.enabled) {
-                StatsDClient statsDClient = new NonBlockingStatsDClient(datadogConfig.prefix, datadogConfig.hostname, datadogConfig.port, "app:jrt");
+                String hostName = Unchecked.call(() -> InetAddress.getLocalHost().getHostName());
+                StatsDClient statsDClient = new NonBlockingStatsDClient(datadogConfig.prefix, datadogConfig.hostname, datadogConfig.port, "app:jrt", "origin:" + hostName);
                 Recorder recorder = new Recorder(new DatadogClient(statsDClient));
                 DependencyFactory.get().register(Recorder.class, new SingletonDependency<>(recorder));
 
