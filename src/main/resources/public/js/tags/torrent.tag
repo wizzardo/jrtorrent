@@ -328,15 +328,15 @@
             if (!isFinite(s))
                 return '';
             if (s < 60)
-                return Math.ceil(s) + 's';
+                return Math.floor(s) + 's';
             var m = s / 60;
             if (m < 60)
-                return Math.ceil(m) + 'm' + Math.ceil(s % 60) + 's';
+                return Math.floor(m) + 'm' + Math.floor(s % 60) + 's';
             var h = m / 60;
             if (h < 24)
-                return Math.ceil(h) + 'h' + Math.ceil(m % 60) + 'm';
+                return Math.floor(h) + 'h' + Math.floor(m % 60) + 'm';
             var d = h / 24;
-            return Math.ceil(d) + 'd' + Math.ceil(h % 24) + 'h';
+            return Math.floor(d) + 'd' + Math.floor(h % 24) + 'h';
         };
 
         clickTorrent = function (event, hash) {
