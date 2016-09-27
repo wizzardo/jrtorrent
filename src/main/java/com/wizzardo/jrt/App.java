@@ -11,6 +11,7 @@ import com.wizzardo.http.framework.WebApplication;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
+import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
 import com.wizzardo.metrics.Recorder;
@@ -37,6 +38,7 @@ public class App {
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
                     .append("/downloads/*", new RestHandler("downloads")
                             .get(new FileTreeHandler(downloads, "/downloads")
+                                    .setRangeResponseHelper(new RangeResponseHelper())
                                     .setShowFolder(false)))
                     .append("/ws", AppWebSocketHandler.class)
                     .append("/tags.js", AppController.class, "tags")
