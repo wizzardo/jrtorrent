@@ -33,7 +33,7 @@
 
     <style>
         torrent {
-            display: inline-block;
+            display: block;
             position: relative;
         }
 
@@ -210,7 +210,7 @@
         }
 
         @media screen and (max-width: 375px) {
-            torrent .torrent .mdl-progress, torrent .name {
+            torrent .torrent .mdl-progress, torrent .torrent .name {
                 max-width: 355px;
             }
 
@@ -220,7 +220,7 @@
         }
 
         @media screen and (max-width: 360px) {
-            torrent .torrent .mdl-progress, torrent .name {
+            torrent .torrent .mdl-progress, torrent .torrent .name {
                 max-width: 340px;
             }
         }
@@ -231,7 +231,7 @@
                 font-size: 12px;
             }
 
-            torrent .torrent .mdl-progress, torrent .name {
+            torrent .torrent .mdl-progress, torrent .torrent .name {
                 max-width: 300px;
             }
         }
