@@ -72,7 +72,7 @@
                 l.push(map[key]);
             }
             l.sort(function (a, b) {
-                return a.id < b.id ? a : b
+                return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0)
             });
 //            log('after sort:')
 //            log(l)
