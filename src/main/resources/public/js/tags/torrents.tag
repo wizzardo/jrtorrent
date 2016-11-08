@@ -19,7 +19,7 @@
         }
 
         torrents .header {
-            margin: 20px 10px 0 10px;
+            margin: 0px 10px 0 10px;
             border-bottom: 1px solid gray;
             padding-left: 44px;
         }
