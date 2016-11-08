@@ -3,6 +3,7 @@ package com.wizzardo.jrt;
 import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
 import com.wizzardo.tools.collections.flow.Flow;
+import com.wizzardo.tools.json.JsonObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +31,8 @@ public class MockRTorrentService extends RTorrentService {
                 e.printStackTrace();
             }
             while (true) {
+                appWebSocketHandler.updateDiskStatus(1024 * 1024 * 1024L);
+
                 for (TorrentInfo ti : list) {
                     if (ti.getStatus() != TorrentInfo.Status.DOWNLOADING)
                         continue;

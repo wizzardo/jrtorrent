@@ -11,6 +11,7 @@
 <body>
 
 <div class="app">
+    <disk_status>disk_status</disk_status>
     <torrents>torrents</torrents>
 </div>
 
@@ -77,6 +78,11 @@
     handlers.callback = function (data) {
         if (obs)
             obs.trigger('callback.' + data.callbackId, data)
+    };
+
+    handlers.updateDiskStatus = function (data) {
+        if (obs)
+            obs.trigger('updateDiskStatus', data)
     };
 
     function initObserver() {
@@ -180,6 +186,7 @@
     obs = initObserver();
     connect();
     riot.mount('add_button');
+    riot.mount('disk_status');
     deleteModal = riot.mount('#delete_modal')[0];
 </script>
 </body>

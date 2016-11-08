@@ -29,7 +29,8 @@ public class App {
         server = new WebApplication(args);
         server.onSetup(app -> {
             DependencyFactory.get(MessageBundle.class).load("messages");
-//            DependencyFactory.get().register(RTorrentService.class, new SingletonDependency<>(MockRTorrentService.class));
+//            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
+            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
 
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
 

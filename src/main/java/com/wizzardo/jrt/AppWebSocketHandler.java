@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHandler.PingableListener> {
 
     protected Map<String, CommandHandler> handlers = new ConcurrentHashMap<>();
-    protected RTorrentService rtorrentService;
+    protected TorrentClientService rtorrentClientService;
 
     @Override
     public String name() {
@@ -29,29 +29,29 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     public AppWebSocketHandler() {
         handlers.put("list", (listener, json) -> sendMessage(listener, new JsonObject()
                 .append("command", "list")
-                .append("torrents", rtorrentService.list().stream()
+                .append("torrents", rtorrentClientService.list().stream()
                         .map((it) -> toJson(it)).collect(Collectors.toList()))));
 
 
         handlers.put("loadTree", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
-            sendMessage(listener, new TreeResponse(rtorrentService.entries(hash), hash));
+            sendMessage(listener, new TreeResponse(rtorrentClientService.entries(hash), hash));
         });
 
         handlers.put("start", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
-            rtorrentService.start(hash);
+            rtorrentClientService.start(hash);
         });
 
         handlers.put("stop", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
-            rtorrentService.stop(hash);
+            rtorrentClientService.stop(hash);
         });
 
         handlers.put("delete", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
             boolean withData = json.getAsJsonObject("args").getAsBoolean("withData", Boolean.FALSE);
-            rtorrentService.delete(hash, withData);
+            rtorrentClientService.delete(hash, withData);
         });
 
         handlers.put("setPriority", (listener, json) -> {
@@ -59,7 +59,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
             String hash = args.getAsString("hash");
             String path = args.getAsString("path");
             FilePriority priority = FilePriority.valueOf(args.getAsString("priority"));
-            rtorrentService.setPriority(hash, path, priority);
+            rtorrentClientService.setPriority(hash, path, priority);
             sendMessage(listener, new JsonObject()
                     .append("command", "callback")
                     .append("callbackId", args.getAsString("callbackId"))
@@ -75,7 +75,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     @Override
     public void onConnect(PingableListener listener) {
         if (listeners.isEmpty())
-            rtorrentService.resumeUpdater();
+            rtorrentClientService.resumeUpdater();
         super.onConnect(listener);
         System.out.println("onConnect. listeners: " + listeners.size());
     }
@@ -84,7 +84,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     public void onDisconnect(PingableListener listener) {
         super.onDisconnect(listener);
         if (listeners.isEmpty())
-            rtorrentService.pauseUpdater();
+            rtorrentClientService.pauseUpdater();
         System.out.println("onDisconnect. listeners: " + listeners.size());
     }
 
@@ -154,6 +154,14 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         JsonObject json = new JsonObject()
                 .append("command", "remove")
                 .append("torrent", toJson(ti));
+
+        broadcast(json);
+    }
+
+    public void updateDiskStatus(long usableSpace) {
+        JsonObject json = new JsonObject()
+                .append("command", "updateDiskStatus")
+                .append("free", usableSpace);
 
         broadcast(json);
     }

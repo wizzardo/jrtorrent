@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class AppController extends Controller {
 
-    RTorrentService rtorrentService;
+    TorrentClientService torrentClientService;
     ControllerUrlMapping mapping = DependencyFactory.get(ControllerUrlMapping.class);
     TokenFilter tokenFilter = getTokenFilter();
     TagBundler tagBundler;
@@ -55,6 +55,7 @@ public class AppController extends Controller {
         sb.append(tagBundler.toJavascript("tree"));
         sb.append(tagBundler.toJavascript("tree_entry"));
         sb.append(tagBundler.toJavascript("upload_form"));
+        sb.append(tagBundler.toJavascript("disk_status"));
         return renderString(sb.toString());
     }
 
@@ -67,9 +68,9 @@ public class AppController extends Controller {
             File tempFile = File.createTempFile("jrt", "torrent");
             tempFile.deleteOnExit();
             FileTools.bytes(tempFile, file);
-            rtorrentService.load(tempFile.getAbsolutePath(), autostart);
+            torrentClientService.load(tempFile.getAbsolutePath(), autostart);
         } else if (!link.isEmpty()) {
-            rtorrentService.load(link, autostart);
+            torrentClientService.load(link, autostart);
         } else {
             throw new IllegalArgumentException("link and file are empty");
         }
