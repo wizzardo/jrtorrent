@@ -1,15 +1,19 @@
 <tree_entry>
     <div onclick="{toggleChildren}">
-        <i if="{isFolder}" class="material-icons">{showChildren?'folder_open':'folder'}</i>
-        <span>{isFolder?name:''}</span>
-        <a if="{!isFolder}" href="{link()}" onclick="openLink('{link()}')">{name}</a>
+        <div class="info">
+            <div if="{isFolder}" class="folder">
+                <i class="material-icons">{showChildren?'folder_open':'folder'}</i>
+                <span class="folderName">{name}</span>
+            </div>
+
+            <a if="{!isFolder}" href="{link()}" onclick="openLink('{link()}')">{name}</a>
 
         <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
                 {priority || 'NORMAL'}
             </button>
         </span>
-
+        </div>
         <div class="resizeable children" style="height: {30 * shownChildren}px">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
@@ -28,7 +32,7 @@
         }
 
         tree_entry .material-icons {
-            font-size: 14px;
+            font-size: 16px;
             color: #757575;
         }
 
@@ -41,12 +45,29 @@
         }
 
         tree_entry .mdl-button {
-            line-height: 14px;
-            height: 14px;
+            line-height: 16px;
+            height: 16px;
         }
 
         tree_entry .priority {
             float: right;
+        }
+
+        tree_entry .folder {
+            display: inline-block;
+        }
+
+        tree_entry .info {
+            line-height: 16px;
+        }
+
+        tree_entry .info:hover {
+            background-color: rgba(0, 0, 0, 0.075);
+        }
+
+        tree_entry .folderName {
+            display: inline-block;
+            margin-left: 5px;
         }
 
         @media screen and (max-width: 736px) {
