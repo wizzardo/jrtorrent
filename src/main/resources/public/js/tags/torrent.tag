@@ -129,12 +129,6 @@
             }
         }
 
-        @media screen and (max-width: 768px) {
-            torrent .mdl-progress {
-                width: 100%;
-            }
-        }
-
         @media screen and (min-width: 737px) {
             torrent .delete-left {
                 display: none;
@@ -146,8 +140,8 @@
                 left: -90px;
             }
 
-            torrent .td {
-                width: 86px;
+            torrent .torrent .name {
+                padding-left: 5px;
             }
 
             torrent .torrent.selected {
@@ -157,35 +151,15 @@
             torrent .delete {
                 display: none;
             }
-        }
 
-        @media screen and (max-width: 690px) {
-            torrent .td {
-                width: 81px;
-            }
-        }
-
-        @media screen and (max-width: 667px) {
-            torrent .td {
-                width: 78px;
-            }
-        }
-
-        @media screen and (max-width: 600px) {
-            torrent .td {
-                width: 69px;
-            }
-        }
-
-        @media screen and (max-width: 568px) {
-            torrent .td {
-                width: 66px;
+            torrent .mdl-progress {
+                width: 100vw;
             }
         }
 
         @media screen and (max-width: 480px) {
             torrent .td {
-                width: 70px;
+                width: 20vw;
             }
 
             torrent .peers, torrent .seeds, torrent .size {
@@ -197,42 +171,9 @@
             }
         }
 
-        @media screen and (max-width: 412px) {
-            torrent .td {
-                width: 75px;
-            }
-        }
-
-        @media screen and (max-width: 384px) {
-            torrent .td {
-                width: 70px;
-            }
-        }
-
-        @media screen and (max-width: 375px) {
-            torrent .torrent .mdl-progress, torrent .torrent .name {
-                max-width: 355px;
-            }
-
-            torrent .td {
-                width: 68px;
-            }
-        }
-
-        @media screen and (max-width: 360px) {
-            torrent .torrent .mdl-progress, torrent .torrent .name {
-                max-width: 340px;
-            }
-        }
-
         @media screen and (max-width: 320px) {
             torrent .td {
-                width: 55px;
                 font-size: 12px;
-            }
-
-            torrent .torrent .mdl-progress, torrent .torrent .name {
-                max-width: 300px;
             }
         }
     </style>

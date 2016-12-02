@@ -38,87 +38,26 @@
             width: 120px;
         }
 
-        @media screen and (max-width: 850px) {
-        }
-
         @media screen and (max-width: 800px) {
-            torrents .status {
+            torrents .status, torrents .size {
                 display: none;
             }
         }
 
         @media screen and (max-width: 736px) {
             torrents .header {
-                padding-left: 11px;
+                padding-left: 5px;
                 margin: 0;
-            }
-
-            torrents .th {
-                width: 86px;
-            }
-        }
-
-        @media screen and (max-width: 690px) {
-            torrents .th {
-                width: 81px;
-            }
-        }
-
-        @media screen and (max-width: 667px) {
-            torrents .th {
-                width: 78px;
-            }
-        }
-
-        @media screen and (max-width: 600px) {
-            torrents .th {
-                width: 69px;
-            }
-        }
-
-        @media screen and (max-width: 568px) {
-            torrents .th {
-                width: 66px;
             }
         }
 
         @media screen and (max-width: 480px) {
             torrents .th {
-                width: 64px;
+                width: 20vw;
             }
 
             torrents .peers, torrents .seeds, torrents .size {
                 display: none;
-            }
-        }
-
-        @media screen and (max-width: 414px) {
-            torrents .th {
-                width: 70px;
-            }
-        }
-
-        @media screen and (max-width: 412px) {
-            torrents .th {
-                width: 75px;
-            }
-        }
-
-        @media screen and (max-width: 384px) {
-            torrents .th {
-                width: 70px;
-            }
-        }
-
-        @media screen and (max-width: 360px) {
-            torrents .th {
-                width: 68px;
-            }
-        }
-
-        @media screen and (max-width: 320px) {
-            torrents .th {
-                width: 54px;
             }
         }
     </style>
