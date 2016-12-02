@@ -6,13 +6,14 @@ import com.wizzardo.http.framework.ControllerUrlMapping;
 import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
-import com.wizzardo.tools.collections.CollectionTools;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.With;
 
 import java.io.File;
 import java.io.IOException;
+
+import static com.wizzardo.tools.misc.With.with;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -32,14 +33,20 @@ public class AppController extends Controller {
         return null;
     }
 
+    static class AppConfig {
+        String ws;
+        String addTorrent;
+        String token;
+        String downloadsPath;
+    }
+
     public Renderer index() {
-        model().append("config", JsonTools.serialize(new CollectionTools.MapBuilder<>()
-                        .add("ws", mapping.getUrlTemplate("ws").getRelativeUrl())
-                        .add("addTorrent", mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl())
-                        .add("token", tokenFilter != null ? tokenFilter.generateToken(request) : "")
-                        .add("downloadsPath", Holders.getApplication().getUrlMapping().getUrlTemplate("downloads").getRelativeUrl())
-                        .get()
-        ));
+        model().append("config", JsonTools.serialize(with(new AppConfig(), it -> {
+            it.ws = mapping.getUrlTemplate("ws").getRelativeUrl();
+            it.addTorrent = mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl();
+            it.token = tokenFilter != null ? tokenFilter.generateToken(request) : "";
+            it.downloadsPath = Holders.getApplication().getUrlMapping().getUrlTemplate("downloads").getRelativeUrl();
+        })));
 
         return renderView("index");
     }
