@@ -25,7 +25,7 @@
                 <div class="bufferbar bar bar2"></div>
             </div>
         </div>
-        <button class="mdl-button mdl-js-button mdl-button--icon delete" onclick="deleteTorrent('{hash}','{name}')">
+        <button class="mdl-button mdl-js-button mdl-button--icon delete" onclick="{deleteTorrent}">
             <i class="material-icons">delete</i>
         </button>
     </div>
@@ -294,9 +294,9 @@
             return true;
         };
 
-        deleteTorrent = function (hash, name) {
-            log('deleteTorrent ' + hash);
-            obs.trigger('torrent.delete', {hash: hash, name: name});
+        that.deleteTorrent = function () {
+            log('deleteTorrent ' + that.hash);
+            obs.trigger('torrent.delete', {hash: that.hash, name: that.name});
             event.processed = true;
             return true;
         };
