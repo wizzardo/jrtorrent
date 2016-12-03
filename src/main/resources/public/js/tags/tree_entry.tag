@@ -32,7 +32,7 @@
         }
 
         tree_entry .material-icons {
-            font-size: 16px;
+            font-size: 20px;
             color: #757575;
         }
 
@@ -45,8 +45,8 @@
         }
 
         tree_entry .mdl-button {
-            line-height: 16px;
-            height: 16px;
+            line-height: 20px;
+            height: 20px;
         }
 
         tree_entry .priority {
@@ -58,7 +58,7 @@
         }
 
         tree_entry .info {
-            line-height: 16px;
+            line-height: 20px;
         }
 
         tree_entry .info:hover {
@@ -68,6 +68,10 @@
         tree_entry .folderName {
             display: inline-block;
             margin-left: 5px;
+        }
+
+        tree_entry .zip {
+            margin-left: 10px;
         }
 
         @media screen and (max-width: 736px) {
