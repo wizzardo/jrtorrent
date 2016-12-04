@@ -19,9 +19,9 @@ mainClassName = "com.wizzardo.jrt.App"
 
 dependencies {
     compile 'com.wizzardo:epoll:0.1+'
-    compile 'com.wizzardo:http:0.1+'
+    compile 'com.wizzardo:http:0.2+'
     compile 'com.wizzardo:datadog-jvm:0.2+'
-    compile 'com.wizzardo.tools:tools:0.15+'
+    compile 'com.wizzardo.tools:tools:0.17+'
 }
 
 //create a single Jar with all dependencies
