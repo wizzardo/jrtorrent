@@ -6,6 +6,7 @@ import com.wizzardo.http.framework.ControllerUrlMapping;
 import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
+import com.wizzardo.http.mapping.Path;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.With;
@@ -38,6 +39,7 @@ public class AppController extends Controller {
         String addTorrent;
         String token;
         String downloadsPath;
+        String zipPath;
     }
 
     public Renderer index() {
@@ -45,7 +47,9 @@ public class AppController extends Controller {
             it.ws = mapping.getUrlTemplate("ws").getRelativeUrl();
             it.addTorrent = mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl();
             it.token = tokenFilter != null ? tokenFilter.generateToken(request) : "";
-            it.downloadsPath = Holders.getApplication().getUrlMapping().getUrlTemplate("downloads").getRelativeUrl();
+            ControllerUrlMapping mapping = Holders.getApplication().getUrlMapping();
+            it.downloadsPath = mapping.getUrlTemplate("downloads").getRelativeUrl();
+            it.zipPath = mapping.getUrlTemplate("zip").getRelativeUrl();
         })));
 
         return renderView("index");

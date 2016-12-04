@@ -37,6 +37,7 @@ public class App {
             app.getUrlMapping()
                     .append("/", AppController.class, "index")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
+                    .append("/zip/*", new ZipHandler(downloads, "zip", "zip"))
                     .append("/downloads/*", new RestHandler("downloads")
                             .get(new FileTreeHandler(downloads, "/downloads")
                                     .setRangeResponseHelper(new RangeResponseHelper())

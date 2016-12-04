@@ -4,6 +4,10 @@
             <div if="{isFolder}" class="folder">
                 <i class="material-icons">{showChildren?'folder_open':'folder'}</i>
                 <span class="folderName">{name}</span>
+
+                <a href="{zip()}" class="zip" onclick="openLink('{zip()}')">
+                    <i class="material-icons">archive</i>
+                </a>
             </div>
 
             <a if="{!isFolder}" href="{link()}" onclick="openLink('{link()}')">{name}</a>
@@ -127,6 +131,10 @@
 
         that.link = function () {
             return config.downloadsPath + that.path() + '?token=' + config.token;
+        };
+
+        that.zip = function () {
+            return config.zipPath + that.path() + '?token=' + config.token;
         };
 
         that.path = function () {
