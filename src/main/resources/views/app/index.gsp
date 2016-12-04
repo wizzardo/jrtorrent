@@ -25,7 +25,12 @@
     <delete_form>delete_form</delete_form>
 </modal>
 
-<script src="${createLink(controller: 'app', action: 'tags')}" type="text/javascript"></script>
+<g:if test="${Holders.environment == Environment.DEVELOPMENT}">
+    <script src="${createLink(controller: 'app', action: 'tags')}" type="text/javascript"></script>
+</g:if>
+<g:else>
+    <g:resource dir="js" file="tags.js"/>
+</g:else>
 
 <script>
     var debug = false;

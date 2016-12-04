@@ -7,16 +7,21 @@ import com.wizzardo.http.MultipartHandler;
 import com.wizzardo.http.RestHandler;
 import com.wizzardo.http.filter.GzipFilter;
 import com.wizzardo.http.framework.ControllerHandler;
+import com.wizzardo.http.framework.Environment;
 import com.wizzardo.http.framework.WebApplication;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
+import com.wizzardo.http.framework.template.LocalResourcesTools;
+import com.wizzardo.http.framework.template.ResourceTools;
 import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
 import com.wizzardo.metrics.Recorder;
+import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Unchecked;
 
+import java.io.File;
 import java.net.InetAddress;
 
 /**
@@ -43,11 +48,16 @@ public class App {
                                     .setRangeResponseHelper(new RangeResponseHelper())
                                     .setShowFolder(false)))
                     .append("/ws", AppWebSocketHandler.class)
-                    .append("/tags.js", AppController.class, "tags")
             ;
-            app.getFiltersMapping()
-                    .addAfter("/tags.js", new GzipFilter())
-            ;
+
+            LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
+            if (app.getEnvironment() == Environment.PRODUCTION && resourceTools.isJar()) {
+                String tags = DependencyFactory.get(AppController.class).tags().render().toString();
+                FileTools.text(new File(resourceTools.getUnzippedJarDirectory(), "/public/js/tags.js"), tags);
+            } else {
+                app.getUrlMapping()
+                        .append("/static/js/tags.js", AppController.class, "tags");
+            }
 
             DatadogConfig datadogConfig = DependencyFactory.get(DatadogConfig.class);
             if (datadogConfig.enabled) {
@@ -59,7 +69,6 @@ public class App {
                 JvmMonitoring jvmMonitoring = new JvmMonitoring(recorder);
                 jvmMonitoring.init();
                 DependencyFactory.get().register(JvmMonitoring.class, new SingletonDependency<>(jvmMonitoring));
-
             }
         });
         server.start();
