@@ -54,7 +54,19 @@ jrt {
 ```
     location /jrt {
         proxy_pass   http://127.0.0.1:8080$request_uri;
-
+    
+        proxy_http_version 1.1;
+        proxy_set_header  Connection "Keep-Alive";
+        proxy_set_header  Host $host;
+        proxy_set_header  X-Real-IP $remote_addr;
+        proxy_set_header  X-Forwarded-for $remote_addr;
+        proxy_buffering off;
+        port_in_redirect  off;
+    }
+    
+    location /jrt/ws {
+        proxy_pass   http://127.0.0.1:8080$request_uri;
+    
         proxy_http_version 1.1;
         proxy_set_header  Upgrade $http_upgrade;
         proxy_set_header  Connection "upgrade";
