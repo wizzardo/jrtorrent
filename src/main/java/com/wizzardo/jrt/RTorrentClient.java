@@ -2,8 +2,8 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.tools.cache.Cache;
 import com.wizzardo.tools.collections.CollectionTools;
+import com.wizzardo.tools.interfaces.Consumer;
 import com.wizzardo.tools.io.FileTools;
-import com.wizzardo.tools.misc.Consumer;
 import com.wizzardo.tools.xml.Node;
 import com.wizzardo.tools.xml.XmlParser;
 
