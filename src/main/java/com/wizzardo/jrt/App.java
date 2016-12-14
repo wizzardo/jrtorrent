@@ -5,10 +5,7 @@ import com.timgroup.statsd.StatsDClient;
 import com.wizzardo.http.FileTreeHandler;
 import com.wizzardo.http.MultipartHandler;
 import com.wizzardo.http.RestHandler;
-import com.wizzardo.http.filter.GzipFilter;
-import com.wizzardo.http.framework.ControllerHandler;
-import com.wizzardo.http.framework.Environment;
-import com.wizzardo.http.framework.WebApplication;
+import com.wizzardo.http.framework.*;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
@@ -69,6 +66,29 @@ public class App {
                 JvmMonitoring jvmMonitoring = new JvmMonitoring(recorder);
                 jvmMonitoring.init();
                 DependencyFactory.get().register(JvmMonitoring.class, new SingletonDependency<>(jvmMonitoring));
+
+                app.getFiltersMapping()
+                        .addAfter("/*", (request, response) -> {
+                            RequestContext context = RequestContext.get();
+                            String controller = context.controller();
+                            String action = context.action();
+                            RequestHolder requestHolder = context.getRequestHolder();
+
+                            long executeTime = 0;
+                            if (requestHolder != null) {
+                                executeTime = requestHolder.getExecutionTimeUntilNow() / 1_000_000L;
+                            }
+
+                            Recorder.Tags tags = new Recorder.Tags()
+                                    .add("controller", String.valueOf(controller))
+                                    .add("action", String.valueOf(action))
+                                    .add("handler", String.valueOf(context.handler()))
+                                    .add("status", String.valueOf(response.status().code));
+
+                            recorder.rec(Recorder.ACTION_DURATION, executeTime, tags);
+                            return true;
+                        })
+                ;
             }
         });
         server.start();
