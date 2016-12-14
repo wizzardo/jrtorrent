@@ -4,14 +4,16 @@ import com.wizzardo.http.HttpConnection;
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
 import com.wizzardo.http.websocket.Message;
 import com.wizzardo.http.websocket.WebSocketHandler;
+import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.Unchecked;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Created by wizzardo on 08.12.15.
@@ -27,11 +29,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public AppWebSocketHandler() {
-        handlers.put("list", (listener, json) -> sendMessage(listener, new JsonObject()
-                .append("command", "list")
-                .append("torrents", rtorrentClientService.list().stream()
-                        .map((it) -> toJson(it)).collect(Collectors.toList()))));
-
+        handlers.put("list", (listener, json) -> sendMessage(listener, new ListResponse(rtorrentClientService.list())));
 
         handlers.put("loadTree", (listener, json) -> {
             String hash = json.getAsJsonObject("args").getAsString("hash");
@@ -88,23 +86,6 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         System.out.println("onDisconnect. listeners: " + listeners.size());
     }
 
-    private JsonObject toJson(TorrentInfo ti) {
-        return new JsonObject()
-                .append("name", ti.getName())
-                .append("hash", ti.getHash())
-                .append("size", ti.getSize())
-                .append("status", ti.getStatus())
-                .append("d", ti.getDownloaded())
-                .append("ds", ti.getDownloadSpeed())
-                .append("u", ti.getUploaded())
-                .append("us", ti.getUploadSpeed())
-                .append("s", ti.getSeeds())
-                .append("p", ti.getPeers())
-                .append("st", ti.getTotalSeeds())
-                .append("pt", ti.getTotalPeers())
-                .append("progress", ti.getDownloaded() * 100f / ti.getSize());
-    }
-
     @Override
     public void onMessage(PingableListener listener, Message message) {
 //        System.out.println(message.asString());
@@ -116,9 +97,9 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
             System.out.println("unknown command: " + message.asString());
     }
 
-    public void broadcast(JsonObject json) {
+    public void broadcast(Response response) {
 //        System.out.println("broadcast: "+json);
-        broadcast(json.toString());
+        broadcast(JsonTools.serialize(response));
     }
 
     public void sendMessage(WebSocketListener listener, String message) {
@@ -135,35 +116,19 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public void onUpdate(TorrentInfo ti) {
-        JsonObject json = new JsonObject()
-                .append("command", "update")
-                .append("torrent", toJson(ti));
-
-        broadcast(json);
+        broadcast(new GenericTorrentInfoResponse("update", ti));
     }
 
     public void onAdd(TorrentInfo ti) {
-        JsonObject json = new JsonObject()
-                .append("command", "add")
-                .append("torrent", toJson(ti));
-
-        broadcast(json);
+        broadcast(new GenericTorrentInfoResponse("add", ti));
     }
 
     public void onRemove(TorrentInfo ti) {
-        JsonObject json = new JsonObject()
-                .append("command", "remove")
-                .append("torrent", toJson(ti));
-
-        broadcast(json);
+        broadcast(new GenericTorrentInfoResponse("remove", ti));
     }
 
     public void updateDiskStatus(long usableSpace) {
-        JsonObject json = new JsonObject()
-                .append("command", "updateDiskStatus")
-                .append("free", usableSpace);
-
-        broadcast(json);
+        broadcast(new DiscStatusResponse(usableSpace));
     }
 
     public void checkConnections() {
@@ -206,6 +171,70 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         public boolean isValid() {
             return System.currentTimeMillis() - lastPing <= 60_000;
         }
+    }
+
+    static class ListResponse extends Response {
+        final List<TorrentInfoSerialized> torrents;
+
+        ListResponse(List<TorrentInfo> infos) {
+            super("list");
+            torrents = Flow.of(infos)
+                    .map(AppWebSocketHandler::toSerializedView)
+                    .collect(new ArrayList<>(infos.size()))
+                    .get();
+        }
+    }
+
+    static class GenericTorrentInfoResponse extends Response {
+        TorrentInfoSerialized torrent;
+
+        GenericTorrentInfoResponse(String command, TorrentInfo ti) {
+            super(command);
+            torrent = toSerializedView(ti);
+        }
+    }
+
+    static class DiscStatusResponse extends Response {
+        final long free;
+
+        DiscStatusResponse(long free) {
+            super("updateDiskStatus");
+            this.free = free;
+        }
+    }
+
+    static class TorrentInfoSerialized {
+        String name;
+        String hash;
+        long size;
+        String status;
+        long d;
+        long ds;
+        long u;
+        long us;
+        long s;
+        long p;
+        long st;
+        long pt;
+        float progress;
+    }
+
+    private static TorrentInfoSerialized toSerializedView(TorrentInfo it) {
+        TorrentInfoSerialized s = new TorrentInfoSerialized();
+        s.name = it.getName();
+        s.hash = it.getHash();
+        s.size = it.getSize();
+        s.status = it.getStatus().name();
+        s.d = it.getDownloaded();
+        s.ds = it.getDownloadSpeed();
+        s.u = it.getUploaded();
+        s.us = it.getUploadSpeed();
+        s.s = it.getSeeds();
+        s.p = it.getPeers();
+        s.st = it.getTotalSeeds();
+        s.pt = it.getTotalPeers();
+        s.progress = it.getDownloaded() * 100f / it.getSize();
+        return s;
     }
 
     static class TreeResponse extends Response {
