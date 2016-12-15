@@ -4,6 +4,7 @@ import com.wizzardo.http.HttpConnection;
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
 import com.wizzardo.http.websocket.Message;
 import com.wizzardo.http.websocket.WebSocketHandler;
+import com.wizzardo.metrics.Recorder;
 import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
@@ -22,6 +23,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
 
     protected Map<String, CommandHandler> handlers = new ConcurrentHashMap<>();
     protected TorrentClientService rtorrentClientService;
+    protected Recorder recorder;
 
     @Override
     public String name() {
@@ -89,12 +91,24 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     @Override
     public void onMessage(PingableListener listener, Message message) {
 //        System.out.println(message.asString());
-        JsonObject json = JsonTools.parse(message.asString()).asJsonObject();
-        CommandHandler handler = handlers.get(json.getAsString("command"));
-        if (handler != null)
-            handler.handle(listener, json);
-        else
-            System.out.println("unknown command: " + message.asString());
+        JsonObject data = parseCommand(message);
+        handleCommand(listener, message, data);
+    }
+
+    protected JsonObject parseCommand(Message message) {
+        return recorder.rec(() -> JsonTools.parse(message.asString()).asJsonObject(),
+                Recorder.Tags.of("method", "parseCommand"));
+    }
+
+    protected void handleCommand(PingableListener listener, Message message, JsonObject data) {
+        String command = data.getAsString("command");
+        recorder.rec(() -> {
+            CommandHandler handler = handlers.get(command);
+            if (handler != null)
+                handler.handle(listener, data);
+            else
+                System.out.println("unknown command: " + message.asString());
+        }, Recorder.Tags.of("method", "handleCommand", "command", command));
     }
 
     public void broadcast(Response response) {
