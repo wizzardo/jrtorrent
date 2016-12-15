@@ -14,6 +14,7 @@ import com.wizzardo.http.framework.template.ResourceTools;
 import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
+import com.wizzardo.metrics.NoopRecorder;
 import com.wizzardo.metrics.Recorder;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Unchecked;
@@ -30,6 +31,7 @@ public class App {
     public App(String[] args) {
         server = new WebApplication(args);
         server.onSetup(app -> {
+            initMonitoring(app);
             DependencyFactory.get(MessageBundle.class).load("messages");
 //            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
             DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
@@ -55,43 +57,47 @@ public class App {
                 app.getUrlMapping()
                         .append("/static/js/tags.js", AppController.class, "tags");
             }
-
-            DatadogConfig datadogConfig = DependencyFactory.get(DatadogConfig.class);
-            if (datadogConfig.enabled) {
-                String hostName = Unchecked.call(() -> InetAddress.getLocalHost().getHostName());
-                StatsDClient statsDClient = new NonBlockingStatsDClient(datadogConfig.prefix, datadogConfig.hostname, datadogConfig.port, "app:jrt", "origin:" + hostName);
-                Recorder recorder = new Recorder(new DatadogClient(statsDClient));
-                DependencyFactory.get().register(Recorder.class, new SingletonDependency<>(recorder));
-
-                JvmMonitoring jvmMonitoring = new JvmMonitoring(recorder);
-                jvmMonitoring.init();
-                DependencyFactory.get().register(JvmMonitoring.class, new SingletonDependency<>(jvmMonitoring));
-
-                app.getFiltersMapping()
-                        .addAfter("/*", (request, response) -> {
-                            RequestContext context = RequestContext.get();
-                            String controller = context.controller();
-                            String action = context.action();
-                            RequestHolder requestHolder = context.getRequestHolder();
-
-                            long executeTime = 0;
-                            if (requestHolder != null) {
-                                executeTime = requestHolder.getExecutionTimeUntilNow() / 1_000_000L;
-                            }
-
-                            Recorder.Tags tags = new Recorder.Tags()
-                                    .add("controller", String.valueOf(controller))
-                                    .add("action", String.valueOf(action))
-                                    .add("handler", String.valueOf(context.handler()))
-                                    .add("status", String.valueOf(response.status().code));
-
-                            recorder.rec(Recorder.ACTION_DURATION, executeTime, tags);
-                            return true;
-                        })
-                ;
-            }
         });
         server.start();
+    }
+
+    protected void initMonitoring(WebApplication app) {
+        DatadogConfig datadogConfig = DependencyFactory.get(DatadogConfig.class);
+        if (datadogConfig.enabled) {
+            String hostName = Unchecked.call(() -> InetAddress.getLocalHost().getHostName());
+            StatsDClient statsDClient = new NonBlockingStatsDClient(datadogConfig.prefix, datadogConfig.hostname, datadogConfig.port, "app:jrt", "origin:" + hostName);
+            Recorder recorder = new Recorder(new DatadogClient(statsDClient));
+            DependencyFactory.get().register(Recorder.class, new SingletonDependency<>(recorder));
+
+            JvmMonitoring jvmMonitoring = new JvmMonitoring(recorder);
+            jvmMonitoring.init();
+            DependencyFactory.get().register(JvmMonitoring.class, new SingletonDependency<>(jvmMonitoring));
+
+            app.getFiltersMapping()
+                    .addAfter("/*", (request, response) -> {
+                        RequestContext context = RequestContext.get();
+                        String controller = context.controller();
+                        String action = context.action();
+                        RequestHolder requestHolder = context.getRequestHolder();
+
+                        long executeTime = 0;
+                        if (requestHolder != null) {
+                            executeTime = requestHolder.getExecutionTimeUntilNow() / 1_000_000L;
+                        }
+
+                        Recorder.Tags tags = new Recorder.Tags()
+                                .add("controller", String.valueOf(controller))
+                                .add("action", String.valueOf(action))
+                                .add("handler", String.valueOf(context.handler()))
+                                .add("status", String.valueOf(response.status().code));
+
+                        recorder.rec(Recorder.ACTION_DURATION, executeTime, tags);
+                        return true;
+                    })
+            ;
+        } else {
+            DependencyFactory.get().register(Recorder.class, new SingletonDependency<>(new NoopRecorder()));
+        }
     }
 
     public static void main(String[] args) {
