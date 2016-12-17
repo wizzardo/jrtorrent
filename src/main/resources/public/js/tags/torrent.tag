@@ -5,7 +5,7 @@
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' || status == 'FINISHED' ? 'play_arrow' : 'pause'}</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon delete-left"
-                onclick="deleteTorrent('{hash}','{name}')">
+                onclick="{deleteTorrent}">
             <i class="material-icons">delete</i>
         </button>
         <div>
