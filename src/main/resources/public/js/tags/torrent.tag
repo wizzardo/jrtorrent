@@ -1,7 +1,7 @@
 <torrent>
     <div class="status-bar {status}"></div>
     <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="clickTorrent(event, '{hash}')">
-        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="pauseTorrent('{hash}')">
+        <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="{pauseTorrent}">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' || status == 'FINISHED' ? 'play_arrow' : 'pause'}</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon delete-left"
@@ -287,9 +287,9 @@
             obs.trigger('click_' + hash);
         };
 
-        pauseTorrent = function (hash) {
-            log('pause ' + hash);
-            obs.trigger('torrent_toggle_' + hash);
+        that.pauseTorrent = function () {
+            log('pause ' + that.hash);
+            obs.trigger('torrent_toggle_' + that.hash);
             event.processed = true;
             return true;
         };
