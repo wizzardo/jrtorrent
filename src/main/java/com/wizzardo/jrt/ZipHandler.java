@@ -14,6 +14,7 @@ import com.wizzardo.tools.misc.Unchecked;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -126,6 +127,7 @@ public class ZipHandler extends FileTreeHandler {
         final static byte[] RN = "\r\n".getBytes(StandardCharsets.UTF_8);
         final BytesProducer producer;
         final HttpConnection connection;
+        final AtomicLong threadId = new AtomicLong(-1);
         volatile boolean last;
 
         ChunkedReadableData(BytesProducer producer, HttpConnection connection) throws IOException {
@@ -147,12 +149,30 @@ public class ZipHandler extends FileTreeHandler {
 
         @Override
         public void onComplete() {
-            if (!last) {
-                ChunkedReadableData readable = Unchecked.call(() -> new ChunkedReadableData(producer, connection));
-                if (readable.length() > 0)
-                    connection.write(readable, ((ByteBufferProvider) Thread.currentThread()));
-            } else
+            Thread thread = Thread.currentThread();
+            if (threadId.get() == thread.getId())
+                return;
+
+            if (last) {
                 Unchecked.run(connection::close);
+                return;
+            }
+
+            try {
+                threadId.set(thread.getId());
+
+                ByteBufferProvider bufferProvider = (ByteBufferProvider) thread;
+                do {
+                    reset();
+                    producer.produceTo(this);
+                } while (connection.write(this, bufferProvider));
+                // check if connection is closed, throw exception maybe
+
+                threadId.compareAndSet(thread.getId(), -1);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Unchecked.run(connection::close);
+            }
         }
     }
 
