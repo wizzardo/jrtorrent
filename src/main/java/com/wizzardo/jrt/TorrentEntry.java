@@ -22,6 +22,12 @@ public class TorrentEntry {
         this.name = name;
     }
 
+    public TorrentEntry(String name, Map<String, TorrentEntry> children) {
+        this.name = name;
+        this.children = children;
+        isFolder = true;
+    }
+
     TorrentEntry() {
         name = null;
         isFolder = true;

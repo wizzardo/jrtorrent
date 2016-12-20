@@ -55,7 +55,7 @@
         };
 
         that.path = function () {
-            return that.opts.entries.length != 1 ? '/' + encodeURIComponent(that.opts.name) : ''
+            return ''
         };
 
         that.hash = function () {

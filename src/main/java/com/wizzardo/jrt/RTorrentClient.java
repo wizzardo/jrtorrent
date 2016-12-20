@@ -2,6 +2,7 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.tools.cache.Cache;
 import com.wizzardo.tools.collections.CollectionTools;
+import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.interfaces.Consumer;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.xml.Node;
@@ -9,6 +10,7 @@ import com.wizzardo.tools.xml.XmlParser;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -216,7 +218,16 @@ public class RTorrentClient {
     }
 
     public Collection<TorrentEntry> getEntries(String hash) {
-        return getRootEntry(hash).getChildren().values();
+        TorrentEntry rootEntry = getRootEntry(hash);
+        if (rootEntry.getChildren().size() != 1 || Flow.of(rootEntry.getChildren()).all(it -> it.getValue().isFolder()).get()) {
+            return Collections.singleton(new TorrentEntry(getName(hash), rootEntry.getChildren()));
+        } else {
+            return rootEntry.getChildren().values();
+        }
+    }
+
+    public String getName(String hash) {
+        return new XmlParser().parse(executeRequest(new XmlRpc("d.name", hash))).get(0).text();
     }
 
     public List<TorrentInfo> getTorrents() {
