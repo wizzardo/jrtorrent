@@ -1,6 +1,6 @@
 <torrent>
     <div class="status-bar {status}"></div>
-    <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="clickTorrent(event, '{hash}')">
+    <div class="torrent {status.toLowerCase()} {selected ? 'selected' : ''}" onclick="{clickTorrent}">
         <button class="mdl-button mdl-js-button mdl-button--icon pause" onclick="{pauseTorrent}">
             <i class="material-icons">{status =='PAUSED' || status == 'STOPPED' || status == 'FINISHED' ? 'play_arrow' : 'pause'}</i>
         </button>
@@ -280,11 +280,11 @@
             return Math.floor(d) + 'd' + Math.floor(h % 24) + 'h';
         };
 
-        clickTorrent = function (event, hash) {
+        that.clickTorrent = function (event) {
             if (event.processed)
                 return true;
 
-            obs.trigger('click_' + hash);
+            obs.trigger('click_' + that.hash);
         };
 
         that.pauseTorrent = function () {
