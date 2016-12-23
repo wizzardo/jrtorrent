@@ -18,7 +18,7 @@
             </button>
         </span>
         </div>
-        <div class="resizeable children" style="height: {30 * shownChildren}px">
+        <div class="resizeable children" style="height: {30 * shownChildren}px; {shownChildren == 0 ? 'display:none' : ''}">
             <tree_entry each="{values(children)}"></tree_entry>
         </div>
     </div>
@@ -51,6 +51,9 @@
         tree_entry .mdl-button {
             line-height: 20px;
             height: 20px;
+            border-radius: 0px;
+            webkit-transition: none;
+            transition: none;
         }
 
         tree_entry .priority {
