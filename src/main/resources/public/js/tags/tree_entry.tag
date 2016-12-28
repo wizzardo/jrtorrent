@@ -5,12 +5,12 @@
                 <i class="material-icons">{showChildren?'folder_open':'folder'}</i>
                 <span class="folderName">{name}</span>
 
-                <a href="{zip()}" class="zip" onclick="openLink('{zip()}')">
+                <a href="#" class="zip" onclick="{openZip}">
                     <i class="material-icons">archive</i>
                 </a>
             </div>
 
-            <a if="{!isFolder}" href="{link()}" onclick="openLink('{link()}')">{name}</a>
+            <a if="{!isFolder}" href="#" onclick="{openDirectLink}">{name}</a>
 
         <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
@@ -192,8 +192,15 @@
             that.children[entry].priority = value
         };
 
-        openLink = function (url) {
-            open(url, '_blank')
+        that.openDirectLink = function (e) {
+            openUrl(that.link(), e);
+        };
+        that.openZip = function (e) {
+            openUrl(that.zip(), e);
+        };
+        openUrl = function (url, e) {
+            e.processed = true;
+            open(url, '_blank');
         };
     </script>
 </tree_entry>
