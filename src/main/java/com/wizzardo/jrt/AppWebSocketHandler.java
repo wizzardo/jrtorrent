@@ -97,7 +97,8 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
 
     protected JsonObject parseCommand(Message message) {
         return recorder.rec(() -> JsonTools.parse(message.asString()).asJsonObject(),
-                Recorder.Tags.of("method", "parseCommand"));
+                Recorder.Tags.of("method", "parseCommand")
+        );
     }
 
     protected void handleCommand(PingableListener listener, Message message, JsonObject data) {
@@ -112,8 +113,13 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public void broadcast(Response response) {
-//        System.out.println("broadcast: "+json);
-        broadcast(JsonTools.serialize(response));
+        broadcast(serialize(response));
+    }
+
+    protected String serialize(Response response) {
+        return recorder.rec(() -> JsonTools.serialize(response),
+                Recorder.Tags.of("method", "serialize", "command", response.command)
+        );
     }
 
     public void sendMessage(WebSocketListener listener, String message) {
@@ -126,7 +132,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public void sendMessage(WebSocketListener listener, Response response) {
-        sendMessage(listener, JsonTools.serialize(response));
+        sendMessage(listener, serialize(response));
     }
 
     public void onUpdate(TorrentInfo ti) {
