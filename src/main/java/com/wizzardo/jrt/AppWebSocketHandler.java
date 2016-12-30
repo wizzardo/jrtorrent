@@ -1,9 +1,11 @@
 package com.wizzardo.jrt;
 
 import com.wizzardo.http.HttpConnection;
+import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
 import com.wizzardo.http.websocket.Message;
 import com.wizzardo.http.websocket.WebSocketHandler;
+import com.wizzardo.metrics.JvmMonitoring;
 import com.wizzardo.metrics.Recorder;
 import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.json.JsonObject;
@@ -70,6 +72,21 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         handlers.put("ping", (listener, json) -> {
             listener.update();
         });
+
+        JvmMonitoring jvmMonitoring = DependencyFactory.get(JvmMonitoring.class);
+        if (jvmMonitoring != null) {
+            jvmMonitoring.add("ws.connections", new JvmMonitoring.Recordable() {
+                @Override
+                public void record(Recorder recorder) {
+                    recorder.gauge("ws.connections", listeners.size());
+                }
+
+                @Override
+                public boolean isValid() {
+                    return true;
+                }
+            });
+        }
     }
 
     @Override
