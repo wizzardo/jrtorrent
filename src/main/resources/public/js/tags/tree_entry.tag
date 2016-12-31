@@ -5,12 +5,12 @@
                 <i class="material-icons">{showChildren?'folder_open':'folder'}</i>
                 <span class="folderName">{name}</span>
 
-                <a href="#" class="zip" onclick="{openZip}">
+                <a href="#" class="{zip()}" onclick="{openZip}">
                     <i class="material-icons">archive</i>
                 </a>
             </div>
 
-            <a if="{!isFolder}" href="#" onclick="{openDirectLink}">{name}</a>
+            <a if="{!isFolder}" href="{link()}" onclick="{openDirectLink}">{name}</a>
 
         <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
