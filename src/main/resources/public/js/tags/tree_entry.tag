@@ -5,7 +5,7 @@
                 <i class="material-icons">{showChildren?'folder_open':'folder'}</i>
                 <span class="folderName">{name}</span>
 
-                <a href="#" class="{zip()}" onclick="{openZip}">
+                <a href="{zip()}" class="zip" onclick="{openZip}">
                     <i class="material-icons">archive</i>
                 </a>
             </div>
