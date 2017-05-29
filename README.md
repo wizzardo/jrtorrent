@@ -22,10 +22,8 @@ cd $HOME/jrtorrent
 screen -dmS jrtorrent java -Xmx32m -jar build/libs/jrtorrent-all-0.1.jar
 ```
 
-
 #### requirements
 * ``Java 1.8``
-
 
 #### rtorrent Installation
 ```bash
