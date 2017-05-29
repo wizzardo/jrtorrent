@@ -11,6 +11,7 @@ git clone https://github.com/wizzardo/jrtorrent.git
 cd jrtorrent
 ./gradlew --refresh-dependencies fatJar
 java -Xmx32m -jar build/libs/jrtorrent-all-0.1.jar
+rtorrent # don't forget to run rtorrent
 ```
 
 #### Run with screen
@@ -20,6 +21,9 @@ cd $HOME/jrtorrent
 ./gradlew --refresh-dependencies fatJar
 screen -dmS jrtorrent java -Xmx32m -jar build/libs/jrtorrent-all-0.1.jar
 ```
+
+#### requirements
+* ``java 8``
 
 #### rtorrent Installation
 ```bash
