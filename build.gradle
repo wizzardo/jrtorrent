@@ -18,10 +18,9 @@ mainClassName = "com.wizzardo.jrt.RTorrentClient"
 mainClassName = "com.wizzardo.jrt.App"
 
 dependencies {
-    compile 'com.wizzardo:epoll:0.2+'
     compile 'com.wizzardo:http:0.2+'
     compile 'com.wizzardo:datadog-jvm:0.4+'
-    compile 'com.wizzardo.tools:tools:0.17+'
+    compile 'com.wizzardo.tools:tools:0.20+'
 }
 
 //create a single Jar with all dependencies
