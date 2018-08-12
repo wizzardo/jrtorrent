@@ -5,6 +5,7 @@ import com.timgroup.statsd.StatsDClient;
 import com.wizzardo.http.FileTreeHandler;
 import com.wizzardo.http.MultipartHandler;
 import com.wizzardo.http.RestHandler;
+import com.wizzardo.http.filter.TokenFilter;
 import com.wizzardo.http.framework.*;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.di.SingletonDependency;
@@ -37,11 +38,13 @@ public class App {
             DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
 
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
+            TokenFilter tokenFilter = DependencyFactory.get(TokenFilter.class);
 
             app.getUrlMapping()
                     .append("/", AppController.class, "index")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
                     .append("/zip/*", new ZipHandler(downloads, "zip", "zip"))
+                    .append("/m3u/*", new M3UHandler(downloads, "m3u", tokenFilter, "m3u"))
                     .append("/downloads/*", new RestHandler("downloads")
                             .get(new FileTreeHandler(downloads, "/downloads")
                                     .setRangeResponseHelper(new RangeResponseHelper())

@@ -8,6 +8,9 @@
                 <a href="{zip()}" class="zip" onclick="{openZip}">
                     <i class="material-icons">archive</i>
                 </a>
+                <a href="{m3u()}" class="m3u" onclick="{openM3U()}">
+                    m3u
+                </a>
             </div>
 
             <a if="{!isFolder}" href="{link()}" onclick="{openDirectLink}">{name}</a>
@@ -80,6 +83,12 @@
         tree_entry .zip {
             margin-left: 10px;
         }
+        tree_entry .m3u {
+            color: darkgray;
+            font-weight: bold;
+            margin-left: 10px;
+            text-decoration: none;
+        }
 
         @media screen and (max-width: 736px) {
             tree_entry .priority {
@@ -140,6 +149,10 @@
             return config.zipPath + that.path() + '?token=' + config.token;
         };
 
+        that.m3u = function () {
+            return config.m3uPath + that.path() + '?token=' + config.token;
+        };
+
         that.path = function () {
             return that.parent.path() + '/' + encodeURIComponent(that.name)
         };
@@ -197,6 +210,9 @@
         };
         that.openZip = function (e) {
             openUrl(that.zip(), e);
+        };
+        that.openM3U = function (e) {
+            openUrl(that.m3u(), e);
         };
         openUrl = function (url, e) {
             e.processed = true;

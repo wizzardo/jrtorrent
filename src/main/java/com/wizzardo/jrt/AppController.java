@@ -40,6 +40,7 @@ public class AppController extends Controller {
         String token;
         String downloadsPath;
         String zipPath;
+        String m3uPath;
     }
 
     public Renderer index() {
@@ -50,6 +51,7 @@ public class AppController extends Controller {
             ControllerUrlMapping mapping = Holders.getApplication().getUrlMapping();
             it.downloadsPath = mapping.getUrlTemplate("downloads").getRelativeUrl();
             it.zipPath = mapping.getUrlTemplate("zip").getRelativeUrl();
+            it.m3uPath = mapping.getUrlTemplate("m3u").getRelativeUrl();
         })));
 
         return renderView("index");
