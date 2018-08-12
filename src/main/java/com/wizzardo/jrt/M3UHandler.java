@@ -64,7 +64,7 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
         ControllerUrlMapping mapping = Holders.getApplication().getUrlMapping();
         StringBuilder sb = new StringBuilder("https://" + handlerContext.request.header(Header.KEY_HOST));
         sb.append(mapping.getUrlTemplate("downloads").getRelativeUrl());
-        getPath(sb, file).append("/").append(super.generateUrl(file, handlerContext));
+        getPath(sb, file.getParentFile()).append("/").append(super.generateUrl(file, handlerContext));
         return sb.toString();
     }
 
