@@ -2,6 +2,8 @@ package com.wizzardo.jrt;
 
 import com.wizzardo.http.TokenizedFileTreeHandler;
 import com.wizzardo.http.filter.TokenFilter;
+import com.wizzardo.http.framework.ControllerUrlMapping;
+import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.request.Header;
 import com.wizzardo.http.request.Request;
 import com.wizzardo.http.response.Response;
@@ -59,7 +61,9 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
 
     @Override
     protected String generateUrl(File file, T handlerContext) {
+        ControllerUrlMapping mapping = Holders.getApplication().getUrlMapping();
         StringBuilder sb = new StringBuilder("https://" + handlerContext.request.header(Header.KEY_HOST));
+        sb.append(mapping.getUrlTemplate("downloads").getRelativeUrl());
         getPath(sb, file).append("/").append(super.generateUrl(file, handlerContext));
         return sb.toString();
     }
