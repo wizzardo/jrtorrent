@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * Created by wizzardo on 03/12/16.
  */
-public class M3UHandler extends TokenizedFileTreeHandler {
+public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends TokenizedFileTreeHandler<T> {
 
     protected Set<String> extensions = new HashSet<>(Arrays.asList(
             "mkv",
@@ -44,12 +44,27 @@ public class M3UHandler extends TokenizedFileTreeHandler {
     @Override
     protected Response handleDirectory(Request request, Response response, String path, File file) {
         StringBuilder sb = new StringBuilder();
-        HandlerContextWithToken handlerContext = createHandlerContext(path, request);
+        T handlerContext = createHandlerContext(path, request);
         return response.setBody(addFileRecursively(file, sb, handlerContext).toString())
                 .header(Header.KEY_CONTENT_TYPE, "audio/x-mpegurl");
     }
 
-    protected StringBuilder addFileRecursively(File file, StringBuilder sb, HandlerContextWithToken context) {
+    protected StringBuilder getPath(StringBuilder sb, File file) {
+        if (!file.equals(workDir)) {
+            getPath(sb, file.getParentFile());
+            sb.append("/").append(encodeName(file.getName()));
+        }
+        return sb;
+    }
+
+    @Override
+    protected String generateUrl(File file, T handlerContext) {
+        StringBuilder sb = new StringBuilder("https://" + handlerContext.request.header(Header.KEY_HOST));
+        getPath(sb, file).append("/").append(super.generateUrl(file, handlerContext));
+        return sb.toString();
+    }
+
+    protected StringBuilder addFileRecursively(File file, StringBuilder sb, T context) {
         if (file.isDirectory()) {
             File[] files = file.listFiles(fileFilter);
             if (files != null)
@@ -62,4 +77,17 @@ public class M3UHandler extends TokenizedFileTreeHandler {
         return sb;
     }
 
+    @Override
+    protected T createHandlerContext(String path, Request request) {
+        return (T) new HandlerContextWithRequest(path, request);
+    }
+
+    protected class HandlerContextWithRequest extends HandlerContextWithToken {
+        protected final Request request;
+
+        public HandlerContextWithRequest(String path, Request request) {
+            super(path, request);
+            this.request = request;
+        }
+    }
 }
