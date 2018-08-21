@@ -8,7 +8,8 @@ import com.wizzardo.http.request.Header;
 import com.wizzardo.http.request.Request;
 import com.wizzardo.http.response.Response;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +49,9 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
         StringBuilder sb = new StringBuilder();
         T handlerContext = createHandlerContext(path, request);
         return response.setBody(addFileRecursively(file, sb, handlerContext).toString())
-                .header(Header.KEY_CONTENT_TYPE, "audio/x-mpegurl");
+                .header(Header.KEY_CONTENT_TYPE, "audio/x-mpegurl")
+                .header("Content-Disposition", "attachment; filename=\"" + file.getName() + ".m3u\"")
+                ;
     }
 
     protected StringBuilder getPath(StringBuilder sb, File file) {
@@ -71,10 +74,12 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
     protected StringBuilder addFileRecursively(File file, StringBuilder sb, T context) {
         if (file.isDirectory()) {
             File[] files = file.listFiles(fileFilter);
-            if (files != null)
+            if (files != null) {
+                Arrays.sort(files);
                 for (File f : files) {
                     addFileRecursively(f, sb, context);
                 }
+            }
         } else {
             sb.append(generateUrl(file, context)).append("\n");
         }

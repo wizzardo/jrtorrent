@@ -216,6 +216,8 @@
         };
         openUrl = function (url, e) {
             e.processed = true;
+            e.preventDefault();
+            e.stopPropagation();
             open(url, '_blank');
         };
     </script>
