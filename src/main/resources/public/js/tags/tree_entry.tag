@@ -62,6 +62,7 @@
         tree_entry .priority {
             float: right;
             overflow: unset;
+            position: relative;
         }
 
         tree_entry .folder {
