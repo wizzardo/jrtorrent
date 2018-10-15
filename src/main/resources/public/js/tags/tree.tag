@@ -11,6 +11,13 @@
             border-bottom: 1px solid #EAEAEA;
         }
 
+        @media screen and (max-width: 960px) {
+            tree {
+                overflow-x: auto;
+                max-width: 100vw;
+            }
+        }
+
         tree .resizeable {
             transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
@@ -29,7 +36,7 @@
 
         that.updateShownChildsCount = function (innerChilds) {
 //            log('tree.updateShownChildsCount ' + innerChilds)
-            if (typeof(innerChilds) != "undefined")
+            if (typeof (innerChilds) != "undefined")
                 that.totalChildrenToShow = that.totalChildrenToShow + innerChilds;
             log('tree.totalChildrenToShow ' + that.totalChildrenToShow)
         };

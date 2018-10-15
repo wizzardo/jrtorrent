@@ -15,7 +15,7 @@
 
             <a if="{!isFolder}" href="{link()}" onclick="{openDirectLink}">{name}</a>
 
-        <span class="priority">
+            <span class="priority">
             <button onclick="{mountSelect}" class="mdl-button mdl-js-button">
                 {priority || 'NORMAL'}
             </button>
@@ -65,6 +65,7 @@
 
         tree_entry .priority {
             float: right;
+            overflow: unset;
         }
 
         tree_entry .folder {
@@ -75,6 +76,12 @@
 
         tree_entry .info {
             line-height: 20px;
+            display: flex;
+            flex-flow: row nowrap;
+        }
+
+        tree_entry .info a {
+            white-space: nowrap;
         }
 
         tree_entry .info:hover {
@@ -89,17 +96,12 @@
         tree_entry .zip {
             margin-left: 10px;
         }
+
         tree_entry .m3u {
             color: darkgray;
             font-weight: bold;
             margin-left: 10px;
             text-decoration: none;
-        }
-
-        @media screen and (max-width: 736px) {
-            tree_entry .priority {
-                display: none;
-            }
         }
     </style>
 
@@ -127,7 +129,7 @@
         };
         that.updateShownChildsCount = function (innerChilds) {
 //            log('entry.updateShownChildsCount ' + innerChilds + ' in ' + that.name);
-            if (typeof(innerChilds) != "undefined")
+            if (typeof (innerChilds) != "undefined")
                 that.shownChildren += innerChilds;
 
             if (that.parent.updateShownChildsCount)
