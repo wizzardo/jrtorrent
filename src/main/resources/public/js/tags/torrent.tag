@@ -95,7 +95,8 @@
         torrent .torrent .name {
             font-weight: bold;
             display: block;
-            width: 100%;
+            width: 100vw;
+            white-space: normal;
             max-width: 760px;
         }
 
@@ -153,7 +154,8 @@
             }
 
             torrent .mdl-progress {
-                width: 100vw;
+                width: 95vw;
+                margin-left: 2vw;
             }
         }
 

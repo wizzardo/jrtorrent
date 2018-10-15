@@ -27,6 +27,14 @@
         add_button .slide-bottom {
             bottom: -100px;
         }
+
+        add_button .mdl-button--fab {
+            border-radius: 77% 23% 37% 63% / 34% 38% 62% 66%;
+        }
+
+        add_button .mdl-button--fab .mdl-button__ripple-container {
+            border-radius: 77% 23% 37% 63% / 34% 38% 62% 66%;
+        }
     </style>
 
     <script>

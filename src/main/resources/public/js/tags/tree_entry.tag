@@ -30,8 +30,12 @@
         tree_entry {
             display: block;
             margin-left: 10px;
-            padding-top: 10px;
             font-size: 14px;
+        }
+
+        tree_entry > div {
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
         tree_entry span:hover {
@@ -64,7 +68,9 @@
         }
 
         tree_entry .folder {
-            display: inline-block;
+            display: inline-flex;
+            flex-flow: row nowrap;
+            align-items: center;
         }
 
         tree_entry .info {
