@@ -47,10 +47,6 @@
             color: #757575;
         }
 
-        tree_entry .children {
-            overflow: hidden;
-        }
-
         tree_entry .resizeable {
             transition: height .2s cubic-bezier(.4, 0, .2, 1);
         }
