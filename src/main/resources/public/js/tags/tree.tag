@@ -5,7 +5,6 @@
     <style>
         tree {
             display: block;
-            overflow: hidden;
             background: #FAFAFA;
             padding-left: 10px;
             border-bottom: 1px solid #EAEAEA;
