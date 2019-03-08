@@ -8,6 +8,7 @@
             background: #FAFAFA;
             padding-left: 10px;
             border-bottom: 1px solid #EAEAEA;
+            overflow: hidden;
         }
 
         @media screen and (max-width: 960px) {

@@ -124,6 +124,10 @@
             width: 100%;
         }
 
+        .torrent.seeding.selected + tree {
+            overflow: unset;
+        }
+
         @media screen and (max-width: 800px) {
             torrent .torrent .status {
                 display: none;
