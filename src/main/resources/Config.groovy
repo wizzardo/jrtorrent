@@ -24,6 +24,7 @@ jrt {
     }
 
     downloads = '/tmp/'
+    downloadsAliases = ['movies', 'series', 'music']
 }
 
 environments {

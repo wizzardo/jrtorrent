@@ -22,6 +22,7 @@ import com.wizzardo.tools.misc.Unchecked;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.Collections;
 
 /**
  * Created by wizzardo on 07.12.15.
@@ -48,9 +49,17 @@ public class App {
                     .append("/downloads/*", new RestHandler("downloads")
                             .get(new FileTreeHandler(downloads, "/downloads")
                                     .setRangeResponseHelper(new RangeResponseHelper())
-                                    .setShowFolder(false)))
+                                    .setShowFolder(true)))
                     .append("/ws", AppWebSocketHandler.class)
             ;
+
+            for (String alias : app.getConfig().config("jrt").get("downloadsAliases", Collections.<String>emptyList())) {
+                app.getUrlMapping()
+                        .append("/" + alias + "/*", new RestHandler()
+                                .get(new FileTreeHandler(downloads, "/" + alias)
+                                        .setRangeResponseHelper(new RangeResponseHelper())
+                                        .setShowFolder(true)));
+            }
 
             LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
             if (app.getEnvironment() == Environment.PRODUCTION && resourceTools.isJar()) {
