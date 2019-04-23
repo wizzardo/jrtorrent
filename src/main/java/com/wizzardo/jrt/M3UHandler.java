@@ -32,6 +32,7 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
     ));
 
     protected FileFilter fileFilter = pathname -> {
+        if(pathname.isDirectory()) return true;
         String name = pathname.getName();
         int i = name.lastIndexOf('.');
         if (i == -1 || i == name.length() - 1)
