@@ -227,7 +227,8 @@ public class RTorrentClient {
     }
 
     public String getName(String hash) {
-        return new XmlParser().parse(executeRequest(new XmlRpc("d.name", hash))).get(0).text();
+        String name = new XmlParser().parse(executeRequest(new XmlRpc("d.name", hash))).get(0).text();
+        return Node.unescape(name);
     }
 
     public List<TorrentInfo> getTorrents() {
