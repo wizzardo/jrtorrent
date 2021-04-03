@@ -82,6 +82,7 @@ public class App {
             DependencyFactory.get().register(Recorder.class, new SingletonDependency<>(recorder));
 
             JvmMonitoring jvmMonitoring = new JvmMonitoring(recorder);
+            jvmMonitoring.setWithCacheMetrics(false);
             jvmMonitoring.init();
             DependencyFactory.get().register(JvmMonitoring.class, new SingletonDependency<>(jvmMonitoring));
 
