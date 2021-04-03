@@ -2,6 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="${resource(file: 'icons/favicon.ico')}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="${resource(file: 'icons/favicon-32x32.png')}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="${resource(file: 'icons/favicon-16x16.png')}" />
     <title><g:layoutTitle default="Default Title"/></title>
     <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
     <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
