@@ -57,6 +57,16 @@ public class AppController extends Controller {
         return renderView("index");
     }
 
+    static class LoginData {
+        String token;
+    }
+
+    public LoginData self() {
+        LoginData loginData = new LoginData();
+        loginData.token = tokenFilter != null ? tokenFilter.generateToken(request) : "";
+        return loginData;
+    }
+
     public Renderer tags() {
         StringBuilder sb = new StringBuilder();
         sb.append(tagBundler.toJavascript("add_button"));
