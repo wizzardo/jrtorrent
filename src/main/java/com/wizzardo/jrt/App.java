@@ -12,6 +12,7 @@ import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
 import com.wizzardo.http.framework.template.LocalResourcesTools;
 import com.wizzardo.http.framework.template.ResourceTools;
+import com.wizzardo.http.request.Header;
 import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
@@ -35,14 +36,16 @@ public class App {
         server.onSetup(app -> {
             initMonitoring(app);
             DependencyFactory.get(MessageBundle.class).load("messages");
-//            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
-            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
+            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
+//            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
 
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
             TokenFilter tokenFilter = DependencyFactory.get(TokenFilter.class);
 
             app.getUrlMapping()
+                    .append("/info", (request, response) -> response.appendHeader(Header.KV_CONTENT_TYPE_APPLICATION_JSON).body("{\"status\":\"OK\"}"))
                     .append("/", AppController.class, "index")
+                    .append("/users/self", AppController.class, "self")
                     .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
                     .append("/zip/*", new ZipHandler(downloads, "zip", "zip"))
                     .append("/m3u/*", new M3UHandler(downloads, "m3u", tokenFilter, "m3u"))
@@ -59,6 +62,17 @@ public class App {
                                 .get(new FileTreeHandler(downloads, "/" + alias)
                                         .setRangeResponseHelper(new RangeResponseHelper())
                                         .setShowFolder(true)));
+            }
+
+            if (app.getEnvironment() != Environment.PRODUCTION) {
+                app.getFiltersMapping().addAfter("/*", (request, response) -> {
+                    String origin = request.header(Header.KEY_ORIGIN);
+                    if (origin != null) {
+                        response.header("Access-Control-Allow-Credentials", "true");
+                        response.header("Access-Control-Allow-Origin", origin);
+                    }
+                    return true;
+                });
             }
 
             LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
