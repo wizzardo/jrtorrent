@@ -10,22 +10,139 @@ import com.wizzardo.metrics.Recorder;
 import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
+import com.wizzardo.tools.misc.ExceptionDrivenStringBuilder;
 import com.wizzardo.tools.misc.Unchecked;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wizzardo on 08.12.15.
  */
-public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHandler.PingableListener> {
+public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener> extends DefaultWebSocketHandler<L> {
 
-    protected Map<String, CommandHandler> handlers = new ConcurrentHashMap<>();
     protected TorrentClientService rtorrentClientService;
     protected Recorder recorder;
+
+    protected Map<String, Map.Entry<Class<? extends CommandPojo>, CommandHandler<? extends L, ? extends CommandPojo>>>
+            handlers = new ConcurrentHashMap<>(16, 1f);
+
+    protected Reader reader = (clazz, bytes, offset, length) -> recorder.rec(() -> JsonTools.parse(bytes, offset, length, clazz),
+            Recorder.Tags.of("method", "parse", "command", clazz.getSimpleName())
+    );
+    protected ErrorHandler errorHandler = e -> e.printStackTrace();
+
+    public interface ErrorHandler {
+        void onError(Exception e);
+    }
+
+    public interface Reader {
+        Object read(Class<?> clazz, byte[] bytes, int offset, int length);
+    }
+
+    public interface CommandPojo {
+    }
+
+    public interface CommandHandler<T, C extends CommandPojo> {
+        void handle(T client, C command);
+    }
+
+    public <C extends CommandPojo> void addHandler(Class<C> commandClass, CommandHandler<? extends L, C> handler) {
+        AbstractMap.SimpleEntry<Class<? extends CommandPojo>, CommandHandler<? extends L, ? extends CommandPojo>> entry = new AbstractMap.SimpleEntry<>(commandClass, handler);
+        handlers.put(commandClass.getSimpleName(), entry);
+    }
+
+    public void onMessage(L listener, Message message) {
+        try {
+            byte[] bytes = message.asBytes();
+
+            int[] holder = new int[1];
+            int position = readInt(holder, bytes, 0, bytes.length);
+            int nameLength = holder[0];
+            String commandName;
+            if (nameLength != -1) {
+                commandName = new String(bytes, position, nameLength);
+            } else {
+                position = 0;
+                nameLength = indexOf((byte) '{', bytes, position, bytes.length);
+                commandName = new String(bytes, position, nameLength);
+            }
+            int offset = position + nameLength;
+            Map.Entry<Class<? extends CommandPojo>, CommandHandler<? extends L, ? extends CommandPojo>> commandHandlerPair = handlers.get(commandName);
+            if (commandHandlerPair == null)
+                throw new IllegalArgumentException("Unknown command: " + commandName);
+
+            CommandHandler<L, CommandPojo> handler = (CommandHandler<L, CommandPojo>) commandHandlerPair.getValue();
+            Class<? extends CommandPojo> commandClass = commandHandlerPair.getKey();
+            CommandPojo command = (CommandPojo) reader.read(commandClass, bytes, offset, bytes.length - offset);
+
+            recorder.rec(() -> handler.handle(listener, command), Recorder.Tags.of("method", "handleCommand", "command", commandName));
+        } catch (Exception e) {
+            onError(e);
+        }
+    }
+
+    protected void onError(Exception e) {
+        errorHandler.onError(e);
+    }
+
+    protected static int indexOf(byte b, byte[] bytes, int offset, int limit) {
+        for (int i = offset; i < limit; i++) {
+            if (bytes[i] == b)
+                return i;
+        }
+        return -1;
+    }
+
+    protected static int readInt(int[] holder, byte[] bytes, int offset, int limit) {
+        int value = 0;
+        int i = offset;
+        while (i < limit) {
+            byte b = bytes[i];
+            if (b >= '0' && b <= '9') {
+                value = value * 10 + (b - '0');
+            } else {
+                if (i == offset)
+                    holder[0] = -1;
+                else
+                    holder[0] = value;
+                return i;
+            }
+            i++;
+        }
+
+        holder[0] = value;
+        return limit;
+    }
+
+    static class Ping implements CommandPojo {
+    }
+
+    static class GetList implements CommandPojo {
+    }
+
+    static class GetTorrentFileTree implements CommandPojo {
+        String hash;
+    }
+
+    static class StartTorrent implements CommandPojo {
+        String hash;
+    }
+
+    static class StopTorrent implements CommandPojo {
+        String hash;
+    }
+
+    static class DeleteTorrent implements CommandPojo {
+        String hash;
+        boolean withData;
+    }
+
+    static class SetFilePriority implements CommandPojo {
+        String hash;
+        String path;
+        FilePriority priority;
+    }
 
     @Override
     public String name() {
@@ -33,44 +150,35 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public AppWebSocketHandler() {
-        handlers.put("list", (listener, json) -> sendMessage(listener, new ListResponse(rtorrentClientService.list())));
 
-        handlers.put("loadTree", (listener, json) -> {
-            String hash = json.getAsJsonObject("args").getAsString("hash");
-            sendMessage(listener, new TreeResponse(rtorrentClientService.entries(hash), hash));
+        addHandler(GetList.class, (l, c) -> {
+            sendMessage(l, new ListResponse(rtorrentClientService.list()));
+        });
+        addHandler(GetTorrentFileTree.class, (l, c) -> {
+            sendMessage(l, new TreeResponse(rtorrentClientService.entries(c.hash), c.hash));
         });
 
-        handlers.put("start", (listener, json) -> {
-            String hash = json.getAsJsonObject("args").getAsString("hash");
-            rtorrentClientService.start(hash);
+        addHandler(StartTorrent.class, (l, c) -> {
+            rtorrentClientService.start(c.hash);
+        });
+        addHandler(StopTorrent.class, (l, c) -> {
+            rtorrentClientService.stop(c.hash);
+        });
+        addHandler(DeleteTorrent.class, (l, c) -> {
+            rtorrentClientService.delete(c.hash, c.withData);
         });
 
-        handlers.put("stop", (listener, json) -> {
-            String hash = json.getAsJsonObject("args").getAsString("hash");
-            rtorrentClientService.stop(hash);
+        addHandler(SetFilePriority.class, (l, c) -> {
+            rtorrentClientService.setPriority(c.hash, c.path, c.priority);
+//            sendMessage(listener, new JsonObject()
+//                    .append("command", "callback")
+//                    .append("callbackId", args.getAsString("callbackId"))
+//                    .append("result", "ok")
+//            );
         });
 
-        handlers.put("delete", (listener, json) -> {
-            String hash = json.getAsJsonObject("args").getAsString("hash");
-            boolean withData = json.getAsJsonObject("args").getAsBoolean("withData", Boolean.FALSE);
-            rtorrentClientService.delete(hash, withData);
-        });
-
-        handlers.put("setPriority", (listener, json) -> {
-            JsonObject args = json.getAsJsonObject("args");
-            String hash = args.getAsString("hash");
-            String path = args.getAsString("path");
-            FilePriority priority = FilePriority.valueOf(args.getAsString("priority"));
-            rtorrentClientService.setPriority(hash, path, priority);
-            sendMessage(listener, new JsonObject()
-                    .append("command", "callback")
-                    .append("callbackId", args.getAsString("callbackId"))
-                    .append("result", "ok")
-            );
-        });
-
-        handlers.put("ping", (listener, json) -> {
-            listener.update();
+        addHandler(Ping.class, (l, c) -> {
+            l.update();
         });
 
         JvmMonitoring jvmMonitoring = DependencyFactory.get(JvmMonitoring.class);
@@ -90,7 +198,7 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     @Override
-    public void onConnect(PingableListener listener) {
+    public void onConnect(L listener) {
         if (listeners.isEmpty())
             rtorrentClientService.resumeUpdater();
         super.onConnect(listener);
@@ -98,39 +206,29 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     @Override
-    public void onDisconnect(PingableListener listener) {
+    public void onDisconnect(L listener) {
         super.onDisconnect(listener);
         if (listeners.isEmpty())
             rtorrentClientService.pauseUpdater();
         System.out.println("onDisconnect. listeners: " + listeners.size());
     }
 
-    @Override
-    public void onMessage(PingableListener listener, Message message) {
-//        System.out.println(message.asString());
-        JsonObject data = parseCommand(message);
-        handleCommand(listener, message, data);
-    }
-
-    protected JsonObject parseCommand(Message message) {
-        return recorder.rec(() -> JsonTools.parse(message.asString()).asJsonObject(),
-                Recorder.Tags.of("method", "parseCommand")
-        );
-    }
-
-    protected void handleCommand(PingableListener listener, Message message, JsonObject data) {
-        String command = data.getAsString("command");
-        recorder.rec(() -> {
-            CommandHandler handler = handlers.get(command);
-            if (handler != null)
-                handler.handle(listener, data);
-            else
-                System.out.println("unknown command: " + message.asString());
-        }, Recorder.Tags.of("method", "handleCommand", "command", command));
-    }
-
-    public void broadcast(Response response) {
+    public void broadcast(Object response) {
         broadcast(serialize(response));
+    }
+
+    public byte[] serialize(Object o) {
+        return serialize(o.getClass().getSimpleName(), o);
+    }
+
+    public byte[] serialize(String name, Object o) {
+        return recorder.rec(() -> ExceptionDrivenStringBuilder.withBuilder(builder -> {
+                    builder.append(name);
+                    JsonTools.serialize(o, builder);
+                    return builder.toBytes();
+                }),
+                Recorder.Tags.of("method", "serialize", "command", name)
+        );
     }
 
     protected String serialize(Response response) {
@@ -153,19 +251,19 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     public void onUpdate(TorrentInfo ti) {
-        broadcast(new GenericTorrentInfoResponse("update", ti));
+        broadcast(toSerializedView(ti, new TorrentUpdated()));
     }
 
     public void onAdd(TorrentInfo ti) {
-        broadcast(new GenericTorrentInfoResponse("add", ti));
+        broadcast(toSerializedView(ti, new TorrentAdded()));
     }
 
     public void onRemove(TorrentInfo ti) {
-        broadcast(new GenericTorrentInfoResponse("remove", ti));
+        broadcast(toSerializedView(ti, new TorrentDeleted()));
     }
 
     public void updateDiskStatus(long usableSpace) {
-        broadcast(new DiscStatusResponse(usableSpace));
+        broadcast(new DiskUsage(usableSpace));
     }
 
     public void checkConnections() {
@@ -176,12 +274,8 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
     }
 
     @Override
-    protected PingableListener createListener(HttpConnection connection, WebSocketHandler handler) {
-        return new PingableListener(connection, handler);
-    }
-
-    protected interface CommandHandler {
-        void handle(PingableListener listener, JsonObject json);
+    protected L createListener(HttpConnection connection, WebSocketHandler handler) {
+        return (L) new PingableListener(connection, handler);
     }
 
     public static class PingableListener extends WebSocketHandler.WebSocketListener {
@@ -216,26 +310,25 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         ListResponse(List<TorrentInfo> infos) {
             super("list");
             torrents = Flow.of(infos)
-                    .map(AppWebSocketHandler::toSerializedView)
+                    .map(torrentInfo -> toSerializedView(torrentInfo, new TorrentInfoSerialized()))
                     .collect(new ArrayList<>(infos.size()))
                     .get();
         }
     }
 
-    static class GenericTorrentInfoResponse extends Response {
-        TorrentInfoSerialized torrent;
-
-        GenericTorrentInfoResponse(String command, TorrentInfo ti) {
-            super(command);
-            torrent = toSerializedView(ti);
-        }
+    static class TorrentUpdated extends TorrentInfoSerialized {
     }
 
-    static class DiscStatusResponse extends Response {
+    static class TorrentDeleted extends TorrentInfoSerialized {
+    }
+
+    static class TorrentAdded extends TorrentInfoSerialized {
+    }
+
+    static class DiskUsage {
         final long free;
 
-        DiscStatusResponse(long free) {
-            super("updateDiskStatus");
+        DiskUsage(long free) {
             this.free = free;
         }
     }
@@ -256,22 +349,21 @@ public class AppWebSocketHandler extends DefaultWebSocketHandler<AppWebSocketHan
         float progress;
     }
 
-    private static TorrentInfoSerialized toSerializedView(TorrentInfo it) {
-        TorrentInfoSerialized s = new TorrentInfoSerialized();
-        s.name = it.getName();
-        s.hash = it.getHash();
-        s.size = it.getSize();
-        s.status = it.getStatus().name();
-        s.d = it.getDownloaded();
-        s.ds = it.getDownloadSpeed();
-        s.u = it.getUploaded();
-        s.us = it.getUploadSpeed();
-        s.s = it.getSeeds();
-        s.p = it.getPeers();
-        s.st = it.getTotalSeeds();
-        s.pt = it.getTotalPeers();
-        s.progress = it.getDownloaded() * 100f / it.getSize();
-        return s;
+    private static TorrentInfoSerialized toSerializedView(TorrentInfo it, TorrentInfoSerialized view) {
+        view.name = it.getName();
+        view.hash = it.getHash();
+        view.size = it.getSize();
+        view.status = it.getStatus().name();
+        view.d = it.getDownloaded();
+        view.ds = it.getDownloadSpeed();
+        view.u = it.getUploaded();
+        view.us = it.getUploadSpeed();
+        view.s = it.getSeeds();
+        view.p = it.getPeers();
+        view.st = it.getTotalSeeds();
+        view.pt = it.getTotalPeers();
+        view.progress = it.getDownloaded() * 100f / it.getSize();
+        return view;
     }
 
     static class TreeResponse extends Response {
