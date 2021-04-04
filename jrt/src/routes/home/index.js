@@ -1,8 +1,10 @@
-import { h } from 'preact';
-import style from './style.css';
+import React from 'react';
+import './style.css';
+import {DiskUsage} from "../../components/DiskUsage";
 
 const Home = () => (
-	<div class={style.home}>
+	<div className='home'>
+		<DiskUsage />
 		<h1>Home </h1>
 		<p>This is the Home component.</p>
 	</div>
