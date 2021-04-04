@@ -1,0 +1,80 @@
+{
+  "private": true,
+  "name": "jrt",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build-css": "node-sass-chokidar src/ -o src/",
+    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
+    "prebuild": "rm -rf build && npm run build-css",
+    "build-rollup": "rollup -c rollup.config.js",
+    "build2": "preact build",
+    "build": "npm-run-all -s prebuild build-rollup",
+    "serve": "sirv build --port 8080 --cors --single",
+    "start-js": "preact watch",
+    "start": "npm-run-all -p watch-css start-js",
+    "lint": "eslint src",
+    "test": "jest"
+  },
+  "eslintConfig": {
+    "extends": "preact",
+    "ignorePatterns": [
+      "build/"
+    ]
+  },
+  "dependencies": {
+    "preact": "^10.5.13",
+    "preact-render-to-string": "^5.1.18",
+    "preact-router": "^3.2.1",
+    "react": "16.14.0",
+    "react-dom": "16.14.0",
+    "react-ui-basics": "0.0.101"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.14",
+    "@babel/plugin-external-helpers": "^7.12.13",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-proposal-decorators": "^7.13.5",
+    "@babel/plugin-proposal-do-expressions": "^7.12.13",
+    "@babel/plugin-proposal-export-default-from": "^7.12.13",
+    "@babel/plugin-proposal-function-bind": "^7.12.13",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.13.8",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.13.8",
+    "@babel/plugin-proposal-optional-chaining": "^7.13.12",
+    "@babel/plugin-proposal-pipeline-operator": "^7.12.13",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "@babel/preset-react": "^7.13.13",
+    "@rollup/plugin-alias": "^3.1.2",
+    "babel-plugin-jsx-pragmatic": "1.0.2",
+    "babel-plugin-module-resolver": "4.1.0",
+    "babel-plugin-transform-react-remove-prop-types": "0.4.24",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-preact-pure": "^2.0.0",
+    "eslint": "^6.0.1",
+    "eslint-config-preact": "^1.1.3",
+    "fs-extra": "^8.1.0",
+    "jest": "^24.9.0",
+    "jest-preset-preact": "^1.0.0",
+    "node-sass-chokidar": "1.5.0",
+    "npm-run-all": "4.1.5",
+    "preact-cli": "^3.0.5",
+    "rollup": "2.44.0",
+    "rollup-plugin-babel": "4.4.0",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-json": "4.0.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-replace": "2.2.0",
+    "rollup-plugin-styles": "^3.14.1",
+    "rollup-plugin-terser": "^5.3.1",
+    "sirv-cli": "1.0.11"
+  },
+  "jest": {
+    "preset": "jest-preset-preact",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/browserMocks.js",
+      "<rootDir>/tests/__mocks__/setupTests.js"
+    ]
+  }
+}
