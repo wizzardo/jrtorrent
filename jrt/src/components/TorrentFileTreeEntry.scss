@@ -1,0 +1,94 @@
+.TorrentFileTreeEntry {
+  display: block;
+  margin-left: 10px;
+  font-size: 14px;
+
+  padding-top: 5px;
+  padding-bottom: 5px;
+
+  span:hover {
+    cursor: pointer;
+  }
+
+  .material-icons {
+    font-size: 20px;
+    color: #757575;
+  }
+
+  .resizeable {
+    transition: height .2s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .mdl-button {
+    line-height: 20px;
+    height: 20px;
+    border-radius: 0px;
+    transition: none;
+  }
+
+  .priority {
+    float: right;
+    overflow: unset;
+    position: relative;
+  }
+
+  .folder {
+    display: inline-flex;
+    flex-flow: row nowrap;
+    align-items: center;
+  }
+
+  .info {
+    line-height: 20px;
+    display: flex;
+    flex-flow: row nowrap;
+
+    a {
+      white-space: nowrap;
+      height: 20px;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.075);
+    }
+
+  }
+
+  .folderName {
+    display: inline-block;
+    margin-left: 5px;
+  }
+
+  .zip {
+    margin-left: 10px;
+  }
+
+  .m3u {
+    color: darkgray;
+    font-weight: bold;
+    margin-left: 10px;
+    text-decoration: none;
+  }
+
+  .prioritySelect {
+    margin-left: 20px;
+    line-height: 20px;
+    height: 20px;
+    min-height: 20px;
+    min-width: 10px;
+
+    .popup {
+      max-width: 150px;
+      min-width: 10px;
+      transition: opacity 0.2s ease-out;
+    }
+
+    .selected.inline {
+      height: 20px;
+
+      div.DummyChild {
+        margin: 0;
+      }
+    }
+  }
+}

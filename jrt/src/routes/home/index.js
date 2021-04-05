@@ -1,12 +1,14 @@
 import React from 'react';
 import './style.css';
 import {DiskUsage} from "../../components/DiskUsage";
+import {TorrentsList} from "../../components/TorrentsList";
+import AddButton from "../../components/AddButton";
 
 const Home = () => (
 	<div className='home'>
 		<DiskUsage />
-		<h1>Home </h1>
-		<p>This is the Home component.</p>
+		<TorrentsList/>
+		<AddButton/>
 	</div>
 );
 

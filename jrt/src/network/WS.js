@@ -262,7 +262,7 @@ const connect = () => {
             let command = e.data.substring(0, commandNameLength);
             if (command === 'AppInfo') {
                 state = STATE_READY;
-                send('VerifyConnection', {token: getConfig().token})
+                // send('VerifyConnection', {token: getConfig().token})
 
                 if (WindowListener.isActive())
                     resendQueue();

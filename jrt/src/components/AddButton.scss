@@ -1,0 +1,29 @@
+.AddButton.FloatingActionButton {
+  border-radius: 77% 23% 37% 63% / 34% 38% 62% 66% !important;
+  position: fixed !important;
+  background-color: #ff4081;
+  color: white;
+
+  &:hover {
+    background-color: darken(#ff4081, 5%);
+  }
+}
+
+.UploadForm {
+  .Button {
+    &.delete {
+      min-width: 32px;
+      min-height: 32px;
+
+      .material-icons {
+        color: #757575;
+      }
+    }
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

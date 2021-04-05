@@ -1,0 +1,13 @@
+.Dialog {
+  .row {
+    display: flex;
+
+    &.right {
+      justify-content: flex-end;
+    }
+
+    .Button {
+      margin-left: 10px;
+    }
+  }
+}

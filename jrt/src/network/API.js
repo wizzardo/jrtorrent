@@ -86,4 +86,8 @@ export default  {
     getWs,
 
     getSelf: createGET(`/users/self`),
+    addTorrent: createMultipart(`/addTorrent`),
+    downloadLink: (path) => `${config.base}/downloads${path}?token=${config.token}`,
+    zipLink: (path) => `${config.base}/zip${path}?token=${config.token}`,
+    m3uLink: (path) => `${config.base}/m3u${path}?token=${config.token}`,
 };

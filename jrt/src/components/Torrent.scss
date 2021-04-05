@@ -1,0 +1,179 @@
+.Torrent {
+  display: block;
+  position: relative;
+
+  > .row {
+    padding: 10px;
+    min-height: 40px;
+    position: relative;
+    left: 0px;
+    transition: left .2s cubic-bezier(.4, 0, .2, 1);
+
+    > .Button {
+      margin-right: 10px;
+      min-width: 32px;
+      min-height: 32px;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    > div {
+      display: inline-block;
+    }
+
+    &.selected {
+      background: #FAFAFA;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .name {
+      font-weight: bold;
+      display: block;
+      width: 100vw;
+      white-space: normal;
+      max-width: 760px;
+    }
+
+    .status {
+      width: 120px;
+      display: inline-block;
+    }
+
+    &.selected + .TorrentFileTree {
+      overflow: unset;
+    }
+  }
+
+  .mdl-button {
+    margin-right: 10px;
+  }
+
+  .material-icons {
+    color: #757575;
+  }
+
+  .status-bar {
+    width: 4px;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .status-bar.FINISHED {
+    background-color: rgb(63, 81, 181);
+  }
+
+  .status-bar.STOPPED {
+    background-color: rgb(255, 193, 7);
+  }
+
+  .status-bar.DOWNLOADING {
+    background-color: rgb(76, 175, 80);
+  }
+
+  .status-bar.SEEDING {
+    background-color: rgb(255, 87, 34);
+  }
+
+  span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .td {
+    width: 80px;
+    display: inline-block;
+  }
+
+  .mdl-progress {
+    width: 100%;
+    display: block;
+    position: relative;
+    height: 4px;
+
+    > .progressbar {
+      background-color: rgb(63, 81, 181);
+      z-index: 1;
+      left: 0;
+    }
+
+    > .bar {
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 0%;
+      transition: width .2s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    > .bufferbar {
+      width: 100%;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, .7), rgba(255, 255, 255, .7)), linear-gradient(to right, rgb(63, 81, 181), rgb(63, 81, 181));
+      z-index: 0;
+      left: 0;
+    }
+  }
+
+}
+
+
+@media screen and (max-width: 800px) {
+  .Torrent .row .status {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 737px) {
+  .Torrent .delete-left {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 736px) {
+  .Torrent .row {
+    left: -90px;
+  }
+
+  .Torrent .row .name {
+    padding-left: 5px;
+  }
+
+  .Torrent .row.selected {
+    left: 0px;
+  }
+
+  .Torrent .delete {
+    display: none;
+  }
+
+  .Torrent .mdl-progress {
+    width: 95vw;
+    margin-left: 2vw;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .Torrent .td {
+    width: 20vw;
+  }
+
+  .Torrent .peers, .Torrent .seeds, .Torrent .size {
+    display: none;
+  }
+
+  .Torrent .row {
+    min-height: 55px;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .Torrent .td {
+    font-size: 12px;
+  }
+}

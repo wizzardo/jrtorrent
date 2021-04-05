@@ -10,13 +10,13 @@ export default () => {
         || window.location.origin.indexOf('192.168') !== -1
         || window.location.origin.indexOf('127.0.0.1') !== -1) {
         GET('http://localhost:8084/jrt/info', {}, null
-            , () => getConfig().base = ('//localhost:8084/jrt/')
+            , () => getConfig().base = ('//localhost:8084/jrt')
             , () => console.error('cannot connect to local backend')
             , 1000 /*timeout*/
             , false /*sync*/
         );
     } else {
-        getConfig().base = (window.location.origin + '/jrt/');
+        getConfig().base = (window.location.origin + '/jrt');
     }
 
     SetupWebsocketHandlers()

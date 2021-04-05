@@ -1,20 +1,80 @@
 html, body {
-	height: 100%;
-	width: 100%;
-	padding: 0;
-	margin: 0;
-	background: #FAFAFA;
-	font-family: 'Helvetica Neue', arial, sans-serif;
-	font-weight: 400;
-	color: #444;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background: white;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  //color: #444;
+  //-webkit-font-smoothing: antialiased;
+  //-moz-osx-font-smoothing: grayscale;
+  -webkit-box-direction: normal;
+  color: rgba(0, 0, 0, .87);
 }
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #app {
-	height: 100%;
+  height: 100%;
+
+  .Button {
+    &.green {
+      background-color: #4CAF50;
+
+      &:hover {
+        background-color: #388E3C;
+      }
+    }
+
+    &.blue {
+      background-color: #3F51B5;
+
+      &:hover {
+        background-color: #303F9F;
+      }
+    }
+
+    &.red {
+      background-color: #f44336;
+
+      &:hover {
+        background-color: #d32f2f;
+      }
+    }
+
+    &.disabled {
+      background-color: #BDBDBD;
+      &:hover {
+        background-color: #BDBDBD;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .TextField {
+    &.focused {
+      > label {
+        color: #3F51B5;
+      }
+    }
+
+    .border .line {
+      background-color: #3F51B5;
+    }
+  }
+
+  .Checkbox label:before {
+    border: 2px solid #BDBDBD;
+  }
+
+  .Checkbox input[type="checkbox"]:checked + label:before {
+    background-color: #3F51B5;
+    border: none;
+  }
 }
