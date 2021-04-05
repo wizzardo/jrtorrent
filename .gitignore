@@ -1,0 +1,7 @@
+.idea
+.gradle
+out
+build
+src/main/resources/public/assets
+src/main/resources/public/static
+src/main/resources/public/index.html

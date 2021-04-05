@@ -12,6 +12,7 @@ import com.wizzardo.http.framework.di.SingletonDependency;
 import com.wizzardo.http.framework.message.MessageBundle;
 import com.wizzardo.http.framework.template.LocalResourcesTools;
 import com.wizzardo.http.framework.template.ResourceTools;
+import com.wizzardo.http.request.Header;
 import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
@@ -35,15 +36,29 @@ public class App {
         server.onSetup(app -> {
             initMonitoring(app);
             DependencyFactory.get(MessageBundle.class).load("messages");
-//            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
-            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
+            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
+//            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
 
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
             TokenFilter tokenFilter = DependencyFactory.get(TokenFilter.class);
+            LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
 
             app.getUrlMapping()
-                    .append("/", AppController.class, "index")
-                    .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
+                    .append("/info", (request, response) -> response.appendHeader(Header.KV_CONTENT_TYPE_APPLICATION_JSON).body("{\"status\":\"OK\"}"))
+//                    .append("/", AppController.class, "index")
+                    .append("/", (request, response) -> {
+                        byte[] html;
+                        if (app.getEnvironment() == Environment.PRODUCTION) {
+                            html = FileTools.bytes(new File(resourceTools.getUnzippedJarDirectory(), "/public/index.html"));
+                        } else {
+                            html = FileTools.bytes(resourceTools.getResourceFile("/public/index.html"));
+                        }
+                        return response.appendHeader(Header.KV_CONTENT_TYPE_HTML_UTF8).body(html);
+                    })
+                    .append("/users/self", AppController.class, "self")
+                    .append("/addTorrent", new RestHandler()
+                            .post(new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
+                    )
                     .append("/zip/*", new ZipHandler(downloads, "zip", "zip"))
                     .append("/m3u/*", new M3UHandler(downloads, "m3u", tokenFilter, "m3u"))
                     .append("/downloads/*", new RestHandler("downloads")
@@ -61,7 +76,20 @@ public class App {
                                         .setShowFolder(true)));
             }
 
-            LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
+            if (app.getEnvironment() != Environment.PRODUCTION) {
+                app.getFiltersMapping().addAfter("/*", (request, response) -> {
+                    String origin = request.header(Header.KEY_ORIGIN);
+                    if (origin != null && response.header("Access-Control-Allow-Origin") == null) {
+                        response.header("Access-Control-Allow-Credentials", "true");
+                        response.header("Access-Control-Allow-Origin", origin);
+                    }
+                    if (request.header("Access-Control-Request-Headers") != null)
+                        response.appendHeader("Access-Control-Allow-Headers", request.header("Access-Control-Request-Headers"));
+
+                    return true;
+                });
+            }
+
             if (app.getEnvironment() == Environment.PRODUCTION && resourceTools.isJar()) {
                 String tags = DependencyFactory.get(AppController.class).tags().render().toString();
                 FileTools.text(new File(resourceTools.getUnzippedJarDirectory(), "/public/js/tags.js"), tags);

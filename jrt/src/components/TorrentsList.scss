@@ -1,0 +1,46 @@
+.TorrentsList {
+  display: block;
+
+  .header {
+    margin: 0px 10px 0 10px;
+    border-bottom: 1px solid gray;
+    padding-left: 44px;
+  }
+
+  .header span {
+    font-weight: bold;
+  }
+
+  /*.header */
+  .th {
+    width: 80px;
+    display: inline-block;
+  }
+
+  .th.status {
+    width: 120px;
+  }
+
+  @media screen and (max-width: 800px) {
+    .status, .size {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 736px) {
+    .header {
+      padding-left: 5px;
+      margin: 0;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .th {
+      width: 20vw;
+    }
+
+    .peers, .seeds, .size {
+      display: none;
+    }
+  }
+}
