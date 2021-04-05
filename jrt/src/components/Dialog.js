@@ -1,5 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useStore} from 'laco-react'
+import React, {useEffect, useState} from 'react';
 import {state} from "../stores/DialogStore";
 import 'react-ui-basics/Dialog.css'
 import './Dialog.css'
@@ -7,6 +6,7 @@ import 'react-ui-basics/Modal.css'
 import Modal from 'react-ui-basics/Modal'
 import {classNames} from "react-ui-basics/Tools";
 import Button from "react-ui-basics/Button";
+import {useStore} from "../stores/StoreUtils";
 
 export default () => {
     const {show, accept, cancel, onAccept, onCancel, title, description, buttons} = useStore(state)

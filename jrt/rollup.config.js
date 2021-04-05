@@ -96,7 +96,7 @@ export default {
             // exclude: 'node_modules/**',
             exclude: [
                 'node_modules/!(' +
-                'preact|preact-compat|react-redux|react-ui-basics' +
+                'preact|preact-compat|react-redux|react-ui-basics|prop-types' +
                 ')/**',
             ],
             babelrc: false,

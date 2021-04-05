@@ -1,8 +1,8 @@
 import React from 'react';
 import {formatAbbreviation, formatNumberWithMaxLength} from 'react-ui-basics/Size';
 import './DiskUsage.css'
-import { useStore } from 'laco-react'
 import {state} from "../stores/DiskUsageStore";
+import {useStore} from "../stores/StoreUtils";
 
 export const DiskUsage = () => {
     const {free} = useStore(state)

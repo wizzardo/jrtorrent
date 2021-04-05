@@ -1,8 +1,8 @@
 import React from 'react';
 import './TorrentsList.css'
-import {useStore} from 'laco-react'
 import {state} from "../stores/TorrentListStore";
 import Torrent from "./Torrent";
+import {useStore} from "../stores/StoreUtils";
 
 export const TorrentsList = () => {
     const {list} = useStore(state)
