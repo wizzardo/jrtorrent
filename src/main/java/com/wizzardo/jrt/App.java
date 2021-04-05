@@ -41,10 +41,20 @@ public class App {
 
             String downloads = app.getConfig().config("jrt").get("downloads", "./");
             TokenFilter tokenFilter = DependencyFactory.get(TokenFilter.class);
+            LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
 
             app.getUrlMapping()
                     .append("/info", (request, response) -> response.appendHeader(Header.KV_CONTENT_TYPE_APPLICATION_JSON).body("{\"status\":\"OK\"}"))
-                    .append("/", AppController.class, "index")
+//                    .append("/", AppController.class, "index")
+                    .append("/", (request, response) -> {
+                        byte[] html;
+                        if (app.getEnvironment() == Environment.PRODUCTION) {
+                            html = FileTools.bytes(new File(resourceTools.getUnzippedJarDirectory(), "/public/index.html"));
+                        } else {
+                            html = FileTools.bytes(resourceTools.getResourceFile("/public/index.html"));
+                        }
+                        return response.appendHeader(Header.KV_CONTENT_TYPE_HTML_UTF8).body(html);
+                    })
                     .append("/users/self", AppController.class, "self")
                     .append("/addTorrent", new RestHandler()
                             .post(new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
@@ -80,7 +90,6 @@ public class App {
                 });
             }
 
-            LocalResourcesTools resourceTools = (LocalResourcesTools) DependencyFactory.get(ResourceTools.class);
             if (app.getEnvironment() == Environment.PRODUCTION && resourceTools.isJar()) {
                 String tags = DependencyFactory.get(AppController.class).tags().render().toString();
                 FileTools.text(new File(resourceTools.getUnzippedJarDirectory(), "/public/js/tags.js"), tags);

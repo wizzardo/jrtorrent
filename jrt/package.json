@@ -9,12 +9,13 @@
     "prebuild": "rm -rf build && npm run build-css",
     "build-rollup": "rollup -c rollup.config.js",
     "build2": "preact build",
-    "build": "npm-run-all -s prebuild build-rollup",
+    "build": "npm-run-all -s prebuild build-rollup copy-build",
     "serve": "sirv build --port 8080 --cors --single",
     "start-js": "preact watch",
     "start": "npm-run-all -p watch-css start-js",
     "lint": "eslint src",
-    "test": "jest"
+    "test": "jest",
+    "copy-build": "rm -rf ../src/main/resources/public/static && cp -r build/* ../src/main/resources/public/"
   },
   "eslintConfig": {
     "extends": "preact",

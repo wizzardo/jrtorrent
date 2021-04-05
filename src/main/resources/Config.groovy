@@ -4,6 +4,9 @@ server {
     ioWorkersCount = 1
     ttl = 5 * 60 * 1000l
     context = 'jrt'
+    resources {
+        mapping = '/'
+    }
     basicAuth {
         username = 'user'
         password = 'pass'
