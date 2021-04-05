@@ -31,8 +31,6 @@ public class MockRTorrentService extends RTorrentService {
                 e.printStackTrace();
             }
             while (true) {
-                appWebSocketHandler.updateDiskStatus(1024 * 1024 * 1024L);
-
                 for (TorrentInfo ti : list) {
                     if (ti.getStatus() != TorrentInfo.Status.DOWNLOADING)
                         continue;
@@ -60,7 +58,7 @@ public class MockRTorrentService extends RTorrentService {
         thread.start();
     }
 
-    private TorrentInfo createTorrent(int n) {
+    private TorrentInfo createTorrent(int n, boolean autostart) {
         return with(new TorrentInfo(), ti -> {
             ti.setName("test torrent " + n);
             ti.setHash("hash_" + n);
@@ -73,7 +71,10 @@ public class MockRTorrentService extends RTorrentService {
             ti.setTotalSeeds(10 * n);
             ti.setPeers(1 + n);
             ti.setSeeds(1 + n);
-            ti.setStatus(TorrentInfo.Status.DOWNLOADING);
+            if (autostart)
+                ti.setStatus(TorrentInfo.Status.DOWNLOADING);
+            else
+                ti.setStatus(TorrentInfo.Status.STOPPED);
         });
     }
 
@@ -86,14 +87,14 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void load(String torrent) {
-        TorrentInfo info = createTorrent(counter.getAndIncrement());
-        if (appWebSocketHandler != null)
-            appWebSocketHandler.onAdd(info);
-        list.add(0, info);
+        load(torrent, true);
     }
 
     public void load(String torrent, boolean autostart) {
-        load(torrent);
+        TorrentInfo info = createTorrent(counter.getAndIncrement(), autostart);
+        if (appWebSocketHandler != null)
+            appWebSocketHandler.onAdd(info);
+        list.add(0, info);
     }
 
     @Override

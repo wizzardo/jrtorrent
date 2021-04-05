@@ -7,6 +7,7 @@ import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.framework.template.Renderer;
 import com.wizzardo.http.mapping.Path;
+import com.wizzardo.http.request.MultiPartEntry;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.With;
@@ -85,7 +86,8 @@ public class AppController extends Controller {
     public Renderer addTorrent() throws IOException {
         String link = request.entry("url").asString();
         boolean autostart = With.map(request.entry("autostart"), it -> it != null && "on".equals(it.asString()));
-        byte[] file = request.entry("file").asBytes();
+        MultiPartEntry entry = request.entry("file");
+        byte[] file = entry == null ? new byte[0] : entry.asBytes();
 
         if (file.length != 0) {
             File tempFile = File.createTempFile("jrt", "torrent");
@@ -97,6 +99,6 @@ public class AppController extends Controller {
         } else {
             throw new IllegalArgumentException("link and file are empty");
         }
-        return renderString("ok");
+        return renderJson("{}");
     }
 }

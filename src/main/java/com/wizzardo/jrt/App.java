@@ -46,7 +46,9 @@ public class App {
                     .append("/info", (request, response) -> response.appendHeader(Header.KV_CONTENT_TYPE_APPLICATION_JSON).body("{\"status\":\"OK\"}"))
                     .append("/", AppController.class, "index")
                     .append("/users/self", AppController.class, "self")
-                    .append("/addTorrent", new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
+                    .append("/addTorrent", new RestHandler()
+                            .post(new MultipartHandler(new ControllerHandler<>(AppController.class, "addTorrent")))
+                    )
                     .append("/zip/*", new ZipHandler(downloads, "zip", "zip"))
                     .append("/m3u/*", new M3UHandler(downloads, "m3u", tokenFilter, "m3u"))
                     .append("/downloads/*", new RestHandler("downloads")
@@ -67,10 +69,13 @@ public class App {
             if (app.getEnvironment() != Environment.PRODUCTION) {
                 app.getFiltersMapping().addAfter("/*", (request, response) -> {
                     String origin = request.header(Header.KEY_ORIGIN);
-                    if (origin != null) {
+                    if (origin != null && response.header("Access-Control-Allow-Origin") == null) {
                         response.header("Access-Control-Allow-Credentials", "true");
                         response.header("Access-Control-Allow-Origin", origin);
                     }
+                    if (request.header("Access-Control-Request-Headers") != null)
+                        response.appendHeader("Access-Control-Allow-Headers", request.header("Access-Control-Request-Headers"));
+
                     return true;
                 });
             }

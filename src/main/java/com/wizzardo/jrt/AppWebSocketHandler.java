@@ -115,6 +115,9 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         return limit;
     }
 
+    static class AppInfo implements CommandPojo {
+    }
+
     static class Ping implements CommandPojo {
     }
 
@@ -155,7 +158,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
             sendMessage(l, new ListResponse(rtorrentClientService.list()));
         });
         addHandler(GetTorrentFileTree.class, (l, c) -> {
-            sendMessage(l, new TreeResponse(rtorrentClientService.entries(c.hash), c.hash));
+            sendMessage(l, new FileTreeResponse(rtorrentClientService.entries(c.hash), c.hash));
         });
 
         addHandler(StartTorrent.class, (l, c) -> {
@@ -202,6 +205,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         if (listeners.isEmpty())
             rtorrentClientService.resumeUpdater();
         super.onConnect(listener);
+        sendMessage(listener, new AppInfo());
         System.out.println("onConnect. listeners: " + listeners.size());
     }
 
@@ -231,14 +235,13 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         );
     }
 
-    protected String serialize(Response response) {
-        return recorder.rec(() -> JsonTools.serialize(response),
-                Recorder.Tags.of("method", "serialize", "command", response.command)
-        );
+    public void sendMessage(WebSocketListener listener, String message) {
+//        System.out.println("send: " + message);
+        listener.sendMessage(new Message(message));
     }
 
-    public void sendMessage(WebSocketListener listener, String message) {
-        System.out.println("send: " + message);
+    public void sendMessage(WebSocketListener listener, byte[] message) {
+//        System.out.println("send: " + message);
         listener.sendMessage(new Message(message));
     }
 
@@ -246,7 +249,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         sendMessage(listener, json.toString());
     }
 
-    public void sendMessage(WebSocketListener listener, Response response) {
+    public void sendMessage(WebSocketListener listener, Object response) {
         sendMessage(listener, serialize(response));
     }
 
@@ -304,11 +307,10 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         }
     }
 
-    static class ListResponse extends Response {
+    static class ListResponse {
         final List<TorrentInfoSerialized> torrents;
 
         ListResponse(List<TorrentInfo> infos) {
-            super("list");
             torrents = Flow.of(infos)
                     .map(torrentInfo -> toSerializedView(torrentInfo, new TorrentInfoSerialized()))
                     .collect(new ArrayList<>(infos.size()))
@@ -366,22 +368,13 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         return view;
     }
 
-    static class TreeResponse extends Response {
+    static class FileTreeResponse {
         final Collection<TorrentEntry> tree;
         final String hash;
 
-        TreeResponse(Collection<TorrentEntry> tree, String hash) {
-            super("tree");
+        FileTreeResponse(Collection<TorrentEntry> tree, String hash) {
             this.tree = tree;
             this.hash = hash;
-        }
-    }
-
-    static class Response {
-        final String command;
-
-        Response(String command) {
-            this.command = command;
         }
     }
 }
