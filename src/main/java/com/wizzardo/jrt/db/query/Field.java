@@ -178,6 +178,10 @@ public class Field {
         public ByteArrayField(Table table, String name) {
             super(table, name);
         }
+
+        public Condition.FieldCondition eq(byte[] l) {
+            return new Condition.FieldCondition(this, Condition.Operator.EQ, l, (o, builder) -> builder.setField((byte[]) o));
+        }
     }
 
 

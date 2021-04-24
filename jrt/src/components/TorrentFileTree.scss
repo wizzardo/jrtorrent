@@ -7,13 +7,11 @@
 
   .resizeable {
     transition: height .2s cubic-bezier(.4, 0, .2, 1);
-  }
-}
 
-
-@media screen and (max-width: 960px) {
-  .TorrentFileTree {
-    overflow-x: auto;
-    max-width: 100vw;
+    > .Scrollable {
+      max-width: 100vw;
+      overflow: unset;
+      overflow-y: visible;
+    }
   }
 }

@@ -4,6 +4,8 @@ import {useStore} from '../stores/StoreUtils'
 import {state} from "../stores/TorrentsFileTreeStore";
 import API from "../network/API";
 import {TorrentFileTreeEntry} from "./TorrentFileTreeEntry";
+import Scrollable,{SCROLLBAR_MODE_AUTO, SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
+import "react-ui-basics/Scrollable.css";
 
 export default React.memo(({hash, show}) => {
     const data = useStore(state, it => it[hash])
@@ -31,15 +33,17 @@ export default React.memo(({hash, show}) => {
 
     return <div className="TorrentFileTree">
         <div className="resizeable" style={{
-            height: (30 * totalChildrenToShow || 0) + 'px'
+            height: (35 * totalChildrenToShow || 0) + 'px'
         }}>
-            {data && data.tree.map(it => <TorrentFileTreeEntry {...it} open={true} hash={hash} key={it.id} parentPath={() => ''} updateParentShownChildrenCount={(innerChilds) => {
-                if (typeof (innerChilds) != "undefined") {
-                    let toShow = (totalChildrenToShow || data.tree.length) + innerChilds;
-                    setTotalChildrenToShow(toShow)
-                    totalChildrenToShowRef.current = toShow;
-                }
-            }}/>)}
+            <Scrollable horizontalScrollBarMode={SCROLLBAR_MODE_AUTO} scrollBarMode={SCROLLBAR_MODE_HIDDEN}>
+                {data && data.tree.map(it => <TorrentFileTreeEntry {...it} open={true} hash={hash} key={it.id} parentPath={() => ''} updateParentShownChildrenCount={(innerChilds) => {
+                    if (typeof (innerChilds) != "undefined") {
+                        let toShow = (totalChildrenToShow || data.tree.length) + innerChilds;
+                        setTotalChildrenToShow(toShow)
+                        totalChildrenToShowRef.current = toShow;
+                    }
+                }}/>)}
+            </Scrollable>
         </div>
     </div>
 })

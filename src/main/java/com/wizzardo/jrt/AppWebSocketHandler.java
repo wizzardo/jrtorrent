@@ -205,7 +205,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
             sendMessage(l, new ListResponse(rtorrentClientService.list()));
         });
         addHandler(GetTorrentFileTree.class, (l, c) -> {
-            sendMessage(l, new FileTreeResponse(rtorrentClientService.entries(c.hash), c.hash));
+            sendMessage(l, new FileTreeResponse(rtorrentClientService.entries(c.hash), c.hash, rtorrentClientService.getEncodedBitfield(c.hash)));
         });
 
         addHandler(StartTorrent.class, (l, c) -> {
@@ -401,6 +401,9 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         public long st;
         public long pt;
         public float progress;
+        public String bitfield;
+        public int piecesTotal;
+        public int piecesComplete;
     }
 
     public static TorrentInfoSerialized toSerializedView(TorrentInfo it, TorrentInfoSerialized view) {
@@ -423,10 +426,12 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
     static class FileTreeResponse {
         final Collection<TorrentEntry> tree;
         final String hash;
+        final String bitfield;
 
-        FileTreeResponse(Collection<TorrentEntry> tree, String hash) {
+        FileTreeResponse(Collection<TorrentEntry> tree, String hash, String bitfield) {
             this.tree = tree;
             this.hash = hash;
+            this.bitfield = bitfield;
         }
     }
 }

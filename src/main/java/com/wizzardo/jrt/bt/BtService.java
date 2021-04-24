@@ -3,7 +3,6 @@ package com.wizzardo.jrt.bt;
 import bt.Bt;
 import bt.data.*;
 import bt.data.digest.Digester;
-import bt.data.digest.JavaSecurityDigester;
 import bt.data.file.FileSystemStorage;
 import bt.dht.DHTConfig;
 import bt.dht.DHTModule;
@@ -13,6 +12,7 @@ import bt.metainfo.MetadataService;
 import bt.metainfo.Torrent;
 import bt.metainfo.TorrentFile;
 import bt.metainfo.TorrentId;
+import bt.protocol.BitOrder;
 import bt.protocol.Protocols;
 import bt.runtime.*;
 import bt.service.IRuntimeLifecycleBinder;
@@ -35,13 +35,13 @@ import com.wizzardo.jrt.*;
 import com.wizzardo.jrt.db.DBService;
 import com.wizzardo.jrt.db.generated.Tables;
 import com.wizzardo.jrt.db.model.TorrentBinary;
+import com.wizzardo.jrt.db.model.TorrentBitfield;
 import com.wizzardo.jrt.db.model.TorrentEntryPriority;
 import com.wizzardo.jrt.db.query.QueryBuilder.TIMESTAMP;
-import com.wizzardo.tools.collections.CollectionTools;
-import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Pair;
 import com.wizzardo.tools.misc.event.EventBus;
+import com.wizzardo.tools.security.Base64;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -68,8 +68,10 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
     EventSink eventSink;
     EventBus<Events> eventBus = new EventBus<>();
     File downloadsDir;
+    volatile boolean broadcasting = false;
 
     static class ActiveClient {
+        final TorrentId torrentId;
         final BtClient client;
         final TorrentInfo torrentInfo;
         final PrioritizedSequentialPieceSelector pieceSelector;
@@ -81,6 +83,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
             this.client = client;
             this.torrentInfo = torrentInfo;
             this.pieceSelector = pieceSelector;
+            this.torrentId = TorrentId.fromBytes(Protocols.fromHex(torrentInfo.getHash()));
             updatedEvent = new AppWebSocketHandler.TorrentUpdated();
         }
 
@@ -140,7 +143,21 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 //            setPriorities(rootEntry, priorities);
 //            return rootEntry.getChildren().values();
 //        }
-        TorrentEntry rootEntry = createTree(torrent);
+
+        TorrentEntry rootEntry;
+        ActiveClient ac = clients.get(hash);
+        if (ac != null && ac.pieceSelector.filesWithPieces != null) {
+            List<PrioritizedSequentialPieceSelector.TorrentFileWithPieces> files = ac.pieceSelector.filesWithPieces;
+            rootEntry = createTree(torrent.getName(), files);
+        } else {
+            Path targetDirectory = getDownloadPath();
+            Storage storage = new FileSystemStorage(targetDirectory);
+            PrioritizedSequentialPieceSelector pieceSelector = new PrioritizedSequentialPieceSelector(storage);
+            pieceSelector.setTorrent(torrent);
+            rootEntry = createTree(torrent.getName(), pieceSelector.filesWithPieces);
+        }
+
+//        rootEntry = createTree(torrent);
         setPriorities(rootEntry, priorities);
         if (rootEntry.getChildren().size() == 1) {
             if (rootEntry.getChildren().get(torrent.getName()) != null)
@@ -161,6 +178,24 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                     entry.setId(id++);
             }
             entry.setSizeBytes(file.getSize());
+        }
+        return rootEntry;
+    }
+
+    static TorrentEntry createTree(String torrentName, List<PrioritizedSequentialPieceSelector.TorrentFileWithPieces> files) {
+        int id = 0;
+        TorrentEntry rootEntry = new TorrentEntry(torrentName);
+        for (PrioritizedSequentialPieceSelector.TorrentFileWithPieces file : files) {
+            TorrentEntry entry = rootEntry;
+            for (String pathElement : file.getPathElements()) {
+                entry = entry.getOrCreate(pathElement);
+                if (entry.getId() == -1)
+                    entry.setId(id++);
+            }
+            entry.setSizeBytes(file.getSize());
+            entry.setPriority(file.priority);
+            entry.setPiecesLength(file.pieces.length);
+            entry.setPiecesOffset(file.pieces[0]);
         }
         return rootEntry;
     }
@@ -350,11 +385,22 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                             + ", pieces: " + p.value.getEnqueuedPieces()
                     ));
 
-            AppWebSocketHandler.toSerializedView(ac.torrentInfo, ac.updatedEvent);
-            ac.updatedEvent.progress = ac.torrentInfo.getSize() == 0 ? 0 : piecesComplete * 100f / state.getPiecesTotal();
+            if (broadcasting) {
+                Optional<TorrentDescriptor> descriptor = torrentRegistry.getDescriptor(ac.torrentId);
+                if (descriptor.isPresent()) {
+                    Bitfield bitfield = descriptor.get().getDataDescriptor().getBitfield();
+                    byte[] bytes = bitfield.toByteArray(BitOrder.BIG_ENDIAN);
+                    ac.updatedEvent.bitfield = Base64.encodeToString(bytes);
+                    ac.updatedEvent.piecesTotal = bitfield.getPiecesTotal();
+                    ac.updatedEvent.piecesComplete = bitfield.getPiecesComplete();
+                }
 
-            appWebSocketHandler.addBroadcastTask(ac.updatedEvent);
-            appWebSocketHandler.addBroadcastTask(new AppWebSocketHandler.DiskUsage(downloadsDir.getUsableSpace()));
+                AppWebSocketHandler.toSerializedView(ac.torrentInfo, ac.updatedEvent);
+                ac.updatedEvent.progress = ac.torrentInfo.getSize() == 0 ? 0 : piecesComplete * 100f / state.getPiecesTotal();
+
+                appWebSocketHandler.addBroadcastTask(ac.updatedEvent);
+                appWebSocketHandler.addBroadcastTask(new AppWebSocketHandler.DiskUsage(downloadsDir.getUsableSpace()));
+            }
         }, 1000);
     }
 
@@ -365,6 +411,25 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         ti.setSize(torrentInfo.size);
         ti.setDownloaded(torrentInfo.downloaded);
         ti.setUploaded(torrentInfo.uploaded);
+    }
+
+    @Override
+    public String getEncodedBitfield(String hash) {
+        ActiveClient client = clients.get(hash);
+        if (client != null) {
+            Optional<TorrentDescriptor> descriptor = torrentRegistry.getDescriptor(client.torrentId);
+            if (descriptor.isPresent()) {
+                Bitfield bitfield = descriptor.get().getDataDescriptor().getBitfield();
+                byte[] bytes = bitfield.toByteArray(BitOrder.BIG_ENDIAN);
+                return Base64.encodeToString(bytes);
+            }
+        }
+
+        TorrentBitfield torrentBitfield = getTorrentBitfield(hash);
+        if (torrentBitfield != null) {
+            return Base64.encodeToString(torrentBitfield.data);
+        }
+        return null;
     }
 
     protected Config createDefaultConfig() {
@@ -401,22 +466,6 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         return new File(Holders.getConfig().config("jrt").get("downloads", ".")).toPath();
     }
 
-
-    protected BtClient loadTorrentFile(Supplier<Torrent> torrentSupplier) {
-        Path targetDirectory = getDownloadPath();
-
-        Storage storage = new FileSystemStorage(targetDirectory);
-
-        BtClient client = Bt.client(btRuntime)
-                .storage(storage)
-                .torrent(torrentSupplier)
-                .sequentialSelector()
-                .afterTorrentFetched(torrent -> {
-                })
-                .build();
-        return client;
-    }
-
     protected ActiveClient loadTorrentFile(Torrent torrent, com.wizzardo.jrt.db.model.TorrentInfo torrentInfo) {
         Path targetDirectory = getDownloadPath();
 
@@ -426,10 +475,11 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         BtClient client = Bt.client(btRuntime)
                 .storage(storage)
                 .torrent(() -> torrent)
-                .sequentialSelector()
-//                .selector(pieceSelector)
+//                .sequentialSelector()
+                .selector(pieceSelector)
                 .afterTorrentFetched(t -> {
                     pieceSelector.setTorrent(torrent);
+                    getTorrentEntriesPriorities(torrentInfo.hash).forEach(entryPriority -> pieceSelector.setPriority(entryPriority.path, entryPriority.priority));
                 })
                 .build();
         return new ActiveClient(client, with(new TorrentInfo(), ti -> mapToTorrentInfoDTO(torrentInfo, ti)), pieceSelector);
@@ -445,10 +495,11 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         BtClient client = Bt.client(btRuntime)
                 .storage(storage)
                 .magnet(magnet)
-                .sequentialSelector()
-//                .selector(pieceSelector)
+//                .sequentialSelector()
+                .selector(pieceSelector)
                 .afterTorrentFetched(torrent -> {
                     pieceSelector.setTorrent(torrent);
+                    getTorrentEntriesPriorities(torrentInfo.hash).forEach(entryPriority -> pieceSelector.setPriority(entryPriority.path, entryPriority.priority));
                     torrentConsumer.accept(torrent);
                     info.setSize(torrent.getSize());
                     info.setName(torrent.getName());
@@ -476,10 +527,6 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
             ac = loadTorrentFile(torrent, torrentInfo);
             clients.put(hash, ac);
-
-//            TorrentId torrentId = TorrentId.fromBytes(Protocols.fromHex(hash));
-//            torrentRegistry.getDescriptor(torrentId).ifPresent(TorrentDescriptor::start);
-//            eventSink.fireTorrentStarted(torrentId);
         }
 
         if (!ac.client.isStarted())
@@ -487,6 +534,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
         dbService.withBuilder(b -> b
                 .update(Tables.TORRENT_INFO)
+                .set(Tables.TORRENT_INFO.DATE_UPDATED.eq(TIMESTAMP.now()))
                 .set(Tables.TORRENT_INFO.STATUS.eq(torrentInfo.status))
                 .where(Tables.TORRENT_INFO.HASH.eq(hash))
                 .executeUpdate()
@@ -505,10 +553,12 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
     @Override
     public void stop(String hash) {
+        storeTorrentBitfield(hash);
+
         ActiveClient ac = clients.remove(hash);
         if (ac != null) {
             ac.client.stop();
-            TorrentId torrentId = TorrentId.fromBytes(Protocols.fromHex(hash));
+            TorrentId torrentId = ac.torrentId;
             torrentRegistry.getDescriptor(torrentId).ifPresent(TorrentDescriptor::stop);
             eventSink.fireTorrentStopped(torrentId);
             torrentRegistry.unregister(torrentId);
@@ -535,6 +585,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
     private void updateTorrent(TorrentInfo torrentInfo) {
         dbService.withBuilder(b -> b
                 .update(Tables.TORRENT_INFO)
+                .set(Tables.TORRENT_INFO.DATE_UPDATED.eq(TIMESTAMP.now()))
                 .set(Tables.TORRENT_INFO.STATUS.eq(torrentInfo.getStatus()))
                 .set(Tables.TORRENT_INFO.DOWNLOADED.eq(torrentInfo.getDownloaded()))
                 .set(Tables.TORRENT_INFO.UPLOADED.eq(torrentInfo.getUploaded()))
@@ -546,6 +597,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
     private void updateTorrent(TorrentInfo torrentInfo, int piecesComplete, int piecesTotal) {
         dbService.withBuilder(b -> b
                 .update(Tables.TORRENT_INFO)
+                .set(Tables.TORRENT_INFO.DATE_UPDATED.eq(TIMESTAMP.now()))
                 .set(Tables.TORRENT_INFO.STATUS.eq(torrentInfo.getStatus()))
                 .set(Tables.TORRENT_INFO.DOWNLOADED.eq(torrentInfo.getDownloaded()))
                 .set(Tables.TORRENT_INFO.UPLOADED.eq(torrentInfo.getUploaded()))
@@ -559,6 +611,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
     private void updateTorrent(com.wizzardo.jrt.db.model.TorrentInfo torrentInfo) {
         dbService.withBuilder(b -> b
                 .update(Tables.TORRENT_INFO)
+                .set(Tables.TORRENT_INFO.DATE_UPDATED.eq(TIMESTAMP.now()))
                 .set(Tables.TORRENT_INFO.STATUS.eq(torrentInfo.status))
                 .set(Tables.TORRENT_INFO.DOWNLOADED.eq(torrentInfo.downloaded))
                 .set(Tables.TORRENT_INFO.UPLOADED.eq(torrentInfo.uploaded))
@@ -590,7 +643,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         ActiveClient ac = clients.remove(hash);
         if (ac != null) {
             ac.client.stop();
-            TorrentId torrentId = TorrentId.fromBytes(Protocols.fromHex(hash));
+            TorrentId torrentId = ac.torrentId;
             torrentRegistry.getDescriptor(torrentId).ifPresent(TorrentDescriptor::stop);
             eventSink.fireTorrentStopped(torrentId);
             torrentRegistry.unregister(torrentId);
@@ -610,6 +663,33 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         TorrentInfo ti = new TorrentInfo();
         mapToTorrentInfoDTO(torrentInfo, ti);
         appWebSocketHandler.onRemove(ti);
+    }
+
+    private void storeTorrentBitfield(String hash) {
+        ActiveClient client = clients.get(hash);
+        if (client == null)
+            return;
+        Optional<TorrentDescriptor> descriptor = torrentRegistry.getDescriptor(client.torrentId);
+        if (!descriptor.isPresent())
+            return;
+
+        Bitfield bitfield = descriptor.get().getDataDescriptor().getBitfield();
+        byte[] bytes = bitfield.toByteArray(BitOrder.BIG_ENDIAN);
+
+        TorrentBitfield torrentBitfield = getTorrentBitfield(hash);
+        if (torrentBitfield != null) {
+            if (Arrays.equals(torrentBitfield.data, bytes))
+                return;
+
+            dbService.consume(b -> b.update(Tables.TORRENT_BITFIELD)
+                    .set(Tables.TORRENT_BITFIELD.DATE_UPDATED.eq(TIMESTAMP.now()))
+                    .set(Tables.TORRENT_BITFIELD.DATA.eq(bytes))
+                    .where(Tables.TORRENT_BITFIELD.ID.eq(torrentBitfield.id))
+                    .executeUpdate());
+        } else {
+            TorrentBitfield tb = new TorrentBitfield(TIMESTAMP.now(), TIMESTAMP.now(), getTorrentInfo(hash).id, bytes);
+            tb.id = dbService.withBuilder(b -> dbService.insertInto(b, tb, Tables.TORRENT_BITFIELD));
+        }
     }
 
     private void resumeDownloading() {
@@ -643,6 +723,14 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                 .fetchOneInto(TorrentBinary.class));
     }
 
+    private TorrentBitfield getTorrentBitfield(String hash) {
+        return dbService.withBuilder(b -> b.select(Tables.TORRENT_BITFIELD.FIELDS)
+                .from(Tables.TORRENT_BITFIELD)
+                .join(Tables.TORRENT_INFO).on(Tables.TORRENT_INFO.ID.eq(Tables.TORRENT_BITFIELD.TORRENT_INFO_ID))
+                .where(Tables.TORRENT_INFO.HASH.eq(hash))
+                .fetchOneInto(TorrentBitfield.class));
+    }
+
     @Override
     public void setPriority(String hash, String path, FilePriority priority) {
         System.out.println("setPriority for " + hash + " " + path + " to " + priority);
@@ -670,12 +758,12 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
     @Override
     public void pauseUpdater() {
-
+        broadcasting = false;
     }
 
     @Override
     public void resumeUpdater() {
-
+        broadcasting = true;
     }
 
     static class DataDescriptorModule implements Module {
@@ -767,6 +855,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                     if (d.verified == d.total) {
                         activeClient.torrentInfo.setStatus(TorrentInfo.Status.SEEDING);
                         activeClient.updatedEvent.progress = 100f;
+                        storeTorrentBitfield(d.torrentHash);
                     } else {
                         activeClient.updatedEvent.progress = d.verified * 100f / d.total;
                         activeClient.torrentInfo.setStatus(TorrentInfo.Status.DOWNLOADING);

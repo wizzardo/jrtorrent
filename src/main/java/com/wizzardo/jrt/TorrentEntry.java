@@ -15,7 +15,8 @@ public class TorrentEntry {
     private int chunksCompleted;
     private long sizeBytes;
     private int id = -1;
-    private int[] pieces;
+    private int piecesOffset;
+    private int piecesLength;
 
     public final String name;
 
@@ -69,14 +70,6 @@ public class TorrentEntry {
         this.priority = priority;
     }
 
-    public void setPieces(int[] pieces) {
-        this.pieces = pieces;
-    }
-
-    public int[] getPieces() {
-        return pieces;
-    }
-
     public int getChunksCount() {
         return chunksCount;
     }
@@ -111,5 +104,21 @@ public class TorrentEntry {
 
     public void setSizeBytes(long sizeBytes) {
         this.sizeBytes = sizeBytes;
+    }
+
+    public int getPiecesOffset() {
+        return piecesOffset;
+    }
+
+    public void setPiecesOffset(int piecesOffset) {
+        this.piecesOffset = piecesOffset;
+    }
+
+    public int getPiecesLength() {
+        return piecesLength;
+    }
+
+    public void setPiecesLength(int piecesLength) {
+        this.piecesLength = piecesLength;
     }
 }

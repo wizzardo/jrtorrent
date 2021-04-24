@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class PrioritizedSequentialPieceSelector extends BaseStreamSelector {
 
-    private final Storage storage;
-    private volatile List<TorrentFileWithPieces> filesWithPieces;
+    final Storage storage;
+    volatile List<TorrentFileWithPieces> filesWithPieces;
 
     public PrioritizedSequentialPieceSelector(Storage storage) {
         this.storage = storage;

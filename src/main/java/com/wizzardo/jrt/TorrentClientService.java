@@ -28,4 +28,6 @@ public interface TorrentClientService {
     void pauseUpdater();
 
     void resumeUpdater();
+
+    String getEncodedBitfield(String hash);
 }

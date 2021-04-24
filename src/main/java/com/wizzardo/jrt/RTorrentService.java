@@ -91,6 +91,11 @@ public class RTorrentService implements Service, TorrentClientService {
         updater.unpause();
     }
 
+    @Override
+    public String getEncodedBitfield(String hash) {
+        return null;
+    }
+
     protected static class Updater extends Thread implements ByteBufferProvider {
 
         volatile boolean pause = true;

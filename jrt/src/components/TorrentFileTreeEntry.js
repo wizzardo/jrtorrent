@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './TorrentFileTreeEntry.css'
 import AutocompleteSelect from "react-ui-basics/AutocompleteSelect";
 import "react-ui-basics/AutocompleteSelect.css";
@@ -7,6 +7,11 @@ import "react-ui-basics/Scrollable.css";
 import {SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
 import {preventDefault, stopPropagation} from "react-ui-basics/Tools";
 import API from "../network/API";
+import * as TorrentsBitfieldStore from "../stores/TorrentsBitfieldStore";
+import {CircleProgress} from "react-ui-basics";
+import {useStore} from "../stores/StoreUtils";
+import 'react-ui-basics/CircleProgress.css'
+import {Size} from "react-ui-basics";
 
 const openUrl = (url, e) => {
     e.processed = true;
@@ -25,6 +30,19 @@ const openLink = e => {
     return false;
 }
 
+const countProgress = (bitfield, offset, length) => {
+    if (!bitfield)
+        return 0
+
+    let completed = 0
+    const end = offset + length;
+    for (let i = offset; i < end; i++) {
+        if (bitfield.has(i))
+            completed++;
+    }
+    return (completed * 100 / length).toFixed(2);
+}
+
 export const TorrentFileTreeEntry = (props) => {
     const {
         children,
@@ -34,13 +52,16 @@ export const TorrentFileTreeEntry = (props) => {
         isFolder,
         name,
         priority,
-        // sizeBytes,
         updateParentShownChildrenCount,
         hidden,
         parentPath,
         hash,
+        piecesOffset,
+        piecesLength,
+        sizeBytes,
         open
     } = props;
+    const bitfield = useStore(TorrentsBitfieldStore.state, s => s[hash])
 
     const [showChildren, setShowChildren] = useState(false)
     const [shownChildren, setShownChildren] = useState(0)
@@ -70,6 +91,16 @@ export const TorrentFileTreeEntry = (props) => {
 
     const path = () => parentPath() + '/' + encodeURIComponent(name)
 
+    const [progress, setProgress] = useState(0);
+    useEffect(() => {
+        if (!hidden) {
+            if (!isFolder)
+                setProgress(countProgress(bitfield, piecesOffset, piecesLength));
+        } else {
+            setProgress(0)
+        }
+    }, [hidden, bitfield])
+
     return <div className="TorrentFileTreeEntry" onClick={toggleChildren}>
         <div className="info">
             {isFolder && <div className="folder">
@@ -84,7 +115,12 @@ export const TorrentFileTreeEntry = (props) => {
                 </a>
             </div>}
 
-            {!isFolder && <a href={!hidden && API.downloadLink(path())} onClick={openLink}>{name}</a>}
+            {!isFolder && <>
+                <CircleProgress value={progress}/>
+                <span className={'progress label'}>{progress}%</span> &nbsp;
+                <a href={!hidden && API.downloadLink(path())} onClick={openLink}>{name}</a>
+                &nbsp;&nbsp; <Size value={sizeBytes}/>
+            </>}
 
             {!hidden && <AutocompleteSelect className="prioritySelect"
                                             scroll={SCROLLBAR_MODE_HIDDEN}
@@ -97,7 +133,7 @@ export const TorrentFileTreeEntry = (props) => {
             />}
         </div>
         <div className="resizeable children" style={{
-            height: (30 * shownChildren) + 'px',
+            height: (35 * shownChildren) + 'px',
             [shownChildren === 0 && 'visibility']: 'hidden',
         }}>
             {children && Object.values(children).map(it => <TorrentFileTreeEntry hidden={shownChildren === 0 || hidden} {...it} key={it.id}

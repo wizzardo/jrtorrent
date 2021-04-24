@@ -1,6 +1,7 @@
 package com.wizzardo.jrt.db.query;
 
 import com.wizzardo.jrt.db.model.TorrentBinary;
+import com.wizzardo.jrt.db.model.TorrentBitfield;
 import com.wizzardo.jrt.db.model.TorrentEntryPriority;
 import com.wizzardo.jrt.db.model.TorrentInfo;
 import com.wizzardo.tools.collections.flow.Flow;
@@ -190,7 +191,7 @@ public class Generator {
 
     public static void main(String[] args) {
         Generator generator = new Generator("src/main/java/com/wizzardo/jrt/db/generated", "com.wizzardo.jrt.db.generated");
-        generator.createTables(TorrentInfo.class, TorrentBinary.class, TorrentEntryPriority.class);
+        generator.createTables(TorrentInfo.class, TorrentBinary.class, TorrentEntryPriority.class, TorrentBitfield.class);
     }
 
 }
