@@ -7,11 +7,11 @@ public enum FilePriority {
     OFF(0), NORMAL(1), HIGH(2);
 
     final String s;
-    final int i;
+    public final int value;
 
     FilePriority(int value) {
         this.s = String.valueOf(value);
-        this.i = value;
+        this.value = value;
     }
 
     public static FilePriority byInt(int i) {

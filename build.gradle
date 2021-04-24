@@ -21,6 +21,30 @@ dependencies {
     compile 'com.wizzardo:http:0.5-SNAPSHOT'
     compile 'com.wizzardo:datadog-jvm:0.4+'
     compile 'com.wizzardo.tools:tools:0.24-SNAPSHOT'
+
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile 'com.google.inject:guice:4.1.0'
+//    compile 'com.google.inject.extensions:guice-multibindings:4.1.0'
+//    compile 'com.google.jimfs:jimfs:1.1'
+//    compile 'org.yaml:snakeyaml:1.17'
+//    compile 'org.apache.httpcomponents:httpclient:4.5.2'
+
+    compile 'com.github.atomashpolskiy:bt-core:1.9'
+    compile 'com.github.atomashpolskiy:bt-http-tracker-client:1.9'
+    compile 'com.github.atomashpolskiy:bt-dht:1.9'
+    compile 'com.github.atomashpolskiy:bt-upnp:1.9'
+
+    compile 'com.h2database:h2:1.4.200'
+
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.slf4j:jcl-over-slf4j:1.7.25'
+    compile 'org.slf4j:jul-to-slf4j:1.7.25'
+    compile 'org.slf4j:log4j-over-slf4j:1.7.25'
+}
+
+compileJava {
+    options.compilerArgs.addAll(['--release', '8'])
 }
 
 //create a single Jar with all dependencies
@@ -39,3 +63,21 @@ run {
     if (project.hasProperty('args'))
         args project.args.split('\\s')
 }
+
+
+task([description: 'listing all migrations'], 'listMigrations', {
+    doLast {
+        def file = new File(projectDir.absolutePath, 'src/main/resources/migrations.txt')
+        def sout = new StringBuilder(), serr = new StringBuilder()
+        def proc = 'find migrations -name *.sql'.execute([], new File(projectDir.absolutePath, 'src/main/resources'))
+        proc.consumeProcessOutput(sout, serr)
+        proc.waitForOrKill(1000)
+        if (serr.length() > 0) {
+            System.err.println(serr)
+            throw new IllegalStateException()
+        }
+
+        file.setText(sout.toString())
+    }
+})
+tasks.processResources.dependsOn listMigrations

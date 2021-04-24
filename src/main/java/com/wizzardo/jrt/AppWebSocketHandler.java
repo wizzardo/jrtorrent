@@ -1,5 +1,7 @@
 package com.wizzardo.jrt;
 
+import com.wizzardo.epoll.ByteBufferProvider;
+import com.wizzardo.epoll.ByteBufferWrapper;
 import com.wizzardo.http.HttpConnection;
 import com.wizzardo.http.framework.di.DependencyFactory;
 import com.wizzardo.http.websocket.DefaultWebSocketHandler;
@@ -12,9 +14,13 @@ import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.json.JsonTools;
 import com.wizzardo.tools.misc.ExceptionDrivenStringBuilder;
 import com.wizzardo.tools.misc.Unchecked;
+import com.wizzardo.tools.misc.With;
 
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by wizzardo on 08.12.15.
@@ -31,6 +37,47 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
             Recorder.Tags.of("method", "parse", "command", clazz.getSimpleName())
     );
     protected ErrorHandler errorHandler = e -> e.printStackTrace();
+    protected Sender sender = With.with(new Sender(errorHandler), s -> s.start());
+
+    static class Sender extends Thread implements ByteBufferProvider {
+        protected final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(100);
+        protected final ByteBufferWrapper byteBufferWrapper = new ByteBufferWrapper(1024 * 50);
+        protected final ErrorHandler errorHandler;
+
+        Sender(ErrorHandler errorHandler) {
+            setName("WebsocketSender");
+            setDaemon(true);
+            this.errorHandler = errorHandler;
+        }
+
+        @Override
+        public ByteBufferWrapper getBuffer() {
+            return byteBufferWrapper;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    queue.take().run();
+                } catch (Exception e) {
+                    errorHandler.onError(e);
+                }
+            }
+        }
+
+        public void addTask(Runnable o) {
+            while (true)
+                try {
+                    while (!queue.offer(o, 1000, TimeUnit.SECONDS)) {
+                        System.out.println("waiting for queue");
+                    }
+                    return;
+                } catch (InterruptedException ignored) {
+                }
+        }
+    }
+
 
     public interface ErrorHandler {
         void onError(Exception e);
@@ -221,6 +268,11 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         broadcast(serialize(response));
     }
 
+    public void addBroadcastTask(Object response) {
+        byte[] serialize = serialize(response);
+        sender.addTask(() -> broadcast(serialize));
+    }
+
     public byte[] serialize(Object o) {
         return serialize(o.getClass().getSimpleName(), o);
     }
@@ -318,40 +370,40 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         }
     }
 
-    static class TorrentUpdated extends TorrentInfoSerialized {
+    static public class TorrentUpdated extends TorrentInfoSerialized {
     }
 
-    static class TorrentDeleted extends TorrentInfoSerialized {
+    static public class TorrentDeleted extends TorrentInfoSerialized {
     }
 
-    static class TorrentAdded extends TorrentInfoSerialized {
+    static public class TorrentAdded extends TorrentInfoSerialized {
     }
 
-    static class DiskUsage {
+    public static class DiskUsage {
         final long free;
 
-        DiskUsage(long free) {
+        public DiskUsage(long free) {
             this.free = free;
         }
     }
 
-    static class TorrentInfoSerialized {
-        String name;
-        String hash;
-        long size;
-        String status;
-        long d;
-        long ds;
-        long u;
-        long us;
-        long s;
-        long p;
-        long st;
-        long pt;
-        float progress;
+    public static class TorrentInfoSerialized {
+        public String name;
+        public String hash;
+        public long size;
+        public String status;
+        public long d;
+        public long ds;
+        public long u;
+        public long us;
+        public long s;
+        public long p;
+        public long st;
+        public long pt;
+        public float progress;
     }
 
-    private static TorrentInfoSerialized toSerializedView(TorrentInfo it, TorrentInfoSerialized view) {
+    public static TorrentInfoSerialized toSerializedView(TorrentInfo it, TorrentInfoSerialized view) {
         view.name = it.getName();
         view.hash = it.getHash();
         view.size = it.getSize();
@@ -364,7 +416,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         view.p = it.getPeers();
         view.st = it.getTotalSeeds();
         view.pt = it.getTotalPeers();
-        view.progress = it.getDownloaded() * 100f / it.getSize();
+        view.progress = it.getSize() == 0 ? 0 : it.getDownloaded() * 100f / it.getSize();
         return view;
     }
 

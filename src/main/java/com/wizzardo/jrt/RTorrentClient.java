@@ -300,7 +300,7 @@ public class RTorrentClient {
         XmlRpc.Params params = new XmlRpc.Params();
         params.add(hash)
                 .add(file)
-                .add(priority.i)
+                .add(priority.value)
         ;
         String s = executeRequest(new XmlRpc("f.set_priority", params));
         if (updatePriorities)

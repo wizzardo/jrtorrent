@@ -15,6 +15,7 @@ public class TorrentEntry {
     private int chunksCompleted;
     private long sizeBytes;
     private int id = -1;
+    private int[] pieces;
 
     public final String name;
 
@@ -28,7 +29,7 @@ public class TorrentEntry {
         isFolder = true;
     }
 
-    TorrentEntry() {
+    public TorrentEntry() {
         name = null;
         isFolder = true;
     }
@@ -49,6 +50,13 @@ public class TorrentEntry {
         return entry;
     }
 
+    public TorrentEntry get(String name) {
+        if (children == null) {
+            return null;
+        } else
+            return children.get(name);
+    }
+
     public boolean isFolder() {
         return isFolder;
     }
@@ -57,8 +65,16 @@ public class TorrentEntry {
         return priority;
     }
 
-    void setPriority(FilePriority priority) {
+    public void setPriority(FilePriority priority) {
         this.priority = priority;
+    }
+
+    public void setPieces(int[] pieces) {
+        this.pieces = pieces;
+    }
+
+    public int[] getPieces() {
+        return pieces;
     }
 
     public int getChunksCount() {
@@ -85,7 +101,7 @@ public class TorrentEntry {
         return id;
     }
 
-    void setId(int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -93,7 +109,7 @@ public class TorrentEntry {
         return sizeBytes;
     }
 
-    void setSizeBytes(long sizeBytes) {
+    public void setSizeBytes(long sizeBytes) {
         this.sizeBytes = sizeBytes;
     }
 }
