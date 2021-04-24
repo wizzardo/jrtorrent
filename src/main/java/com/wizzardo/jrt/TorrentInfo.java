@@ -17,7 +17,7 @@ public class TorrentInfo {
     private int totalSeeds;
     private int totalPeers;
 
-    enum Status {
+    public enum Status {
         SEEDING, FINISHED, DOWNLOADING, STOPPED, PAUSED, CHECKING, UNKNOWN;
 
         public static Status valueOf(boolean complete, boolean isOpen, boolean isHashChecking, boolean state) {
