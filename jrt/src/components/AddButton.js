@@ -36,6 +36,7 @@ const UploadForm = () => {
         {!selectedFile && <DropFileInput
             droppable={true}
             multiple={false}
+            accept={".torrent"}
             label={'Attach File'}
             onDrop={files => setSelectedFile(files[0])}/>
         }

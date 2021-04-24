@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import './TorrentFileTree.css'
 import {useStore} from '../stores/StoreUtils'
 import {state} from "../stores/TorrentsFileTreeStore";
@@ -9,7 +9,9 @@ export default React.memo(({hash, show}) => {
     const data = useStore(state, it => it[hash])
     const [totalChildrenToShow, setTotalChildrenToShow] = useState(0)
     const [totalChildrenHidden, setTotalChildrenHidden] = useState(0)
-    // console.log('render TorrentFileTree', data, totalChildrenToShow, totalChildrenHidden)
+
+    const totalChildrenToShowRef = useRef()
+    totalChildrenToShowRef.current = totalChildrenToShow;
 
     useEffect(() => {
         if (!data && show) {
@@ -22,8 +24,7 @@ export default React.memo(({hash, show}) => {
             if (!show) {
                 setTotalChildrenHidden(totalChildrenToShow);
                 setTotalChildrenToShow(0)
-            } else {
-                // console.log('setTotalChildrenToShow', totalChildrenHidden, data && data.tree.length)
+            } else if (!totalChildrenToShowRef.current) {
                 setTotalChildrenToShow(totalChildrenHidden || data && data.tree.length);
             }
     }, [show, data])
@@ -32,10 +33,11 @@ export default React.memo(({hash, show}) => {
         <div className="resizeable" style={{
             height: (30 * totalChildrenToShow || 0) + 'px'
         }}>
-            {data && data.tree.map(it => <TorrentFileTreeEntry {...it} hash={hash} key={it.id} parentPath={() => ''} updateParentShownChildrenCount={(innerChilds) => {
+            {data && data.tree.map(it => <TorrentFileTreeEntry {...it} open={true} hash={hash} key={it.id} parentPath={() => ''} updateParentShownChildrenCount={(innerChilds) => {
                 if (typeof (innerChilds) != "undefined") {
-                    setTotalChildrenToShow(totalChildrenToShow + innerChilds)
-                    // console.log('setTotalChildrenToShow', totalChildrenToShow + innerChilds)
+                    let toShow = (totalChildrenToShow || data.tree.length) + innerChilds;
+                    setTotalChildrenToShow(toShow)
+                    totalChildrenToShowRef.current = toShow;
                 }
             }}/>)}
         </div>

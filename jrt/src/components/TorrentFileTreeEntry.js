@@ -38,7 +38,8 @@ export const TorrentFileTreeEntry = (props) => {
         updateParentShownChildrenCount,
         hidden,
         parentPath,
-        hash
+        hash,
+        open
     } = props;
 
     const [showChildren, setShowChildren] = useState(false)
@@ -64,6 +65,8 @@ export const TorrentFileTreeEntry = (props) => {
         updateShownChildrenCount(!showChildren ? hiddenChildren : -shownChildren);
         setHiddenChildren(t)
     };
+
+    useEffect(() => !!open && toggleChildren({}), [!!open])
 
     const path = () => parentPath() + '/' + encodeURIComponent(name)
 
