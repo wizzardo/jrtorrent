@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener> extends DefaultWebSocketHandler<L> {
 
     protected TorrentClientService rtorrentClientService;
+    protected StorageStatusService storageStatusService;
     protected Recorder recorder;
 
     protected Map<String, Map.Entry<Class<? extends CommandPojo>, CommandHandler<? extends L, ? extends CommandPojo>>>
@@ -249,8 +250,10 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
 
     @Override
     public void onConnect(L listener) {
-        if (listeners.isEmpty())
+        if (listeners.isEmpty()) {
             rtorrentClientService.resumeUpdater();
+            storageStatusService.unpause();
+        }
         super.onConnect(listener);
         sendMessage(listener, new AppInfo());
         System.out.println("onConnect. listeners: " + listeners.size());
@@ -259,8 +262,10 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
     @Override
     public void onDisconnect(L listener) {
         super.onDisconnect(listener);
-        if (listeners.isEmpty())
+        if (listeners.isEmpty()) {
             rtorrentClientService.pauseUpdater();
+            storageStatusService.pause();
+        }
         System.out.println("onDisconnect. listeners: " + listeners.size());
     }
 

@@ -116,34 +116,6 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
         List<TorrentEntryPriority> priorities = getTorrentEntriesPriorities(hash);
 
-//        if (files.size() == 1) {
-//            TorrentFile file = files.get(0);
-//            if (file.getPathElements().size() == 1)
-//                return Collections.singleton(with(new TorrentEntry(file.getPathElements().get(0)), e -> {
-//                    e.setSizeBytes(file.getSize());
-//                    if (!priorities.isEmpty())
-//                        e.setPriority(priorities.get(0).priority);
-//                }));
-//        }
-//        int id = 0;
-//        TorrentEntry rootEntry = new TorrentEntry(torrent.getName());
-//        for (TorrentFile file : files) {
-//            TorrentEntry entry = rootEntry;
-//            for (String pathElement : file.getPathElements()) {
-//                entry = entry.getOrCreate(pathElement);
-//            }
-//            entry.setId(id++);
-//            entry.setSizeBytes(file.getSize());
-//        }
-//        if (rootEntry.getChildren().size() != 1 || Flow.of(rootEntry.getChildren()).all(it -> it.getValue().isFolder()).get()) {
-//            rootEntry = new TorrentEntry(torrent.getName(), rootEntry.getChildren());
-//            setPriorities(rootEntry, priorities);
-//            return Collections.singleton(rootEntry);
-//        } else {
-//            setPriorities(rootEntry, priorities);
-//            return rootEntry.getChildren().values();
-//        }
-
         TorrentEntry rootEntry;
         ActiveClient ac = clients.get(hash);
         if (ac != null && ac.pieceSelector.filesWithPieces != null) {
@@ -157,29 +129,12 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
             rootEntry = createTree(torrent.getName(), pieceSelector.filesWithPieces);
         }
 
-//        rootEntry = createTree(torrent);
         setPriorities(rootEntry, priorities);
         if (rootEntry.getChildren().size() == 1) {
             if (rootEntry.getChildren().get(torrent.getName()) != null)
                 return rootEntry.getChildren().values();
         }
         return Collections.singletonList(rootEntry);
-    }
-
-    static TorrentEntry createTree(Torrent torrent) {
-        List<TorrentFile> files = torrent.getFiles();
-        int id = 0;
-        TorrentEntry rootEntry = new TorrentEntry(torrent.getName());
-        for (TorrentFile file : files) {
-            TorrentEntry entry = rootEntry;
-            for (String pathElement : file.getPathElements()) {
-                entry = entry.getOrCreate(pathElement);
-                if (entry.getId() == -1)
-                    entry.setId(id++);
-            }
-            entry.setSizeBytes(file.getSize());
-        }
-        return rootEntry;
     }
 
     static TorrentEntry createTree(String torrentName, List<PrioritizedSequentialPieceSelector.TorrentFileWithPieces> files) {
@@ -399,7 +354,6 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                 ac.updatedEvent.progress = ac.torrentInfo.getSize() == 0 ? 0 : piecesComplete * 100f / state.getPiecesTotal();
 
                 appWebSocketHandler.addBroadcastTask(ac.updatedEvent);
-                appWebSocketHandler.addBroadcastTask(new AppWebSocketHandler.DiskUsage(downloadsDir.getUsableSpace()));
             }
         }, 1000);
     }
@@ -819,11 +773,8 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         //todo: rewrite MessageDispatcher without busy loop
         //todo: save to db number of downloaded chunks and show progress based on it - need to remove rtorrent first =(
         //todo: rewrite pool of threads for socket-creation to a single nio-thread
-        //todo: file priority
         //todo: sort files
-        //todo: add sequential download
         //todo: change torrent's status to SEEDING when download finished
-        //todo: onPause - save downloaded chunks state into memory/db
         //todo: onResume - restore list of chunks without rechecking
 
         Config config = createDefaultConfig();
@@ -871,55 +822,6 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         });
 
         resumeDownloading();
-
-//        EventSource eventSource = btRuntime.getInjector().getInstance(EventSource.class);
-//        if (eventSource != null) {
-//            eventSource.onMetadataAvailable(e -> System.out.println(e));
-//            eventSource.onPieceVerified(e -> System.out.println(e));
-//            eventSource.onTorrentStarted(e -> System.out.println(e));
-//            eventSource.onTorrentStopped(e -> System.out.println(e));
-//        }
-
-//        Config config = new Config() {
-//            @Override
-//            public int getNumOfHashingThreads() {
-//                return Runtime.getRuntime().availableProcessors() * 2;
-//            }
-//        };
-//
-//        // enable bootstrapping from public routers
-//        Module dhtModule = new DHTModule(new DHTConfig() {
-//            @Override
-//            public boolean shouldUseRouterBootstrap() {
-//                return true;
-//            }
-//        });
-//
-//        // get download directory
-//        Path targetDirectory = new File(Holders.getConfig().config("jrt").get("downloads", ".")).toPath();
-//
-//        // create file system based backend for torrent data
-//        Storage storage = new FileSystemStorage(targetDirectory);
-//
-//
-//        // create client with a private runtime
-//        BtClient client = Bt.client()
-//                .config(config)
-//                .storage(storage)
-//                .magnet("magnet:?xt=urn:btih:af0d9aa01a9ae123a73802cfa58ccaf355eb19f1")
-//                .afterTorrentFetched(torrent -> {
-//                    torrent.getSource()
-//                })
-//                .autoLoadModules()
-//                .module(dhtModule)
-//                .stopWhenDownloaded()
-//                .build();
-//        client.startAsync(session -> {
-//        //            session.
-//        }, 1000);
-//
-//        // launch
-//        client.startAsync();
     }
 
     private void configureSecurity() {
