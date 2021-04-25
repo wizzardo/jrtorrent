@@ -14,6 +14,7 @@ import com.wizzardo.http.framework.template.LocalResourcesTools;
 import com.wizzardo.http.framework.template.ResourceTools;
 import com.wizzardo.http.request.Header;
 import com.wizzardo.http.response.RangeResponseHelper;
+import com.wizzardo.jrt.bt.BtService;
 import com.wizzardo.metrics.DatadogClient;
 import com.wizzardo.metrics.JvmMonitoring;
 import com.wizzardo.metrics.NoopRecorder;
@@ -36,6 +37,7 @@ public class App {
         server.onSetup(app -> {
             initMonitoring(app);
             DependencyFactory.get(MessageBundle.class).load("messages");
+//            DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(BtService.class));
             DependencyFactory.get().register(TorrentClientService.class, new SingletonDependency<>(MockRTorrentService.class));
 //            DependencyFactory.get().register(TorrentClientService.class, RTorrentService.class);
 
@@ -45,7 +47,6 @@ public class App {
 
             app.getUrlMapping()
                     .append("/info", (request, response) -> response.appendHeader(Header.KV_CONTENT_TYPE_APPLICATION_JSON).body("{\"status\":\"OK\"}"))
-//                    .append("/", AppController.class, "index")
                     .append("/", (request, response) -> {
                         byte[] html;
                         if (app.getEnvironment() == Environment.PRODUCTION) {
@@ -88,14 +89,6 @@ public class App {
 
                     return true;
                 });
-            }
-
-            if (app.getEnvironment() == Environment.PRODUCTION && resourceTools.isJar()) {
-                String tags = DependencyFactory.get(AppController.class).tags().render().toString();
-                FileTools.text(new File(resourceTools.getUnzippedJarDirectory(), "/public/js/tags.js"), tags);
-            } else {
-                app.getUrlMapping()
-                        .append("/static/js/tags.js", AppController.class, "tags");
             }
         });
         server.start();

@@ -23,9 +23,7 @@ import static com.wizzardo.tools.misc.With.with;
 public class AppController extends Controller {
 
     TorrentClientService torrentClientService;
-    ControllerUrlMapping mapping = DependencyFactory.get(ControllerUrlMapping.class);
     TokenFilter tokenFilter = getTokenFilter();
-    TagBundler tagBundler;
 
     private TokenFilter getTokenFilter() {
         try {
@@ -33,29 +31,6 @@ public class AppController extends Controller {
         } catch (IllegalStateException ignored) {
         }
         return null;
-    }
-
-    static class AppConfig {
-        String ws;
-        String addTorrent;
-        String token;
-        String downloadsPath;
-        String zipPath;
-        String m3uPath;
-    }
-
-    public Renderer index() {
-        model().append("config", JsonTools.serialize(with(new AppConfig(), it -> {
-            it.ws = mapping.getUrlTemplate("ws").getRelativeUrl();
-            it.addTorrent = mapping.getUrlTemplate(AppController.class, "addTorrent").getRelativeUrl();
-            it.token = tokenFilter != null ? tokenFilter.generateToken(request) : "";
-            ControllerUrlMapping mapping = Holders.getApplication().getUrlMapping();
-            it.downloadsPath = mapping.getUrlTemplate("downloads").getRelativeUrl();
-            it.zipPath = mapping.getUrlTemplate("zip").getRelativeUrl();
-            it.m3uPath = mapping.getUrlTemplate("m3u").getRelativeUrl();
-        })));
-
-        return renderView("index");
     }
 
     static class LoginData {
@@ -66,21 +41,6 @@ public class AppController extends Controller {
         LoginData loginData = new LoginData();
         loginData.token = tokenFilter != null ? tokenFilter.generateToken(request) : "";
         return loginData;
-    }
-
-    public Renderer tags() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(tagBundler.toJavascript("add_button"));
-        sb.append(tagBundler.toJavascript("delete_form"));
-        sb.append(tagBundler.toJavascript("mdl_select"));
-        sb.append(tagBundler.toJavascript("modal"));
-        sb.append(tagBundler.toJavascript("torrent"));
-        sb.append(tagBundler.toJavascript("torrents"));
-        sb.append(tagBundler.toJavascript("tree"));
-        sb.append(tagBundler.toJavascript("tree_entry"));
-        sb.append(tagBundler.toJavascript("upload_form"));
-        sb.append(tagBundler.toJavascript("disk_status"));
-        return renderString(sb.toString());
     }
 
     public Renderer addTorrent() throws IOException {
