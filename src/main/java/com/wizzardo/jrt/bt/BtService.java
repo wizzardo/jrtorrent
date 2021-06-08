@@ -398,7 +398,8 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         config.setNetworkBufferSize(256 * 1024);
         config.setMaxConcurrentlyActivePeerConnectionsPerTorrent(512);
         config.setMaxPieceReceivingTime(Duration.ofSeconds(120));
-        config.setMaxOutstandingRequests(16 * 1024 / 16 + 1);
+//        config.setMaxOutstandingRequests(16 * 1024 / 16 + 1);
+        config.setMaxOutstandingRequests(128);
 //        config.setTransferBlockSize(64 * 1024);
         config.setTransferBlockSize(16 * 1024); // 32kb might be supported but not more >_<
         config.setPeerConnectionInactivityThreshold(Duration.ofSeconds(60));
