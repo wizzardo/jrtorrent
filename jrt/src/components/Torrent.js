@@ -37,7 +37,7 @@ export default ({hash}) => {
     if (!data)
         return null
 
-    const {status, name, size, d, ds, u, us, p, s, pt, st, progress} = data
+    const {status, name, size, d, ds, u, us, p, s, pt, st, progress, folder} = data
 
     const pauseTorrent = (e) => {
         e.stopPropagation()
@@ -103,6 +103,6 @@ export default ({hash}) => {
                 <i className="material-icons">delete</i>
             </Button>
         </div>
-        <TorrentFileTree hash={hash} show={showTree}/>
+        <TorrentFileTree hash={hash} show={showTree} folder={folder}/>
     </div>
 }

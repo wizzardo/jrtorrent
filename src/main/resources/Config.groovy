@@ -26,8 +26,9 @@ jrt {
         port = 5000
     }
 
-    downloads = '/tmp/'
-    downloadsAliases = ['movies', 'series', 'music']
+    downloads = '/media/storage/share/'
+    downloadsAliases = []
+    folders = ['movies', 'series', 'music']
 }
 
 environments {

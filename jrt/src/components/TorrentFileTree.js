@@ -7,7 +7,7 @@ import {TorrentFileTreeEntry} from "./TorrentFileTreeEntry";
 import Scrollable,{SCROLLBAR_MODE_AUTO, SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
 import "react-ui-basics/Scrollable.css";
 
-export default React.memo(({hash, show}) => {
+export default React.memo(({hash, show, folder}) => {
     const data = useStore(state, it => it[hash])
     const [totalChildrenToShow, setTotalChildrenToShow] = useState(0)
     const [totalChildrenHidden, setTotalChildrenHidden] = useState(0)
@@ -36,7 +36,7 @@ export default React.memo(({hash, show}) => {
             height: (35 * totalChildrenToShow || 0) + 'px'
         }}>
             <Scrollable horizontalScrollBarMode={SCROLLBAR_MODE_AUTO} scrollBarMode={SCROLLBAR_MODE_HIDDEN}>
-                {data && data.tree.map(it => <TorrentFileTreeEntry {...it} open={true} hash={hash} key={it.id} parentPath={() => ''} updateParentShownChildrenCount={(innerChilds) => {
+                {data && data.tree.map(it => <TorrentFileTreeEntry {...it} open={true} hash={hash} key={it.id} parentPath={() => folder ? '/'+ folder  : ''} updateParentShownChildrenCount={(innerChilds) => {
                     if (typeof (innerChilds) != "undefined") {
                         let toShow = (totalChildrenToShow || data.tree.length) + innerChilds;
                         setTotalChildrenToShow(toShow)

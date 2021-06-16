@@ -15,10 +15,7 @@ import com.wizzardo.http.framework.template.ResourceTools;
 import com.wizzardo.http.request.Header;
 import com.wizzardo.http.response.RangeResponseHelper;
 import com.wizzardo.jrt.bt.BtService;
-import com.wizzardo.metrics.DatadogClient;
-import com.wizzardo.metrics.JvmMonitoring;
-import com.wizzardo.metrics.NoopRecorder;
-import com.wizzardo.metrics.Recorder;
+import com.wizzardo.metrics.*;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Unchecked;
 
@@ -73,6 +70,15 @@ public class App {
                 app.getUrlMapping()
                         .append("/" + alias + "/*", new RestHandler()
                                 .get(new FileTreeHandler(downloads, "/" + alias)
+                                        .setRangeResponseHelper(new RangeResponseHelper())
+                                        .setShowFolder(true)));
+            }
+
+            for (String folder : app.getConfig().config("jrt").get("folders", Collections.<String>emptyList())) {
+                new File(downloads, folder).mkdirs();
+                app.getUrlMapping()
+                        .append("/" + folder + "/*", new RestHandler()
+                                .get(new FileTreeHandler(downloads + "/" + folder, "/" + folder)
                                         .setRangeResponseHelper(new RangeResponseHelper())
                                         .setShowFolder(true)));
             }

@@ -16,6 +16,7 @@ public class TorrentInfo {
     private Status status;
     private int totalSeeds;
     private int totalPeers;
+    private String folder;
 
     public enum Status {
         SEEDING, FINISHED, DOWNLOADING, STOPPED, PAUSED, CHECKING, UNKNOWN;
@@ -142,6 +143,14 @@ public class TorrentInfo {
 
     public void setTotalPeers(int totalPeers) {
         this.totalPeers = totalPeers;
+    }
+
+    public String getFolder() {
+        return folder;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
     }
 
     @Override

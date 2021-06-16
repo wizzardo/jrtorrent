@@ -14,10 +14,13 @@ import "react-ui-basics/DropFileInput.css";
 import "react-ui-basics/Dropzone.css";
 import "react-ui-basics/Checkbox.css";
 import {preventDefault, stopPropagation} from 'react-ui-basics/Tools'
+import AutocompleteSelect from "react-ui-basics/AutocompleteSelect";
+import {SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
 
 const UploadForm = () => {
 
     const [selectedFile, setSelectedFile] = useState()
+    const [folder, setFolder] = useState('default')
     const [url, setUrl] = useState('')
     const [autostart, setAutostart] = useState(true)
 
@@ -26,7 +29,12 @@ const UploadForm = () => {
         if(!selectedFile && !url)
             return false;
 
-        API.addTorrent(null, {url, autostart: autostart ? 'on' : 'off', file: selectedFile})
+        API.addTorrent(null, {
+            url,
+            autostart: autostart ? 'on' : 'off',
+            file: selectedFile,
+            folder: (folder === 'default' ? null : folder)
+        })
     }
 
     return <form className={'UploadForm'} action="#" name="form">
@@ -56,6 +64,17 @@ const UploadForm = () => {
 
         <div className="row">
             <Checkbox name={'autostart'} label={'Autostart'} value={autostart} onChange={e => setAutostart(e.target.checked)}/>
+
+            <span>Save to:
+            <AutocompleteSelect className="folderSelect"
+                                scroll={SCROLLBAR_MODE_HIDDEN}
+                                value={folder}
+                                onSelect={setFolder}
+                                withArrow={false}
+                                withFilter={false}
+                                selectedMode={'inline'}
+                                data={['default', 'movies', 'series', 'music']}/>
+            </span>
 
             <Button className={'blue'} type="button" disabled={!selectedFile && !url} onClick={() => {
                 submit()

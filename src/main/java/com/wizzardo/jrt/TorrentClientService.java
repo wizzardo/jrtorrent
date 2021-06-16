@@ -15,7 +15,7 @@ public interface TorrentClientService {
 
     void load(String torrent);
 
-    void load(String torrent, boolean autostart);
+    void load(String torrent, boolean autostart, String folder);
 
     void start(String torrent);
 

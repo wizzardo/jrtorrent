@@ -14,11 +14,12 @@ public class TorrentInfo {
     public com.wizzardo.jrt.TorrentInfo.Status status;
     public long piecesComplete;
     public long piecesCount;
+    public String folder;
 
     public TorrentInfo() {
     }
 
-    public TorrentInfo(Timestamp dateCreated, Timestamp dateUpdated, String name, String hash, long size, long downloaded, long uploaded, com.wizzardo.jrt.TorrentInfo.Status status, long piecesComplete, long piecesCount) {
+    public TorrentInfo(Timestamp dateCreated, Timestamp dateUpdated, String name, String hash, long size, long downloaded, long uploaded, com.wizzardo.jrt.TorrentInfo.Status status, long piecesComplete, long piecesCount, String folder) {
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.name = name;
@@ -29,6 +30,7 @@ public class TorrentInfo {
         this.status = status;
         this.piecesComplete = piecesComplete;
         this.piecesCount = piecesCount;
+        this.folder = folder;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class TorrentInfo {
                 ", status=" + status +
                 ", piecesComplete=" + piecesComplete +
                 ", piecesCount=" + piecesCount +
+                ", folder=" + folder +
                 '}';
     }
 }

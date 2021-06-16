@@ -6,7 +6,6 @@ import com.wizzardo.http.framework.Holders;
 import com.wizzardo.http.framework.di.Service;
 import com.wizzardo.tools.collections.flow.Flow;
 import com.wizzardo.tools.evaluation.Config;
-import com.wizzardo.tools.json.JsonObject;
 import com.wizzardo.tools.misc.Unchecked;
 
 import java.io.File;
@@ -54,7 +53,7 @@ public class RTorrentService implements Service, TorrentClientService {
     }
 
     @Override
-    public void load(String torrent, boolean autostart) {
+    public void load(String torrent, boolean autostart, String folder) {
         client.load(torrent, autostart);
     }
 

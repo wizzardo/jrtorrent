@@ -10,7 +10,6 @@ import bt.event.EventSink;
 import bt.event.EventSource;
 import bt.metainfo.MetadataService;
 import bt.metainfo.Torrent;
-import bt.metainfo.TorrentFile;
 import bt.metainfo.TorrentId;
 import bt.protocol.BitOrder;
 import bt.protocol.Protocols;
@@ -37,6 +36,7 @@ import com.wizzardo.jrt.db.generated.Tables;
 import com.wizzardo.jrt.db.model.TorrentBinary;
 import com.wizzardo.jrt.db.model.TorrentBitfield;
 import com.wizzardo.jrt.db.model.TorrentEntryPriority;
+import com.wizzardo.jrt.db.query.QueryBuilder;
 import com.wizzardo.jrt.db.query.QueryBuilder.TIMESTAMP;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Pair;
@@ -52,13 +52,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.wizzardo.tools.misc.With.with;
 
 public class BtService implements Service, TorrentClientService, PostConstruct {
 
+    AppConfig appConfig;
     DBService dbService;
     AppWebSocketHandler appWebSocketHandler;
     MetadataService metadataService = new MetadataService();
@@ -95,9 +95,11 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
     @Override
     public List<TorrentInfo> list() {
-        return dbService.withBuilder(b -> {
-            return b.select(Tables.TORRENT_INFO.FIELDS).from(Tables.TORRENT_INFO).fetchInto(com.wizzardo.jrt.db.model.TorrentInfo.class);
-        }).stream()
+        return dbService.withBuilder(b -> b.select(Tables.TORRENT_INFO.FIELDS)
+                        .from(Tables.TORRENT_INFO)
+                        .orderBy(Tables.TORRENT_INFO.DATE_CREATED, QueryBuilder.OrderByStep.Order.DESC)
+                        .fetchInto(com.wizzardo.jrt.db.model.TorrentInfo.class))
+                .stream()
                 .map(torrentInfo -> with(new TorrentInfo(), ti -> mapToTorrentInfoDTO(torrentInfo, ti)))
                 .collect(Collectors.toList());
     }
@@ -198,7 +200,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
     }
 
     @Override
-    public void load(String torrent, boolean autostart) {
+    public void load(String torrent, boolean autostart, String folder) {
         System.out.println("adding new torrent: " + torrent);
 
         com.wizzardo.jrt.db.model.TorrentInfo torrentInfo;
@@ -208,7 +210,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
             TorrentInfo.Status status = autostart ? TorrentInfo.Status.DOWNLOADING : TorrentInfo.Status.STOPPED;
             torrentInfo = new com.wizzardo.jrt.db.model.TorrentInfo(TIMESTAMP.now(), TIMESTAMP.now(), t.getName(),
-                    t.getTorrentId().toString(), t.getSize(), 0, 0, status, 0, 0);
+                    t.getTorrentId().toString(), t.getSize(), 0, 0, status, 0, 0, folder);
 
             dbService.withBuilder(b -> {
                 torrentInfo.id = dbService.insertInto(b, torrentInfo, Tables.TORRENT_INFO);
@@ -239,7 +241,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
             TorrentInfo.Status status = autostart ? TorrentInfo.Status.DOWNLOADING : TorrentInfo.Status.STOPPED;
             torrentInfo = new com.wizzardo.jrt.db.model.TorrentInfo(TIMESTAMP.now(), TIMESTAMP.now(), name,
-                    hash, size, 0, 0, status, 0, 0);
+                    hash, size, 0, 0, status, 0, 0, folder);
 
             ActiveClient ac = loadTorrentFile(torrent, torrentInfo, t -> {
                 dbService.withBuilder(b -> {
@@ -365,6 +367,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         ti.setSize(torrentInfo.size);
         ti.setDownloaded(torrentInfo.downloaded);
         ti.setUploaded(torrentInfo.uploaded);
+        ti.setFolder(torrentInfo.folder);
     }
 
     @Override
@@ -423,6 +426,8 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
     protected ActiveClient loadTorrentFile(Torrent torrent, com.wizzardo.jrt.db.model.TorrentInfo torrentInfo) {
         Path targetDirectory = getDownloadPath();
+        if (torrentInfo.folder != null)
+            targetDirectory = targetDirectory.resolve(torrentInfo.folder);
 
         Storage storage = new FileSystemStorage(targetDirectory);
 
@@ -442,6 +447,8 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
 
     protected ActiveClient loadTorrentFile(String magnet, com.wizzardo.jrt.db.model.TorrentInfo torrentInfo, Consumer<Torrent> torrentConsumer) {
         Path targetDirectory = getDownloadPath();
+        if (torrentInfo.folder != null)
+            targetDirectory = targetDirectory.resolve(torrentInfo.folder);
 
         Storage storage = new FileSystemStorage(targetDirectory);
 

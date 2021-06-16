@@ -535,6 +535,14 @@ public class QueryBuilder {
             result = 31 * result + table.hashCode();
             return result;
         }
+
+        public OrderByStep orderBy(Field field) {
+            return new OrderByStep(this, field);
+        }
+
+        public OrderByStep orderBy(Field field, OrderByStep.Order order) {
+            return new OrderByStep(this, field, order);
+        }
     }
 
     public static class JoinStep extends AbstractChainStep {

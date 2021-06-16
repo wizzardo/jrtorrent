@@ -28,8 +28,9 @@ public class TorrentInfoTable extends Table {
     public final Field.EnumField<Status> STATUS = new Field.EnumField<Status>(this, "status");
     public final Field.LongField PIECES_COMPLETE = new Field.LongField(this, "pieces_complete");
     public final Field.LongField PIECES_COUNT = new Field.LongField(this, "pieces_count");
+    public final Field.StringField FOLDER = new Field.StringField(this, "folder");
 
-    public final List<Field> FIELDS  = Collections.unmodifiableList(Arrays.asList(ID, DATE_CREATED, DATE_UPDATED, NAME, HASH, SIZE, DOWNLOADED, UPLOADED, STATUS, PIECES_COMPLETE, PIECES_COUNT));
+    public final List<Field> FIELDS  = Collections.unmodifiableList(Arrays.asList(ID, DATE_CREATED, DATE_UPDATED, NAME, HASH, SIZE, DOWNLOADED, UPLOADED, STATUS, PIECES_COMPLETE, PIECES_COUNT, FOLDER));
     public List<Field> getFields() {
         return FIELDS;
     }

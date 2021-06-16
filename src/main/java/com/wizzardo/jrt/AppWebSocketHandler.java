@@ -394,6 +394,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
 
     public static class TorrentInfoSerialized {
         public String name;
+        public String folder;
         public String hash;
         public long size;
         public String status;
@@ -413,6 +414,7 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
 
     public static TorrentInfoSerialized toSerializedView(TorrentInfo it, TorrentInfoSerialized view) {
         view.name = it.getName();
+        view.folder = it.getFolder();
         view.hash = it.getHash();
         view.size = it.getSize();
         view.status = it.getStatus().name();

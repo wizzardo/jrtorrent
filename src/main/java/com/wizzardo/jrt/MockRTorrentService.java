@@ -3,7 +3,6 @@ package com.wizzardo.jrt;
 import com.wizzardo.epoll.ByteBufferProvider;
 import com.wizzardo.epoll.ByteBufferWrapper;
 import com.wizzardo.tools.collections.flow.Flow;
-import com.wizzardo.tools.json.JsonObject;
 
 import java.util.Collection;
 import java.util.List;
@@ -87,10 +86,10 @@ public class MockRTorrentService extends RTorrentService {
 
     @Override
     public void load(String torrent) {
-        load(torrent, true);
+        load(torrent, true, null);
     }
 
-    public void load(String torrent, boolean autostart) {
+    public void load(String torrent, boolean autostart, String folder) {
         TorrentInfo info = createTorrent(counter.getAndIncrement(), autostart);
         if (appWebSocketHandler != null)
             appWebSocketHandler.onAdd(info);
