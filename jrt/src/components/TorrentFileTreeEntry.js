@@ -8,6 +8,7 @@ import {SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
 import {preventDefault, stopPropagation} from "react-ui-basics/Tools";
 import API from "../network/API";
 import * as TorrentsBitfieldStore from "../stores/TorrentsBitfieldStore";
+import * as TorrentsFileTreeStore from "../stores/TorrentsFileTreeStore";
 import {CircleProgress} from "react-ui-basics";
 import {useStore} from "../stores/StoreUtils";
 import 'react-ui-basics/CircleProgress.css'
@@ -43,74 +44,76 @@ const countProgress = (bitfield, offset, length) => {
     return (completed * 100 / length).toFixed(2);
 }
 
+export const countOpenEntries = (children) => {
+    if (!children)
+        return 0
+    let count = 0;
+    for (const key in children) {
+        const child = children[key];
+        count += 1
+        if (child.open)
+            count += countOpenEntries(child.children)
+    }
+    return count
+}
+
 export const TorrentFileTreeEntry = (props) => {
     const {
-        children,
+        parentPath,
+        hash,
+        path,
+        forceOpen,
+    } = props;
+    const bitfield = useStore(TorrentsBitfieldStore.state, s => s[hash])
+
+    const data = useStore(TorrentsFileTreeStore.state, TorrentsFileTreeStore.selectPath(hash, path))
+
+    const {
         // chunksCompleted,
         // chunksCount,
+        children,
         id,
         isFolder,
         name,
         priority,
-        updateParentShownChildrenCount,
-        hidden,
-        parentPath,
-        hash,
         piecesOffset,
         piecesLength,
         sizeBytes,
-        open
-    } = props;
-    const bitfield = useStore(TorrentsBitfieldStore.state, s => s[hash])
-
-    const [showChildren, setShowChildren] = useState(false)
-    const [shownChildren, setShownChildren] = useState(0)
-    const [hiddenChildren, setHiddenChildren] = useState(children && Object.values(children).length || 0)
-
-    const updateShownChildrenCount = innerChilds => {
-        // console.log('entry.updateShownChildsCount ' + innerChilds + ' in ' + name);
-        if (typeof (innerChilds) != "undefined")
-            setShownChildren(shownChildren + innerChilds)
-
-        if (updateParentShownChildrenCount)
-            updateParentShownChildrenCount(innerChilds);
-    }
+        open,
+    } = data || {};
 
     const toggleChildren = (e) => {
         if (e.processed)
             return;
         e.processed = true;
-        setShowChildren(!showChildren);
-
-        var t = shownChildren;
-        updateShownChildrenCount(!showChildren ? hiddenChildren : -shownChildren);
-        setHiddenChildren(t)
+        TorrentsFileTreeStore.setOpen(hash, path, !open)
     };
 
-    useEffect(() => !!open && toggleChildren({}), [!!open])
+    useEffect(() => !!forceOpen && TorrentsFileTreeStore.setOpen(hash, path, !!forceOpen), [!!forceOpen])
 
-    const path = () => parentPath() + '/' + encodeURIComponent(name)
+    const pathEncoded = parentPath + '/' + encodeURIComponent(name)
 
     const [progress, setProgress] = useState(0);
     useEffect(() => {
-        if (!hidden) {
-            if (!isFolder)
-                setProgress(countProgress(bitfield, piecesOffset, piecesLength));
-        } else {
-            setProgress(0)
-        }
-    }, [hidden, bitfield])
+        if (!isFolder)
+            setProgress(countProgress(bitfield, piecesOffset, piecesLength));
+    }, [bitfield])
+
+    const shownChildren = open ? countOpenEntries(children) + 0 : 0
+
+    // console.log('TorrentFileTreeEntry', shownChildren, open, data.open, path, data)
+    debugger
 
     return <div className="TorrentFileTreeEntry" onClick={toggleChildren}>
         <div className="info">
             {isFolder && <div className="folder">
-                <i className="material-icons">{showChildren ? 'folder_open' : 'folder'}</i>
+                <i className="material-icons">{open ? 'folder_open' : 'folder'}</i>
                 <span className="folderName">{name}</span>
 
-                <a href={!hidden && API.zipLink(path())} className="zip" onClick={openLink}>
+                <a href={API.zipLink(pathEncoded)} className="zip" onClick={openLink}>
                     <i className="material-icons">archive</i>
                 </a>
-                <a href={!hidden && API.m3uLink(path())} className="m3u" onClick={openLink}>
+                <a href={API.m3uLink(pathEncoded)} className="m3u" onClick={openLink}>
                     m3u
                 </a>
             </div>}
@@ -118,27 +121,31 @@ export const TorrentFileTreeEntry = (props) => {
             {!isFolder && <>
                 <CircleProgress value={progress}/>
                 <span className={'progress label'}>{progress}%</span> &nbsp;
-                <a href={!hidden && API.downloadLink(path())} onClick={openLink}>{name}</a>
+                <a href={API.downloadLink(pathEncoded)} onClick={openLink}>{name}</a>
                 &nbsp;&nbsp; <Size value={sizeBytes}/>
             </>}
 
-            {!hidden && <AutocompleteSelect className="prioritySelect"
-                                            scroll={SCROLLBAR_MODE_HIDDEN}
-                                            value={priority || 'NORMAL'}
-                                            onSelect={priority => API.getWs().send('SetFilePriority', {path: path(), priority, hash})}
-                                            withArrow={false}
-                                            withFilter={false}
-                                            selectedMode={'inline'}
-                                            data={['OFF', 'NORMAL', 'HIGH']}
+            {<AutocompleteSelect className="prioritySelect"
+                                 scroll={SCROLLBAR_MODE_HIDDEN}
+                                 value={priority || 'NORMAL'}
+                                 onSelect={priority => API.getWs().send('SetFilePriority', {path: pathEncoded, priority, hash})}
+                                 withArrow={false}
+                                 withFilter={false}
+                                 selectedMode={'inline'}
+                                 data={['OFF', 'NORMAL', 'HIGH']}
             />}
         </div>
         <div className="resizeable children" style={{
             height: (35 * shownChildren) + 'px',
             [shownChildren === 0 && 'visibility']: 'hidden',
         }}>
-            {children && Object.values(children).map(it => <TorrentFileTreeEntry hidden={shownChildren === 0 || hidden} {...it} key={it.id}
-                                                                                 parentPath={path} hash={hash}
-                                                                                 updateParentShownChildrenCount={updateShownChildrenCount}/>)}
+            {!!open && children && Object.values(children).map(it => <TorrentFileTreeEntry
+                key={it.id}
+                path={[...path, it.name]}
+                parentPath={pathEncoded}
+                hash={hash}
+                name={it.name}
+            />)}
 
         </div>
     </div>
