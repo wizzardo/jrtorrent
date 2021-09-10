@@ -1,16 +1,21 @@
 import {getWsUrl, showLog, showStats, getConfig} from './Config'
 import WindowListener from './WindowListener'
-import {orNoop} from "react-ui-basics/Tools";
+import {orNoop, clearInterval, setTimeout, setInterval} from "react-ui-basics/Tools";
 
 const now = (window.performance && window.performance.now && (() => window.performance.now())) || (() => new Date().getTime());
-const setTimeout = window.setTimeout;
-
+let pingTimer;
 const handlers = {};
 const requests = {};
 const wsEvents = {
     onOpen: () => {
+        clearInterval(pingTimer);
+        pingTimer = setInterval(() => {
+            if (state === STATE_READY)
+                send('Ping', {})
+        }, 10000)
     },
     onClose: () => {
+        clearInterval(pingTimer);
     }
 };
 
