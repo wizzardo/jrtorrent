@@ -5,7 +5,6 @@ import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
 import styles from "rollup-plugin-styles";
 import {terser} from "rollup-plugin-terser";
-import alias from '@rollup/plugin-alias';
 import fs from "fs-extra";
 
 const env = process.env.NODE_ENV || 'production';
@@ -101,7 +100,7 @@ export default {
             ],
             babelrc: false,
             presets: [
-                ["@babel/env", {"modules": false}],
+                // ["@babel/env", {"modules": false}],
                 ["@babel/react", {"pragma": "ReactCreateElement"}],
             ],
             plugins: [
@@ -117,7 +116,8 @@ export default {
                 ["@babel/plugin-proposal-nullish-coalescing-operator", {"loose": false}],
                 "@babel/plugin-proposal-do-expressions",
 
-                "@babel/plugin-proposal-class-properties",
+                ["@babel/plugin-proposal-private-property-in-object", {"loose": true}],
+                ["@babel/plugin-proposal-class-properties", {"loose": true}],
                 "@babel/plugin-syntax-dynamic-import",
 
                 "transform-react-remove-prop-types",
