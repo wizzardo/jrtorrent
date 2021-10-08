@@ -36,12 +36,12 @@ import com.wizzardo.jrt.db.generated.Tables;
 import com.wizzardo.jrt.db.model.TorrentBinary;
 import com.wizzardo.jrt.db.model.TorrentBitfield;
 import com.wizzardo.jrt.db.model.TorrentEntryPriority;
-import com.wizzardo.jrt.db.query.QueryBuilder;
-import com.wizzardo.jrt.db.query.QueryBuilder.TIMESTAMP;
 import com.wizzardo.tools.io.FileTools;
 import com.wizzardo.tools.misc.Pair;
 import com.wizzardo.tools.misc.event.EventBus;
 import com.wizzardo.tools.security.Base64;
+import com.wizzardo.tools.sql.query.QueryBuilder;
+import com.wizzardo.tools.sql.query.QueryBuilder.TIMESTAMP;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -401,6 +401,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         config.setNetworkBufferSize(256 * 1024);
         config.setMaxConcurrentlyActivePeerConnectionsPerTorrent(512);
         config.setMaxPieceReceivingTime(Duration.ofSeconds(120));
+        config.setTrackerQueryInterval(Duration.ofSeconds(120));
 //        config.setMaxOutstandingRequests(16 * 1024 / 16 + 1);
         config.setMaxOutstandingRequests(128);
 //        config.setTransferBlockSize(64 * 1024);
@@ -784,6 +785,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         //todo: sort files
         //todo: change torrent's status to SEEDING when download finished
         //todo: onResume - restore list of chunks without rechecking
+        //todo: investigate bt.peer.tracker-peer-source- threads
 
         Config config = createDefaultConfig();
 

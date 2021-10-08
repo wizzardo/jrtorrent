@@ -1,5 +1,18 @@
+
+buildscript {
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'com.wizzardo.tools:tools-gradle-build:+'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'tools-gradle-build'
 
 repositories {
     jcenter()
@@ -47,37 +60,22 @@ compileJava {
     options.compilerArgs.addAll(['--release', '8'])
 }
 
-//create a single Jar with all dependencies
-task fatJar(type: Jar) {
-    manifest {
-        attributes(
-                "Main-Class": mainClassName
-        )
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
 run {
     if (project.hasProperty('args'))
         args project.args.split('\\s')
 }
 
-
-task([description: 'listing all migrations'], 'listMigrations', {
-    doLast {
-        def file = new File(projectDir.absolutePath, 'src/main/resources/migrations.txt')
-        def sout = new StringBuilder(), serr = new StringBuilder()
-        def proc = 'find migrations -name *.sql'.execute([], new File(projectDir.absolutePath, 'src/main/resources'))
-        proc.consumeProcessOutput(sout, serr)
-        proc.waitForOrKill(1000)
-        if (serr.length() > 0) {
-            System.err.println(serr)
-            throw new IllegalStateException()
-        }
-
-        file.setText(sout.toString())
+sqlTools {
+    migrations {
+        enabled = true
+        src = 'migrations'
+        out = 'migrations.txt'
     }
-})
-tasks.processResources.dependsOn listMigrations
+    tablesGenerator {
+        enabled = true
+        src = 'src/main/java/com/wizzardo/jrt/db/model'
+        out = 'src/main/java/com/wizzardo/jrt/db/generated'
+        packageName = 'com.wizzardo.jrt.db.generated'
+    }
+
+}

@@ -1,5 +1,5 @@
 package com.wizzardo.jrt.db.generated;
-import com.wizzardo.jrt.db.query.*;
+import com.wizzardo.tools.sql.query.*;
 
 import java.util.Arrays;
 import java.util.List;
