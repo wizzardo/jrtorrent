@@ -81,6 +81,7 @@ public class PrioritizedSequentialPieceSelector extends BaseStreamSelector {
         Map<TorrentFile, List<Integer>> piecesByFile = new HashMap<>((int) (files.size() / 0.75d) + 1);
         Map<StorageUnit, TorrentFile> storageUnitsToFilesMap = new LinkedHashMap<>((int) (files.size() / 0.75d) + 1);
         files.forEach(f -> storageUnitsToFilesMap.put(storage.getUnit(torrent, f), f));
+        files.forEach(f -> piecesByFile.put(f, f.getSize() != 0 ? new ArrayList<>() : Collections.emptyList()));
 
         long totalSize = torrent.getSize();
         long chunkSize = torrent.getChunkSize();
@@ -100,7 +101,7 @@ public class PrioritizedSequentialPieceSelector extends BaseStreamSelector {
 
             int finalPieceId = pieceId;
             subrange.visitUnits((unit, off1, lim1) -> {
-                piecesByFile.computeIfAbsent(storageUnitsToFilesMap.get(unit), torrentFile -> new ArrayList<>()).add(finalPieceId);
+                piecesByFile.get(storageUnitsToFilesMap.get(unit)).add(finalPieceId);
                 return true;
             });
 
