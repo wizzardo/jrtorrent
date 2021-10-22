@@ -152,7 +152,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
             entry.setSizeBytes(file.getSize());
             entry.setPriority(file.priority);
             entry.setPiecesLength(file.pieces.length);
-            entry.setPiecesOffset(file.pieces[0]);
+            entry.setPiecesOffset(file.pieces.length > 0 ? file.pieces[0] : -1);
         }
         return rootEntry;
     }
