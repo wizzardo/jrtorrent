@@ -38,7 +38,8 @@ export default ({hash, show, folder}) => {
                                                                            hash={hash}
                                                                            key={it.id}
                                                                            path={[i]}
-                                                                           parentPath={folder ? '/' + folder : ''}
+                                                                           folder={folder}
+                                                                           parentPath={''}
                 />)}
             </Scrollable>
         </div>

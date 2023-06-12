@@ -62,6 +62,7 @@ export const TorrentFileTreeEntry = (props) => {
         parentPath,
         hash,
         path,
+        folder,
         forceOpen,
     } = props;
     const bitfield = useStore(TorrentsBitfieldStore.state, s => s[hash])
@@ -92,6 +93,7 @@ export const TorrentFileTreeEntry = (props) => {
     useEffect(() => !!forceOpen && TorrentsFileTreeStore.setOpen(hash, path, !!forceOpen), [!!forceOpen])
 
     const pathEncoded = parentPath + '/' + encodeURIComponent(name)
+    const absolutePath = folder ? '/' + folder + pathEncoded : pathEncoded;
 
     const [progress, setProgress] = useState(0);
     useEffect(() => {
@@ -110,10 +112,10 @@ export const TorrentFileTreeEntry = (props) => {
                 <i className="material-icons">{open ? 'folder_open' : 'folder'}</i>
                 <span className="folderName">{name}</span>
 
-                <a href={API.zipLink(pathEncoded)} className="zip" onClick={openLink}>
+                <a href={API.zipLink(absolutePath)} className="zip" onClick={openLink}>
                     <i className="material-icons">archive</i>
                 </a>
-                <a href={API.m3uLink(pathEncoded)} className="m3u" onClick={openLink}>
+                <a href={API.m3uLink(absolutePath)} className="m3u" onClick={openLink}>
                     m3u
                 </a>
             </div>}
@@ -121,7 +123,7 @@ export const TorrentFileTreeEntry = (props) => {
             {!isFolder && <>
                 <CircleProgress value={progress}/>
                 <span className={'progress label'}>{progress}%</span> &nbsp;
-                <a href={API.downloadLink(pathEncoded)} onClick={openLink}>{name}</a>
+                <a href={API.downloadLink(absolutePath)} onClick={openLink}>{name}</a>
                 &nbsp;&nbsp; <Size value={sizeBytes}/>
             </>}
 
@@ -144,6 +146,7 @@ export const TorrentFileTreeEntry = (props) => {
                 path={[...path, it.name]}
                 parentPath={pathEncoded}
                 hash={hash}
+                folder={folder}
                 name={it.name}
             />)}
 
