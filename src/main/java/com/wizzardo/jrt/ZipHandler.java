@@ -40,7 +40,7 @@ public class ZipHandler extends FileTreeHandler {
     }
 
     @Override
-    protected Response handleDirectory(Request request, Response response, String path, File file) {
+    protected Response handleDirectory(Request request, Response response, File file) {
         response.header(Header.KV_CONNECTION_CLOSE);
         response.header(Header.KEY_TRANSFER_ENCODING, Header.VALUE_CHUNKED);
         response.header(Header.KEY_CONTENT_TYPE, "application/zip");

@@ -46,8 +46,9 @@ public class M3UHandler<T extends M3UHandler.HandlerContextWithRequest> extends 
     }
 
     @Override
-    protected Response handleDirectory(Request request, Response response, String path, File file) {
+    protected Response handleDirectory(Request request, Response response, File file) {
         StringBuilder sb = new StringBuilder();
+        String path = prefix + getCanonicalPath(file).substring(workDirPath.length());
         T handlerContext = createHandlerContext(path, request);
         return response.setBody(addFileRecursively(file, sb, handlerContext).toString())
                 .header(Header.KEY_CONTENT_TYPE, "audio/x-mpegurl")
