@@ -1,10 +1,10 @@
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import replace from 'rollup-plugin-replace';
-import styles from "rollup-plugin-styles";
-import {terser} from "rollup-plugin-terser";
+import postcss from 'rollup-plugin-postcss';
+import terser from "@rollup/plugin-terser";
 import fs from "fs-extra";
 
 const env = process.env.NODE_ENV || 'production';
@@ -59,9 +59,13 @@ export default {
         exclude: ['node_modules/**'],
     },
     plugins: [
-        styles({
-            mode: ["extract", "bundle.css"],
-            // output: `bundle.css`,
+        // styles({
+        //     mode: ["extract", "bundle.css"],
+        //     // output: `bundle.css`,
+        // }),
+        postcss({
+            extract: 'bundle.css',
+            minimize: true,
         }),
         resolve({
             browser: true,
@@ -104,7 +108,7 @@ export default {
                 ["@babel/react", {"pragma": "ReactCreateElement"}],
             ],
             plugins: [
-                "@babel/external-helpers",
+                // "@babel/external-helpers",
                 // Stage 0
                 "@babel/plugin-proposal-function-bind",
 
