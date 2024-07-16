@@ -10,6 +10,12 @@
   }
 }
 
+@media screen and (width > 1280px) {
+  .AddButton.FloatingActionButton {
+    left: calc(50% + 920px / 2 + 50px);
+  }
+}
+
 .UploadForm {
   .Button {
     &.delete {

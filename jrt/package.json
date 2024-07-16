@@ -3,6 +3,7 @@
   "name": "jrt",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build-css": "sass --no-source-map src:src",
     "watch-css": "npm run build-css && sass --no-source-map --watch src:src",
@@ -62,13 +63,13 @@
     "npm-run-all": "4.1.5",
     "postcss": "^8.3.6",
     "preact-cli": "^3.2.2",
-    "rollup": "2.56.3",
+    "rollup": "4.9.5",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-commonjs": "10.1.0",
     "rollup-plugin-json": "4.0.0",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-replace": "2.2.0",
-    "rollup-plugin-styles": "^3.14.1",
+    "rollup-plugin-styles": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "sass": "^1.39.0",
     "sirv-cli": "1.0.14"
