@@ -41,8 +41,7 @@ const countProgress = (bitfield, offset, length) => {
         if (bitfield.has(i))
             completed++;
     }
-    // return (completed * 100 / length).toFixed(2);
-    return completed * 100 / length;
+    return (completed * 100 / length).toFixed(2);
 }
 
 export const countOpenEntries = (children) => {
