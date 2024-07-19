@@ -41,7 +41,8 @@ const countProgress = (bitfield, offset, length) => {
         if (bitfield.has(i))
             completed++;
     }
-    return (completed * 100 / length).toFixed(2);
+    // return (completed * 100 / length).toFixed(2);
+    return completed * 100 / length;
 }
 
 export const countOpenEntries = (children) => {
@@ -104,7 +105,6 @@ export const TorrentFileTreeEntry = (props) => {
     const shownChildren = open ? countOpenEntries(children) + 0 : 0
 
     // console.log('TorrentFileTreeEntry', shownChildren, open, data.open, path, data)
-    debugger
 
     return <div className="TorrentFileTreeEntry" onClick={toggleChildren}>
         <div className="info">

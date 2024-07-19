@@ -1,5 +1,5 @@
 import {Store} from 'laco'
-import TypedFastBitSet from "typedfastbitset";
+import * as BitSet from "typedfastbitset";
 
 export const state = new Store({})
 
@@ -17,7 +17,7 @@ export const update = (hash, bitfieldBase64) => {
         uint8Array = concatTypedArrays(uint8Array, new Uint8Array(alignedLength - uint8Array.length))
     }
     const uint32Array = new Uint32Array(uint8Array.buffer);
-    const bitset = TypedFastBitSet.fromWords(uint32Array)
+    const bitset = BitSet.TypedFastBitSet.fromWords(uint32Array)
     state.set(prev => ({...prev, [hash]: bitset}));
 }
 

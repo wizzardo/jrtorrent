@@ -90,9 +90,7 @@ export default {
                 'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
                 'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
                 'node_modules/react-dom/index.js': ['render', 'unstable_batchedUpdates'],
-                // 'node_modules/chart.js/src/chart.js': ['Chart'],
-                'node_modules/chart.js/dist/Chart.js': ['Chart'],
-                'node_modules/react-sparklines/build/index.js': ['Sparklines', 'SparklinesLine'],
+                'node_modules/typedfastbitset/lib/index.js': ['TypedFastBitSet'],
             },
         }),
         babel({

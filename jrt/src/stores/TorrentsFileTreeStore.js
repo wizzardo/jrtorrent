@@ -41,7 +41,6 @@ export const setOpen = (torrent, path, isOpen) => state.set(prev => {
             }
         }
     }
-    debugger
 
     return next;
 })
