@@ -28,7 +28,7 @@ jrt {
 
     downloads = '/media/storage/share/'
     downloadsAliases = []
-    folders = ['movies', 'series', 'music']
+    folders = ['movies', 'series', 'music', 'games', 'other']
 }
 
 environments {

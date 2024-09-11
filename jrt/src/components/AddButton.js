@@ -16,6 +16,7 @@ import "react-ui-basics/Checkbox.css";
 import {preventDefault, stopPropagation} from 'react-ui-basics/Tools'
 import AutocompleteSelect from "react-ui-basics/AutocompleteSelect";
 import {SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable";
+import {FOLDERS} from "../stores/FolderFilterStore.js";
 
 const UploadForm = () => {
 
@@ -73,7 +74,7 @@ const UploadForm = () => {
                                 withArrow={false}
                                 withFilter={false}
                                 selectedMode={'inline'}
-                                data={['default', 'movies', 'series', 'music']}/>
+                                data={FOLDERS}/>
             </span>
 
             <Button className={'blue'} type="button" disabled={!selectedFile && !url} onClick={() => {

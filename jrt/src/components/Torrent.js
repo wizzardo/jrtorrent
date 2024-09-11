@@ -7,6 +7,8 @@ import {formatNumberWithMaxLength, formatAbbreviation} from 'react-ui-basics/Siz
 import {classNames} from "react-ui-basics/Tools";
 import Button from "react-ui-basics/Button";
 import "react-ui-basics/Button.css";
+import {FOLDER_FILTER_ALL, FOLDER_FILTER_DEFAULT, FOLDERS} from "../stores/FolderFilterStore.js";
+import * as FolderFilterStore from "../stores/FolderFilterStore.js";
 import TorrentFileTree from "./TorrentFileTree";
 import API from "../network/API";
 
@@ -34,8 +36,14 @@ export default ({hash}) => {
     const [selected, setSelected] = useState(false)
     const [showTree, setShowTree] = useState(false)
     const data = useStore(state, state => state[hash]);
+    const folderFilter = useStore(FolderFilterStore.state)
     if (!data)
         return null
+
+    if (folderFilter.folder !== FOLDER_FILTER_ALL) {
+        if ((!data.folder && folderFilter.folder !== FOLDER_FILTER_DEFAULT) || (!!data.folder && data.folder !== folderFilter.folder))
+            return null
+    }
 
     const {status, name, size, d, ds, u, us, p, s, pt, st, progress, folder} = data
 
