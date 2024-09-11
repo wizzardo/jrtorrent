@@ -12,5 +12,12 @@
 		align-items: center;
 
 		padding: 10px 50px;
+		max-width: 100vw;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.home .topbar {
+		padding: 10px 40px 10px 10px;
 	}
 }

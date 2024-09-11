@@ -46,6 +46,9 @@
     a {
       white-space: nowrap;
       height: 20px;
+      max-width: 600px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     &:hover {
