@@ -189,6 +189,11 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         boolean withData;
     }
 
+    static class MoveTorrent implements CommandPojo {
+        String hash;
+        String folder;
+    }
+
     static class SetFilePriority implements CommandPojo {
         String hash;
         String path;
@@ -217,6 +222,9 @@ public class AppWebSocketHandler<L extends AppWebSocketHandler.PingableListener>
         });
         addHandler(DeleteTorrent.class, (l, c) -> {
             rtorrentClientService.delete(c.hash, c.withData);
+        });
+        addHandler(MoveTorrent.class, (l, c) -> {
+            rtorrentClientService.move(c.hash, c.folder);
         });
 
         addHandler(SetFilePriority.class, (l, c) -> {

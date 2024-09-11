@@ -545,6 +545,44 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
         appWebSocketHandler.onUpdate(with(new TorrentInfo(), ti -> mapToTorrentInfoDTO(torrentInfo, ti)));
     }
 
+    @Override
+    public void move(String hash, String folder) {
+        if (folder.equals("default"))
+            folder = null;
+
+        com.wizzardo.jrt.db.model.TorrentInfo torrentInfo = getTorrentInfo(hash);
+        if (torrentInfo == null)
+            return;
+
+        if (torrentInfo.status != TorrentInfo.Status.STOPPED) {
+            stop(hash);
+        }
+
+        torrentInfo = getTorrentInfo(hash);
+
+        Path fromDirectory = getDownloadPath();
+        if (torrentInfo.folder != null)
+            fromDirectory = fromDirectory.resolve(torrentInfo.folder);
+
+        fromDirectory = fromDirectory.resolve(torrentInfo.name);
+
+        Path toDirectory = getDownloadPath();
+        if (folder != null)
+            toDirectory = toDirectory.resolve(folder);
+
+        toDirectory = toDirectory.resolve(torrentInfo.name);
+
+        boolean renamed = fromDirectory.toFile().renameTo(toDirectory.toFile());
+        if (!renamed)
+            throw new IllegalStateException("Failed to move torrent from " + fromDirectory + " to " + toDirectory);
+
+        torrentInfo.folder = folder;
+        updateTorrent(torrentInfo);
+
+        com.wizzardo.jrt.db.model.TorrentInfo finalTorrentInfo = torrentInfo;
+        appWebSocketHandler.onUpdate(with(new TorrentInfo(), ti -> mapToTorrentInfoDTO(finalTorrentInfo, ti)));
+    }
+
     private void updateTorrent(TorrentInfo torrentInfo) {
         dbService.withBuilder(b -> b
                 .update(Tables.TORRENT_INFO)
@@ -578,6 +616,7 @@ public class BtService implements Service, TorrentClientService, PostConstruct {
                 .set(Tables.TORRENT_INFO.STATUS.eq(torrentInfo.status))
                 .set(Tables.TORRENT_INFO.DOWNLOADED.eq(torrentInfo.downloaded))
                 .set(Tables.TORRENT_INFO.UPLOADED.eq(torrentInfo.uploaded))
+                .set(Tables.TORRENT_INFO.FOLDER.eq(torrentInfo.folder))
                 .where(Tables.TORRENT_INFO.HASH.eq(torrentInfo.hash))
                 .executeUpdate()
         );

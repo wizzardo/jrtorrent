@@ -29,5 +29,7 @@ public interface TorrentClientService {
 
     void resumeUpdater();
 
+    void move(String torrent, String folder);
+
     String getEncodedBitfield(String hash);
 }

@@ -91,6 +91,10 @@ public class RTorrentService implements Service, TorrentClientService {
     }
 
     @Override
+    public void move(String hash, String folder) {
+    }
+
+    @Override
     public String getEncodedBitfield(String hash) {
         return null;
     }

@@ -4,13 +4,15 @@ import {useStore} from '../stores/StoreUtils'
 import {state} from "../stores/TorrentsStore";
 import * as DialogStore from "../stores/DialogStore";
 import {formatNumberWithMaxLength, formatAbbreviation} from 'react-ui-basics/Size'
-import {classNames} from "react-ui-basics/Tools";
+import {classNames, stopPropagation} from "react-ui-basics/Tools";
 import Button from "react-ui-basics/Button";
 import "react-ui-basics/Button.css";
 import {FOLDER_FILTER_ALL, FOLDER_FILTER_DEFAULT, FOLDERS} from "../stores/FolderFilterStore.js";
 import * as FolderFilterStore from "../stores/FolderFilterStore.js";
 import TorrentFileTree from "./TorrentFileTree";
 import API from "../network/API";
+import AutocompleteSelect from "react-ui-basics/AutocompleteSelect.js";
+import {SCROLLBAR_MODE_HIDDEN} from "react-ui-basics/Scrollable.js";
 
 
 const formatSpeed = function (size) {
@@ -48,7 +50,7 @@ export default ({hash}) => {
     const {status, name, size, d, ds, u, us, p, s, pt, st, progress, folder} = data
 
     const pauseTorrent = (e) => {
-        e.stopPropagation()
+        stopPropagation(e)
         if (status === 'PAUSED' || status === 'STOPPED' || status === 'FINISHED')
             API.getWs().send('StartTorrent', {hash})
         else
@@ -59,7 +61,7 @@ export default ({hash}) => {
         setShowTree(!showTree)
     }
     const deleteTorrent = (e) => {
-        e.stopPropagation()
+        stopPropagation(e)
         DialogStore.show({
             title: 'Delete torrent?',
             description: <p> Are you sure that you want to delete
@@ -77,6 +79,33 @@ export default ({hash}) => {
                 }}>DELETE</Button>,
                 <Button onClick={DialogStore.hide}>Cancel</Button>,
             ],
+            onCancel: DialogStore.hide,
+        })
+    }
+
+
+    const showSettings = (e) => {
+        stopPropagation(e)
+        DialogStore.show({
+            description: <div className="torrentSettings">
+                <strong style={{fontSize: '16px'}}>{name}</strong>
+                <br/>
+                <br/>
+                folder:
+                <AutocompleteSelect
+                    className="folderSelect"
+                    scroll={SCROLLBAR_MODE_HIDDEN}
+                    value={folder || 'default'}
+                    onSelect={folder => {
+                        API.getWs().send('MoveTorrent', {hash, folder})
+                        DialogStore.hide()
+                    }}
+                    withArrow={false}
+                    withFilter={false}
+                    selectedMode={'inline'}
+                    data={FOLDERS}
+                />
+            </div>,
             onCancel: DialogStore.hide,
         })
     }
@@ -109,6 +138,9 @@ export default ({hash}) => {
             </div>
             <Button className="delete" round={true} flat={true} onClick={deleteTorrent}>
                 <i className="material-icons">delete</i>
+            </Button>
+            <Button className="settings" round={true} flat={true} onClick={showSettings}>
+                <i className="material-icons">more_vert</i>
             </Button>
         </div>
         <TorrentFileTree hash={hash} show={showTree} folder={folder}/>
