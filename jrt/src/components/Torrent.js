@@ -136,11 +136,11 @@ export default ({hash}) => {
                     <div className="bufferbar bar bar2"/>
                 </div>
             </div>
-            <Button className="delete" round={true} flat={true} onClick={deleteTorrent}>
-                <i className="material-icons">delete</i>
-            </Button>
             <Button className="settings" round={true} flat={true} onClick={showSettings}>
                 <i className="material-icons">more_vert</i>
+            </Button>
+            <Button className="delete" round={true} flat={true} onClick={deleteTorrent}>
+                <i className="material-icons">delete</i>
             </Button>
         </div>
         <TorrentFileTree hash={hash} show={showTree} folder={folder}/>
