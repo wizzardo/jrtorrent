@@ -1,32 +1,26 @@
-import { defineConfig, transformWithEsbuild } from 'vite';
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig, transformWithOxc  } from 'vite';
+import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+const transformJsxInJs = () => ({
+    name: "transform-jsx-in-js",
+    enforce: "pre",
+    async transform(code, id) {
+        if (!id.match(/.*\.js$/)) {
+            return null;
+        }
+
+        return await transformWithOxc(code, id, {
+            lang: "jsx",
+        });
+    },
+});
+
 export default defineConfig({
     plugins: [
-        {
-            name: 'load+transform-js-files-as-jsx',
-            async transform(code, id) {
-                if (!id.match(/src\/.*\.js$/)) {
-                    return null;
-                }
-
-                // Use the exposed transform from vite, instead of directly
-                // transforming with esbuild
-                return transformWithEsbuild(code, id, {
-                    loader: 'jsx',
-                    jsx: 'automatic',
-                });
-            },
-        },
         react(),
+        transformJsxInJs(),
     ],
-    optimizeDeps: {
-        force: true,
-        esbuildOptions: {
-            loader: {
-                '.js': 'jsx',
-            },
-        },
-    },
+    legacy: {
+        inconsistentCjsInterop: true,
+    }
 })
